@@ -1,0 +1,462 @@
+.home {
+  --home-text: var(--text-primary, #1f2937);
+  --home-muted: var(--text-secondary, #4b5563);
+  --home-border: var(--border-color, #e5e7eb);
+  --home-surface: var(--card-bg, #ffffff);
+  --home-inset: var(--bg-color, #f4f6f9);
+  --home-primary: var(--primary, #2563eb);
+  --home-primary-hover: var(--primary-hover, #1d4ed8);
+
+  padding: 3rem 2.5rem 5rem;
+  text-align: left;
+  color: var(--home-text);
+}
+
+/* Hero */
+
+.home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.5rem;
+}
+
+.home-title {
+  margin: 0 0 1.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: var(--home-text);
+}
+
+.home-search {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 28rem;
+  padding: 0.25rem 0.25rem 0.25rem 1.1rem;
+  background-color: var(--home-surface);
+  border: 1px solid var(--home-border);
+  border-radius: 999px;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.home-search:hover {
+  border-color: var(--home-muted);
+}
+
+.home-search:focus-within {
+  border-color: var(--home-text);
+}
+
+.home-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: normal;
+  color: var(--home-text);
+}
+
+.home-search-input::placeholder {
+  color: var(--home-muted);
+  opacity: 0.7;
+}
+
+.home-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.home-search-button {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.home-search-button:hover {
+  background-color: var(--home-inset);
+}
+
+.home-search-button:focus-visible {
+  outline: 2px solid var(--home-primary);
+  outline-offset: 1px;
+}
+
+.home-search-button svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: var(--home-text);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+
+/* Sections */
+
+.home-section {
+  max-width: 1046px;
+  margin: 3.5rem auto 0;
+}
+
+.home-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1rem;
+  padding-bottom: 0.875rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--home-border);
+}
+
+.home-section-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--home-text);
+}
+
+.home-text-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--home-primary);
+  cursor: pointer;
+}
+
+.home-text-button:hover {
+  text-decoration: underline;
+}
+
+.home-status {
+  padding: 1.5rem 0;
+  font-size: 0.95rem;
+  color: var(--home-muted);
+}
+
+.home-status-error {
+  color: var(--danger, #dc2626);
+}
+
+/* Shared phone bits */
+
+.phone-brand {
+  font-size: 0.8rem;
+  color: var(--home-muted);
+}
+
+.phone-placeholder {
+  fill: none;
+  stroke: var(--home-muted);
+  stroke-width: 1.5;
+  opacity: 0.4;
+}
+
+/* Trending: horizontally scrolling row */
+
+.phone-row {
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0 0 0.75rem;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+}
+
+.phone-row > li {
+  flex: 0 0 calc((100% - 3rem) / 4);
+  scroll-snap-align: start;
+}
+
+/* Card grid (search results) */
+
+.phone-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.phone-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--home-surface);
+  border: 1px solid var(--home-border);
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+a.phone-card:hover {
+  border-color: var(--home-muted);
+}
+
+a.phone-card:focus-visible {
+  outline: 2px solid var(--home-primary);
+  outline-offset: 2px;
+}
+
+.phone-card-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  padding: 1.25rem;
+  background-color: var(--home-inset);
+  border-bottom: 1px solid var(--home-border);
+  box-sizing: border-box;
+}
+
+/* Out of flow so tall images can't stretch the 4:3 box */
+.phone-card-media img {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  width: calc(100% - 2.5rem);
+  height: calc(100% - 2.5rem);
+  object-fit: contain;
+}
+
+.phone-card-media .phone-placeholder {
+  height: 4.5rem;
+}
+
+.phone-card-rank {
+  position: absolute;
+  z-index: 1;
+  top: 0.75rem;
+  left: 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--home-muted);
+}
+
+.phone-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.875rem 1rem 1rem;
+}
+
+.phone-card-model {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--home-text);
+}
+
+a.phone-card:hover .phone-card-model {
+  color: var(--home-primary);
+}
+
+.phone-card-meta {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--home-muted);
+}
+
+/* Release list (new releases) */
+
+.release-list {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  background-color: var(--home-surface);
+  border: 1px solid var(--home-border);
+  border-radius: 12px;
+}
+
+.release-list li + li {
+  border-top: 1px solid var(--home-border);
+}
+
+.release-row {
+  display: grid;
+  grid-template-columns: 7.5rem 2.75rem minmax(0, 1fr) 1.25rem;
+  grid-template-areas: "date thumb name arrow";
+  align-items: center;
+  column-gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+a.release-row:hover {
+  background-color: var(--home-inset);
+}
+
+a.release-row:focus-visible {
+  outline: 2px solid var(--home-primary);
+  outline-offset: -2px;
+}
+
+.release-date {
+  grid-area: date;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--home-muted);
+}
+
+.release-thumb {
+  grid-area: thumb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  overflow: hidden;
+  background-color: var(--home-inset);
+  border-radius: 8px;
+}
+
+.release-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.release-thumb .phone-placeholder {
+  height: 1.6rem;
+}
+
+.release-name {
+  grid-area: name;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.release-model {
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--home-text);
+}
+
+.release-arrow {
+  grid-area: arrow;
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: var(--home-muted);
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+a.release-row:hover .release-arrow {
+  stroke: var(--home-text);
+}
+
+/* Loading placeholders */
+
+.skeleton {
+  display: block;
+  height: 0.8rem;
+  border-radius: 4px;
+  background-color: var(--home-border);
+  animation: home-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-line {
+  width: 70%;
+}
+
+.skeleton-line-short {
+  width: 40%;
+  margin-bottom: 0.4rem;
+}
+
+@keyframes home-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .phone-row > li {
+    flex-basis: calc((100% - 1rem) / 2);
+  }
+
+  .phone-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .home {
+    padding: 2.5rem 1rem 3.5rem;
+  }
+
+  .home-title {
+    font-size: 2rem;
+  }
+
+  .home-section {
+    margin-top: 2.5rem;
+  }
+
+  .phone-grid {
+    gap: 0.75rem;
+  }
+
+  .phone-card-body {
+    padding: 0.75rem;
+  }
+
+  .release-row {
+    grid-template-columns: 2.75rem minmax(0, 1fr) 1.25rem;
+    grid-template-areas:
+      "thumb name arrow"
+      "thumb date arrow";
+    column-gap: 0.875rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .release-date {
+    font-size: 0.8rem;
+  }
+}

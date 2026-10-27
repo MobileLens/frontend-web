@@ -28,13 +28,13 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:3000",
+        target: "https://mobilelens.duckdns.org",
         changeOrigin: true,
         secure: false,
       },
 
       "/media": {
-        target: "http://localhost:3000",
+        target: "https://mobilelens.duckdns.org",
         changeOrigin: true,
         secure: false,
       },

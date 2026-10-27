@@ -11,3 +11,9 @@ export async function searchSmartphones(query) {
 export async function getSmartphoneById(id) {
   return apiFetch(`/api/smartphones/${id}`);
 }
+
+export async function getSmartphones(limit = 50) {
+  const data = await apiFetch(`/api/smartphones?limit=${limit}`);
+
+  return data.data;
+}

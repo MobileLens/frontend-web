@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { isLoggedIn, removeToken } from "../../utils/auth";
 import "./Navbar.css";
 
@@ -26,29 +26,25 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      {/* Puste miejsce po lewej stronie lub opcjonalne logo usunięte */}
-      <div style={{ width: 0 }} />
+      <Link to="/" className="navbar-brand">MobileLens</Link>
 
       <div className="navbar-links">
-        {/* Browse kieruje teraz na stronę główną */}
-        <Link to="/" className="nav-link">Browse</Link>
-        <Link to="/compare" className="nav-link">Compare</Link>
+        <NavLink to="/" end className="nav-link">Browse</NavLink>
+        <NavLink to="/compare" className="nav-link">Compare</NavLink>
 
         {loggedIn ? (
           <button
             type="button"
             onClick={handleLogout}
-            className="nav-btn nav-btn-danger"
+            className="nav-btn nav-btn-outline"
           >
             Log out
           </button>
         ) : (
-          <>
-            <Link to="/register" className="nav-link">Register</Link>
-            <Link to="/login" className="nav-btn nav-btn-primary">
-              Login
-            </Link>
-          </>
+          <div className="navbar-actions">
+            <Link to="/login" className="nav-btn nav-btn-outline">Sign in</Link>
+            <Link to="/register" className="nav-btn nav-btn-primary">Register</Link>
+          </div>
         )}
       </div>
     </nav>

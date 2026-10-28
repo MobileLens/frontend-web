@@ -12,8 +12,27 @@ export async function getSmartphoneById(id) {
   return apiFetch(`/api/smartphones/${id}`);
 }
 
+// Verified phones only (used by Home's Trending / New releases).
 export async function getSmartphones(limit = 50) {
-  const data = await apiFetch(`/api/smartphones?limit=${limit}`);
+  const data = await apiFetch(`/api/smartphones?limit=${limit}&verified=true`);
 
   return data.data;
+}
+
+// Catalogue listing with server-side filters; returns { data, page, limit, total, sort }.
+// Empty/undefined params are dropped so the backend doesn't reject them.
+export async function browseSmartphones(params = {}) {
+  const search = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      search.set(key, value);
+    }
+  });
+
+  return apiFetch(`/api/smartphones?${search.toString()}`);
+}
+
+export async function getBrands() {
+  return apiFetch("/api/brands");
 }

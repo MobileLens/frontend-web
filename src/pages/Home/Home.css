@@ -165,13 +165,6 @@
   color: var(--home-muted);
 }
 
-.phone-placeholder {
-  fill: none;
-  stroke: var(--home-muted);
-  stroke-width: 1.5;
-  opacity: 0.4;
-}
-
 /* Trending: horizontally scrolling row */
 
 .phone-row {
@@ -459,4 +452,16 @@ a.release-row:hover .release-arrow {
   .release-date {
     font-size: 0.8rem;
   }
+}
+
+.home-browse-link {
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--home-primary);
+  text-decoration: none;
+}
+
+.home-browse-link:hover {
+  text-decoration: underline;
 }

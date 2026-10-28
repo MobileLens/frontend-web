@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -12,7 +13,8 @@ import PhoneSpecifications from "./pages/PhoneSpecifications/PhoneSpecifications
 import ReviewThread from "./pages/ReviewThread/ReviewThread";
 import Review from "./pages/Review/Review";
 import PhoneComparison from "./pages/PhoneComparison/PhoneComparison";
-import AdminPanel from "./pages/AdminPanel/AdminPanel";
+// Lazy so the charting library only loads for admins.
+const AdminPanel = lazy(() => import("./pages/AdminPanel/AdminPanel"));
 
 function App() {
   return (
@@ -46,13 +48,14 @@ function App() {
           path="/compare"
           element={<PhoneComparison />}
         />
-          <Route
-            path="/phone/:phoneId"
-            element={<PhoneSpecifications />}
-        />
-          <Route 
-            path="/admin_panel" 
-            element={<AdminPanel />} 
+
+        <Route
+          path="/admin_panel"
+          element={
+            <Suspense fallback={null}>
+              <AdminPanel />
+            </Suspense>
+          }
         />
       </Routes>
     </BrowserRouter>

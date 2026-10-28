@@ -80,10 +80,10 @@ function Register() {
   }
 
   return (
-    <main className="auth-page-wrapper">
-      <h1 className="auth-external-title">Register</h1>
+    <main className="auth-page">
+      <h1 className="auth-title">Create an account</h1>
 
-      <div className="auth-container">
+      <div className="auth-card">
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
             <label htmlFor="username" className="auth-label">Username</label>
@@ -167,7 +167,7 @@ function Register() {
         <p className="auth-footer">
           Already have an account?{" "}
           <button type="button" onClick={() => navigate("/login")} className="auth-link-btn">
-            Login
+            Log in
           </button>
         </p>
       </div>

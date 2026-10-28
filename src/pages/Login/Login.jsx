@@ -58,10 +58,10 @@ function Login() {
   }
 
   return (
-    <main className="auth-page-wrapper">
-      <h1 className="auth-external-title">Login</h1>
+    <main className="auth-page">
+      <h1 className="auth-title">Log in to MobileLens</h1>
 
-      <div className="auth-container">
+      <div className="auth-card">
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
             <label htmlFor="email" className="auth-label">Email</label>
@@ -90,7 +90,7 @@ function Login() {
           {error && <p role="alert" className="auth-error">{error}</p>}
 
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "Log in"}
           </button>
         </form>
 

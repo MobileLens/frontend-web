@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { getAdminBans, getAdminUsers, getPromotionOffers } from "../../../api/admin";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { asArray, banState, formatDate, ROLES } from "../format";
 import DataTable from "../components/DataTable";
 import Icon from "../components/Icon";

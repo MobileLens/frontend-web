@@ -1,0 +1,6 @@
+.phone-placeholder {
+  fill: none;
+  stroke: var(--text-secondary, #4b5563);
+  stroke-width: 1.5;
+  opacity: 0.4;
+}

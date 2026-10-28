@@ -29,7 +29,7 @@ function Navbar() {
       <Link to="/" className="navbar-brand">MobileLens</Link>
 
       <div className="navbar-links">
-        <NavLink to="/" end className="nav-link">Browse</NavLink>
+        <NavLink to="/browse" className="nav-link">Browse</NavLink>
         <NavLink to="/compare" className="nav-link">Compare</NavLink>
 
         {loggedIn ? (

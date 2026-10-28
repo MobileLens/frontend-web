@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { getAdminBans, getAdminUsers, getHiddenReviews, getPromotionOffers } from "../../../api/admin";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { asArray } from "../format";
 import StatCard from "../components/StatCard";
 import ChartCard from "../components/ChartCard";

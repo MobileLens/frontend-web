@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { getAdminDashboard, getPendingMedia } from "../../api/admin";
-import { useAsyncData } from "./useAsyncData";
+import { useAsyncData } from "../../hooks/useAsyncData";
 import Icon from "./components/Icon";
 import OverviewTab from "./tabs/OverviewTab";
 import CameraSubmissionsTab from "./tabs/CameraSubmissionsTab";

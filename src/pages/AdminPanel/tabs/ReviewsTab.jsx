@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { getHiddenReviews, getPendingReviews } from "../../../api/admin";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { asArray, formatDate } from "../format";
 import DataTable from "../components/DataTable";
 import Icon from "../components/Icon";

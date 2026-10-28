@@ -48,17 +48,14 @@ function App() {
           path="/compare"
           element={<PhoneComparison />}
         />
-          <Route
-            path="/phone/:phoneId"
-            element={<PhoneSpecifications />}
-        />
-          <Route 
-            path="/admin_panel" 
-            element={
-              <Suspense fallback={null}>
-                <AdminPanel />
-              </Suspense>
-            }
+
+        <Route
+          path="/admin_panel"
+          element={
+            <Suspense fallback={null}>
+              <AdminPanel />
+            </Suspense>
+          }
         />
       </Routes>
     </BrowserRouter>

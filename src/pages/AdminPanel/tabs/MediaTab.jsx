@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getPendingCameras, getPendingMedia, setMediaStatus } from "../../../api/admin";
 import { getSmartphoneById } from "../../../api/smartphones";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { asArray, formatDate, phoneLabel, shortId } from "../format";
 import Icon from "../components/Icon";
 

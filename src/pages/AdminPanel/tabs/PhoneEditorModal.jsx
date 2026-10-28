@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { getBrands, updateCamera, updateSmartphone, uploadDeviceImage } from "../../../api/admin";
 import { getSmartphoneById } from "../../../api/smartphones";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { asArray, phoneLabel } from "../format";
 import Modal from "../components/Modal";
 

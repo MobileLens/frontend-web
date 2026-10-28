@@ -129,9 +129,7 @@ export function updateSmartphone(id, patch) {
   });
 }
 
-export function getBrands() {
-  return apiFetch("/api/brands");
-}
+export { getBrands } from "./smartphones";
 
 export function uploadDeviceImage(file) {
   const body = new FormData();

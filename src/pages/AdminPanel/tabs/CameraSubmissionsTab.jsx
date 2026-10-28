@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { getPendingCameras, reviewCamera } from "../../../api/admin";
 import { getSmartphoneById } from "../../../api/smartphones";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { asArray, formatDate, formatNumber, phoneLabel, shortId } from "../format";
 import Icon from "../components/Icon";
 import StatusBadge from "../components/StatusBadge";

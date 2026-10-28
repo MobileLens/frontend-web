@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { deleteReview, getReviewDetail, setReviewStatus } from "../../../api/admin";
 import { getSmartphoneById } from "../../../api/smartphones";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { formatDate, phoneLabel } from "../format";
 import Modal from "../components/Modal";
 import StatusBadge from "../components/StatusBadge";

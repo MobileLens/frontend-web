@@ -1,31 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getSmartphones, searchSmartphones } from "../../api/smartphones";
+import { Link, useNavigate } from "react-router-dom";
+import { getSmartphones } from "../../api/smartphones";
+import { formatReleaseDate, formatViews } from "../../utils/phoneFormat";
+import PhoneImage from "../../components/PhoneImage/PhoneImage";
 import "./Home.css";
 
 const TRENDING_COUNT = 12;
 const NEW_RELEASES_COUNT = 10;
 const SKELETON_CARDS = 4;
 const SKELETON_ROWS = 5;
-
-const releaseDateFormat = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
-
-function formatReleaseDate(releaseDate) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(releaseDate)) {
-    return releaseDate;
-  }
-
-  return releaseDateFormat.format(new Date(releaseDate));
-}
-
-function formatViews(viewCount) {
-  return `${viewCount.toLocaleString("en-US")} ${viewCount === 1 ? "view" : "views"}`;
-}
 
 function getTrending(phones) {
   return [...phones]
@@ -38,28 +21,6 @@ function getNewReleases(phones) {
     .filter((phone) => phone.releaseDate)
     .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate))
     .slice(0, NEW_RELEASES_COUNT);
-}
-
-function PhoneImage({ phone }) {
-  const [failed, setFailed] = useState(false);
-
-  if (!phone.imageUrl || failed) {
-    return (
-      <svg className="phone-placeholder" viewBox="0 0 36 64" aria-hidden="true">
-        <rect x="1" y="1" width="34" height="62" rx="6" vectorEffect="non-scaling-stroke" />
-        <line x1="14" y1="5.5" x2="22" y2="5.5" vectorEffect="non-scaling-stroke" />
-      </svg>
-    );
-  }
-
-  return (
-    <img
-      src={phone.imageUrl}
-      alt=""
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
-  );
 }
 
 function PhoneCard({ phone, rank, meta }) {
@@ -144,11 +105,8 @@ function ReleasesSkeleton() {
 }
 
 function Home() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [submittedQuery, setSubmittedQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [searching, setSearching] = useState(false);
-  const [searchError, setSearchError] = useState("");
 
   const [catalog, setCatalog] = useState([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
@@ -184,36 +142,11 @@ function Home() {
     };
   }, []);
 
-  async function handleSearch(event) {
+  function handleSearch(event) {
     event.preventDefault();
 
     const trimmedQuery = query.trim();
-
-    if (!trimmedQuery) {
-      return;
-    }
-
-    setSubmittedQuery(trimmedQuery);
-    setSearching(true);
-    setSearchError("");
-
-    try {
-      const phones = await searchSmartphones(trimmedQuery);
-      setResults(phones);
-    } catch (error) {
-      console.error(error);
-      setSearchError("Could not load phones.");
-      setResults([]);
-    } finally {
-      setSearching(false);
-    }
-  }
-
-  function handleClearSearch() {
-    setQuery("");
-    setSubmittedQuery("");
-    setResults([]);
-    setSearchError("");
+    navigate(trimmedQuery ? `/browse?q=${encodeURIComponent(trimmedQuery)}` : "/browse");
   }
 
   const trending = getTrending(catalog);
@@ -242,52 +175,11 @@ function Home() {
             </svg>
           </button>
         </form>
+
+        <Link to="/browse" className="home-browse-link">
+          Browse the full catalogue →
+        </Link>
       </header>
-
-      {submittedQuery && (
-        <section
-          className="home-section"
-          aria-labelledby="home-results-title"
-          aria-busy={searching}
-        >
-          <div className="home-section-header">
-            <h2 id="home-results-title" className="home-section-title">
-              Results for “{submittedQuery}”
-            </h2>
-
-            <button
-              type="button"
-              className="home-text-button"
-              onClick={handleClearSearch}
-            >
-              Clear
-            </button>
-          </div>
-
-          {searching && <p className="home-status">Searching…</p>}
-
-          {!searching && searchError && (
-            <p className="home-status home-status-error">{searchError}</p>
-          )}
-
-          {!searching && !searchError && results.length === 0 && (
-            <p className="home-status">No phones match “{submittedQuery}”.</p>
-          )}
-
-          {!searching && results.length > 0 && (
-            <ul className="phone-grid">
-              {results.map((phone) => (
-                <li key={phone.id}>
-                  <PhoneCard
-                    phone={phone}
-                    meta={phone.releaseDate && formatReleaseDate(phone.releaseDate)}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
 
       <section
         className="home-section"

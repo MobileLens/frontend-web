@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { getSmartphonesPage } from "../../../api/admin";
-import { useAsyncData } from "../useAsyncData";
+import { useAsyncData } from "../../../hooks/useAsyncData";
 import { phoneLabel } from "../format";
 import StatusBadge from "../components/StatusBadge";
 import PhoneEditorModal from "./PhoneEditorModal";
@@ -73,15 +73,15 @@ export default function PhoneEditorTab({ onChanged }) {
 
       <ul className={`phone-list ${loading ? "is-loading" : ""}`}>
         {phones.map((phone) => (
-          <li key={phone.id} className="phone-row">
+          <li key={phone.id} className="admin-phone-row">
             {phone.imageUrl ? (
-              <img src={phone.imageUrl} alt="" className="phone-row-thumb" loading="lazy" />
+              <img src={phone.imageUrl} alt="" className="admin-phone-row-thumb" loading="lazy" />
             ) : (
-              <span className="phone-row-thumb phone-row-thumb-empty" />
+              <span className="admin-phone-row-thumb admin-phone-row-thumb-empty" />
             )}
-            <div className="phone-row-info">
-              <span className="phone-row-name">{phoneLabel(phone)}</span>
-              <span className="phone-row-meta">
+            <div className="admin-phone-row-info">
+              <span className="admin-phone-row-name">{phoneLabel(phone)}</span>
+              <span className="admin-phone-row-meta">
                 {phone.releaseDate ? `Released ${phone.releaseDate}` : "No release date"}
               </span>
             </div>

@@ -380,11 +380,11 @@
   color: var(--cat-muted);
 }
 
-.catalogue-verified {
+.catalogue-unverified {
   padding: 0.05rem 0.45rem;
   border-radius: 999px;
-  background: var(--success-subtle-bg, #f0fdf4);
-  color: var(--success-text, #15803d);
+  background: var(--warning-subtle-bg, #fffbeb);
+  color: var(--warning-text, #b45309);
   font-size: 0.7rem;
   font-weight: 700;
 }

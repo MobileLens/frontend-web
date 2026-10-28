@@ -59,6 +59,12 @@ const OIS_OPTIONS = [
   { value: "none", label: "None" },
 ];
 
+// No "verified" param in the URL means verified phones only; these opt in to the rest.
+const VERIFICATION_OPTIONS = [
+  { value: "all", label: "All phones" },
+  { value: "false", label: "Unverified only" },
+];
+
 const YEARS = Array.from(
   { length: new Date().getFullYear() - FIRST_YEAR + 1 },
   (_, index) => String(new Date().getFullYear() - index)
@@ -80,6 +86,8 @@ function toApiParams(searchParams) {
     // The backend compares release dates as strings, so "2023" would exclude
     // "2023-10-04"; send the last day of the year instead.
     release_to: filters.release_to ? `${filters.release_to}-12-31` : "",
+    // Unverified phones are hidden unless the Verified filter asks for them.
+    verified: filters.verified === "all" ? "" : filters.verified || "true",
     sort: searchParams.get("sort") || "name",
     page: searchParams.get("page") || 1,
     limit: PAGE_SIZE,
@@ -94,7 +102,7 @@ function activeChips(filters, brands) {
   add("brand_id", brands.find((brand) => brand.id === filters.brand_id)?.name || "Brand");
   add("release_from", `From ${filters.release_from}`);
   add("release_to", `Until ${filters.release_to}`);
-  add("verified", "Verified only");
+  add("verified", filters.verified === "false" ? "Unverified only" : "Including unverified");
   add("camera_type", `${optionLabel(LENS_TYPES, filters.camera_type)} lens`);
   add("facing", `${optionLabel(FACINGS, filters.facing)} camera`);
   add("ois", `Stabilization: ${optionLabel(OIS_OPTIONS, filters.ois)}`);
@@ -271,7 +279,7 @@ function PhoneListRow({ phone, details, detailsLoading, inCompare, onToggleCompa
           {phone.releaseDate ? formatReleaseDate(phone.releaseDate) : "Release date unknown"}
           {" · "}
           {formatViews(phone.viewCount || 0)}
-          {phone.verified && <span className="catalogue-verified">Verified</span>}
+          {!phone.verified && <span className="catalogue-unverified">Unverified</span>}
         </span>
       </div>
 
@@ -445,7 +453,14 @@ function PhoneBrowse() {
               />
             </div>
 
-            <CheckFilter label="Verified only" name="verified" value={filters.verified} onChange={setParam} />
+            <SelectFilter
+              label="Verified"
+              name="verified"
+              value={filters.verified}
+              options={VERIFICATION_OPTIONS}
+              onChange={setParam}
+              placeholder="Verified only"
+            />
           </div>
 
           <div className="catalogue-filters-group">

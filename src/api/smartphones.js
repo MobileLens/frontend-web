@@ -12,8 +12,9 @@ export async function getSmartphoneById(id) {
   return apiFetch(`/api/smartphones/${id}`);
 }
 
+// Verified phones only (used by Home's Trending / New releases).
 export async function getSmartphones(limit = 50) {
-  const data = await apiFetch(`/api/smartphones?limit=${limit}`);
+  const data = await apiFetch(`/api/smartphones?limit=${limit}&verified=true`);
 
   return data.data;
 }

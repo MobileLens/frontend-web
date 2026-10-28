@@ -1,0 +1,74 @@
+/* Shared design tokens used across pages (light + dark). */
+:root {
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-subtle: rgba(37, 99, 235, 0.1);
+
+  --neutral-btn-bg: #f1f5f9;
+  --neutral-btn-hover: #e2e8f0;
+  --neutral-btn-text: #334155;
+
+  --danger-subtle-bg: #fef2f2;
+  --danger-subtle-border: #fecaca;
+  --danger-subtle-text: #b91c1c;
+  --danger-subtle-hover: #fee2e2;
+
+  --success-text: #15803d;
+  --success-subtle-bg: #f0fdf4;
+  --warning-text: #b45309;
+  --warning-subtle-bg: #fffbeb;
+  --info-text: #1d4ed8;
+  --info-subtle-bg: #eff6ff;
+
+  --radius: 8px;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --spec-bg: #f1f5f9;
+  --table-hover: #f8fafc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-subtle: rgba(59, 130, 246, 0.16);
+
+    --neutral-btn-bg: #273548;
+    --neutral-btn-hover: #334155;
+    --neutral-btn-text: #e2e8f0;
+
+    --danger-subtle-bg: rgba(239, 68, 68, 0.12);
+    --danger-subtle-border: #7f1d1d;
+    --danger-subtle-text: #fca5a5;
+    --danger-subtle-hover: rgba(239, 68, 68, 0.2);
+
+    --success-text: #86efac;
+    --success-subtle-bg: rgba(34, 197, 94, 0.12);
+    --warning-text: #fcd34d;
+    --warning-subtle-bg: rgba(245, 158, 11, 0.14);
+    --info-text: #93c5fd;
+    --info-subtle-bg: rgba(59, 130, 246, 0.14);
+
+    --spec-bg: #172033;
+    --table-hover: #233047;
+  }
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+

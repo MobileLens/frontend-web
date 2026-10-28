@@ -22,9 +22,10 @@ export async function apiFetch(endpoint, options = {}) {
 
   if (!response.ok) {
     let errorMessage = `API error: ${response.status}`;
+    let errorData = null;
 
     try {
-      const errorData = await response.json();
+      errorData = await response.json();
 
       if (errorData.message) {
         errorMessage = errorData.message;
@@ -32,9 +33,15 @@ export async function apiFetch(endpoint, options = {}) {
         errorMessage = errorData.error;
       }
     } catch {
+      // Non-JSON error body; keep the generic message.
     }
 
-    throw new Error(errorMessage);
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.code = errorData?.code;
+    error.field = errorData?.field;
+    error.data = errorData;
+    throw error;
   }
 
   if (response.status === 204) {

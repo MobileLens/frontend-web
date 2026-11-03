@@ -1,26 +1,24 @@
-import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { isLoggedIn, removeToken } from "../../utils/auth";
+import { logoutUser } from "../../api/auth";
+import { useAuth } from "../../context/useAuth";
+import { isLoggedIn } from "../../utils/auth";
 import "./Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
+  const { currentUser, loading, isStaff } = useAuth();
 
-  useEffect(() => {
-    function handleStorageChange() {
-      setLoggedIn(isLoggedIn());
+  // While the session loads, trust the stored token so the bar doesn't flash "Sign in".
+  const loggedIn = Boolean(currentUser) || (loading && isLoggedIn());
+
+  async function handleLogout() {
+    try {
+      await logoutUser();
+    } catch (err) {
+      // logoutUser drops the local token anyway; an expired session can't be signed out
+      console.error(err);
     }
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-  function handleLogout() {
-    removeToken();
-    setLoggedIn(false);
     navigate("/");
   }
 
@@ -29,17 +27,26 @@ function Navbar() {
       <Link to="/" className="navbar-brand">MobileLens</Link>
 
       <div className="navbar-links">
-        <NavLink to="/" end className="nav-link">Browse</NavLink>
+        <NavLink to="/browse" className="nav-link">Browse</NavLink>
         <NavLink to="/compare" className="nav-link">Compare</NavLink>
+        {loggedIn && <NavLink to="/favorites" className="nav-link">Favorites</NavLink>}
 
         {loggedIn ? (
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="nav-btn nav-btn-outline"
-          >
-            Log out
-          </button>
+          <div className="navbar-actions">
+            {isStaff && (
+              <Link to="/admin_panel" className="nav-btn nav-btn-primary">Admin panel</Link>
+            )}
+            <NavLink to="/account" className="nav-link nav-account" title="Account settings">
+              {currentUser?.username || currentUser?.name || "Account"}
+            </NavLink>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="nav-btn nav-btn-outline"
+            >
+              Log out
+            </button>
+          </div>
         ) : (
           <div className="navbar-actions">
             <Link to="/login" className="nav-btn nav-btn-outline">Sign in</Link>

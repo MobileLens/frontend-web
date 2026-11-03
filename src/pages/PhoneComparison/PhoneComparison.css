@@ -1,0 +1,309 @@
+.compare-clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primary, #2563eb);
+  cursor: pointer;
+}
+
+.compare-clear:hover {
+  text-decoration: underline;
+}
+
+/* Dodawanie telefonu */
+
+.compare-add {
+  position: relative;
+  max-width: 28rem;
+  margin-bottom: 1.5rem;
+}
+
+.compare-add-results {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  max-height: 20rem;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  list-style: none;
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
+}
+
+.compare-add-empty {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #4b5563);
+}
+
+.compare-add-option {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  color: var(--text-primary, #1f2937);
+  cursor: pointer;
+}
+
+.compare-add-option:hover,
+.compare-add-option:focus-visible {
+  outline: none;
+  background-color: var(--bg-color, #f4f6f9);
+}
+
+.compare-add-option strong {
+  font-weight: 600;
+}
+
+.compare-add-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: var(--bg-color, #f4f6f9);
+}
+
+.compare-add-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.compare-add-thumb .phone-placeholder {
+  height: 1.3rem;
+}
+
+.compare-add-plus {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary, #2563eb);
+}
+
+/* Mniej niż 2 telefony */
+
+.compare-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.compare-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  align-self: flex-start;
+  padding: 0.4rem 0.5rem 0.4rem 0.4rem;
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+}
+
+.compare-chip-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  text-decoration: none;
+}
+
+.compare-chip-name:hover {
+  color: var(--primary, #2563eb);
+}
+
+/* Tabela */
+
+.compare-table-wrap {
+  overflow-x: auto;
+  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+}
+
+.compare-table {
+  width: 100%;
+  min-width: calc(11rem + var(--compare-cols, 2) * 11rem);
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.875rem;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  text-align: left;
+  vertical-align: top;
+}
+
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.compare-corner {
+  width: 11rem;
+}
+
+/* Pierwsza kolumna przyklejona przy przewijaniu w poziomie */
+.compare-table tbody th[scope="row"],
+.compare-corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: var(--card-bg, #ffffff);
+}
+
+.compare-table tbody th[scope="row"] {
+  font-weight: 500;
+  color: var(--text-secondary, #4b5563);
+}
+
+.compare-table td {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary, #1f2937);
+  overflow-wrap: anywhere;
+}
+
+.compare-phone {
+  position: relative;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  font-weight: 400;
+}
+
+.compare-phone-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.compare-phone-image {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7rem;
+  margin-bottom: 0.6rem;
+  border-radius: 8px;
+  background-color: var(--bg-color, #f4f6f9);
+}
+
+.compare-phone-image img {
+  position: absolute;
+  inset: 0.6rem;
+  width: calc(100% - 1.2rem);
+  height: calc(100% - 1.2rem);
+  object-fit: contain;
+}
+
+.compare-phone-image .phone-placeholder {
+  height: 3.5rem;
+}
+
+.compare-phone-model {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary, #1f2937);
+}
+
+.compare-phone-link:hover .compare-phone-model {
+  color: var(--primary, #2563eb);
+}
+
+.compare-reviews {
+  display: inline-block;
+  margin-top: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.compare-remove {
+  position: absolute;
+  z-index: 1;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 50%;
+  background-color: var(--card-bg, #ffffff);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text-secondary, #4b5563);
+  cursor: pointer;
+}
+
+.compare-chip .compare-remove {
+  position: static;
+}
+
+.compare-remove:hover {
+  border-color: var(--danger, #dc2626);
+  color: var(--danger, #dc2626);
+}
+
+.compare-group th {
+  padding-top: 1.1rem !important;
+  background-color: var(--bg-color, #f4f6f9);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary, #1f2937);
+}
+
+.compare-group th[scope="colgroup"] {
+  position: sticky;
+  left: 0;
+}
+
+.compare-best {
+  background-color: rgba(22, 163, 74, 0.08);
+  font-weight: 600;
+  color: var(--success, #16a34a) !important;
+}
+
+.compare-missing {
+  color: var(--text-secondary, #4b5563) !important;
+  opacity: 0.6;
+}
+
+.compare-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #4b5563);
+}
+
+.compare-best-swatch {
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+  background-color: rgba(22, 163, 74, 0.25);
+}

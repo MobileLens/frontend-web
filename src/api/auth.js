@@ -1,5 +1,7 @@
 import { apiFetch } from "./client";
+import { removeToken } from "../utils/auth";
 
+// Returns { token, user }. token is null when the backend requires e-mail verification.
 export async function registerUser({
   name,
   username,
@@ -17,6 +19,7 @@ export async function registerUser({
   });
 }
 
+// Returns { token, user }.
 export async function loginUser({
   email,
   password,
@@ -28,4 +31,16 @@ export async function loginUser({
       password,
     }),
   });
+}
+
+// Invalidates the session on the server (and its cookie); the local token is dropped either way.
+export async function logoutUser() {
+  try {
+    await apiFetch("/api/auth/sign-out", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  } finally {
+    removeToken();
+  }
 }

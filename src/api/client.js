@@ -1,13 +1,14 @@
-import { getToken } from "../utils/auth";
+import { getToken, removeToken } from "../utils/auth";
 
 export async function apiFetch(endpoint, options = {}) {
   const token = getToken();
 
   const headers = {
+    "Accept-Language": "en",
     ...options.headers,
   };
 
-  if (!(options.body instanceof FormData)) {
+  if (options.body && !(options.body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -21,20 +22,33 @@ export async function apiFetch(endpoint, options = {}) {
   });
 
   if (!response.ok) {
-    let errorMessage = `API error: ${response.status}`;
-
-    try {
-      const errorData = await response.json();
-
-      if (errorData.message) {
-        errorMessage = errorData.message;
-      } else if (errorData.error) {
-        errorMessage = errorData.error;
-      }
-    } catch {
+    // Expired or revoked session (e.g. after a ban). Only when a token was sent,
+    // so a wrong-password 401 on the login form doesn't touch anything.
+    if (response.status === 401 && token) {
+      removeToken();
     }
 
-    throw new Error(errorMessage);
+    let errorMessage = `API error: ${response.status}`;
+    let errorData = null;
+
+    try {
+      errorData = await response.json();
+
+      // backend: { error, code, ...extra }; better-auth (/api/auth/*): { message, code }
+      if (errorData.error) {
+        errorMessage = errorData.error;
+      } else if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch {
+      // not JSON - keep the generic message
+    }
+
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.code = errorData?.code;
+    error.data = errorData;
+    throw error;
   }
 
   if (response.status === 204) {

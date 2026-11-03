@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser, loginUser } from "../../api/auth";
+import { registerUser } from "../../api/auth";
 import { saveToken } from "../../utils/auth";
 import "./Register.css";
 
@@ -15,6 +15,7 @@ function Register() {
   const [acceptTerms, setAcceptTerms] = useState(false);
 
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const [loading, setLoading] = useState(false);
 
   function validateForm() {
@@ -35,6 +36,7 @@ function Register() {
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+    setInfo("");
 
     const validationError = validateForm();
     if (validationError) {
@@ -45,35 +47,24 @@ function Register() {
     setLoading(true);
 
     try {
-      await registerUser({
+      const data = await registerUser({
         name: name.trim(),
         username: username.trim(),
         email: email.trim(),
         password,
       });
 
-      const loginData = await loginUser({
-        email: email.trim(),
-        password,
-      });
-
-      const token =
-        loginData.token ||
-        loginData.accessToken ||
-        loginData.data?.token ||
-        loginData.data?.accessToken;
-
-      if (!token) {
-        throw new Error(
-          "Registration succeeded, but automatic login failed to return a token."
-        );
+      // No token when the backend requires e-mail verification before the first login.
+      if (!data.token) {
+        setInfo("Account created. Check your e-mail to confirm your address, then log in.");
+        return;
       }
 
-      saveToken(token);
+      saveToken(data.token);
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError(err.message || "Registration or automatic login failed.");
+      setError(err.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -158,6 +149,7 @@ function Register() {
           </div>
 
           {error && <p role="alert" className="auth-error">{error}</p>}
+          {info && <p role="status">{info}</p>}
 
           <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? "Creating account..." : "Register"}

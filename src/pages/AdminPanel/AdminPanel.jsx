@@ -9,10 +9,42 @@ import {
   getPromotionOffers,
   getPendingCameras,
   reviewCamera,
+  getPendingMedia,
+  reviewMedia,
 } from "../../api/admin";
-import { searchSmartphones, getSmartphoneById } from "../../api/smartphones";
-import { apiFetch } from "../../api/client";
+import {
+  searchSmartphones,
+  getSmartphoneById,
+  updateSmartphone,
+  updateCamera,
+} from "../../api/smartphones";
 import "./AdminPanel.css";
+
+const isAuthError = (err) => err?.status === 401 || err?.status === 403;
+
+// Editable camera fields: input value (string) -> API value.
+const CAMERA_NUMBER_FIELDS = ["resolutionMp", "focalLengthMm", "aperture"];
+
+function phoneDisplayName(phone, fallbackId) {
+  if (phone) return [phone.brandName, phone.modelName].filter(Boolean).join(" ");
+  return `Model (ID: ${fallbackId ? fallbackId.slice(0, 8) : "unknown"}...)`;
+}
+
+function cameraChanges(original, edited) {
+  const changes = {};
+
+  for (const field of CAMERA_NUMBER_FIELDS) {
+    if (String(edited[field] ?? "") !== String(original[field] ?? "")) {
+      changes[field] = Number(edited[field]);
+    }
+  }
+
+  if ((edited.ois ?? null) !== (original.ois ?? null)) {
+    changes.ois = edited.ois || null;
+  }
+
+  return changes;
+}
 
 function DataTable({ title, columns, rows, emptyMessage }) {
   return (
@@ -75,10 +107,7 @@ export default function AdminPanel() {
   const [isSearching, setIsSearching] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [imagesList, setImagesList] = useState([
-    { id: 1, name: "Sample_Main_Sensor_1.jpg", phone: "Galaxy S22", status: "Approved" },
-    { id: 2, name: "Sample_Telephoto_2.jpg", phone: "Galaxy S24 Ultra", status: "Pending" },
-  ]);
+  const [pendingMedia, setPendingMedia] = useState([]);
 
   const [error, setError] = useState("");
   const [isForbidden, setIsForbidden] = useState(false);
@@ -94,17 +123,8 @@ export default function AdminPanel() {
         getHiddenReviews(),
         getPromotionOffers(),
         getPendingCameras(),
+        getPendingMedia(),
       ]);
-
-      const hasForbiddenError = results.some(
-        (res) => res.status === "rejected" && (res.reason?.status === 403 || res.reason?.status === 401 || String(res.reason).includes("403") || String(res.reason).includes("401"))
-      );
-
-      if (hasForbiddenError) {
-        setIsForbidden(true);
-        setLoading(false);
-        return;
-      }
 
       const [
         dashRes,
@@ -114,7 +134,15 @@ export default function AdminPanel() {
         hiddenRes,
         promoRes,
         camerasRes,
+        mediaRes,
       ] = results;
+
+      // The dashboard needs moderator rights. Bans and hidden reviews are admin-only,
+      // so a 403 there just means a moderator is signed in.
+      if (dashRes.status === "rejected" && isAuthError(dashRes.reason)) {
+        setIsForbidden(true);
+        return;
+      }
 
       if (dashRes.status === "fulfilled") setDashboard(dashRes.value);
       if (statsRes.status === "fulfilled") setStats(statsRes.value);
@@ -122,39 +150,21 @@ export default function AdminPanel() {
       if (bansRes.status === "fulfilled") setBans(bansRes.value);
       if (hiddenRes.status === "fulfilled") setHiddenReviews(hiddenRes.value);
       if (promoRes.status === "fulfilled") setPromotions(promoRes.value);
-      
-      if (camerasRes.status === "fulfilled") {
-        const rawCameras = camerasRes.value.data || camerasRes.value;
-        if (Array.isArray(rawCameras)) {
-          const enrichedCameras = await Promise.all(
-            rawCameras.map(async (cam) => {
-              let modelName = cam.modelName || cam.smartphoneName;
-              let brandName = cam.brandName;
+      if (camerasRes.status === "fulfilled") setPendingCameras(camerasRes.value);
 
-              if (!modelName && cam.smartphoneId) {
-                try {
-                  const phoneRes = await getSmartphoneById(cam.smartphoneId);
-                  const phoneData = phoneRes.data || phoneRes;
-                  modelName = phoneData.modelName || phoneData.name;
-                  brandName = phoneData.brandName || brandName;
-                } catch (e) {
-                  console.error("Failed to fetch phone for camera:", e);
-                }
-              }
-
-              return {
-                ...cam,
-                resolvedPhoneName: `${brandName ? brandName + " " : ""}${modelName || "Model (ID: " + (cam.smartphoneId ? cam.smartphoneId.slice(0, 8) : "unknown") + "..." + ")"}`
-              };
-            })
-          );
-          setPendingCameras(enrichedCameras);
-        }
+      if (mediaRes.status === "fulfilled") {
+        setPendingMedia([
+          ...mediaRes.value.photos.map((item) => ({ ...item, kind: "photos" })),
+          ...mediaRes.value.videos.map((item) => ({ ...item, kind: "videos" })),
+        ]);
       }
 
+      results
+        .filter((res) => res.status === "rejected" && !isAuthError(res.reason))
+        .forEach((res) => console.error(res.reason));
     } catch (err) {
       console.error(err);
-      if (err?.status === 403 || err?.status === 401) {
+      if (isAuthError(err)) {
         setIsForbidden(true);
       } else {
         setError("An error occurred while loading the admin panel.");
@@ -173,7 +183,19 @@ export default function AdminPanel() {
       await reviewCamera(id, status);
       setPendingCameras((prev) => prev.filter((cam) => cam.id !== id));
     } catch (err) {
+      if (err.code === "ALREADY_REVIEWED") {
+        setPendingCameras((prev) => prev.filter((cam) => cam.id !== id));
+      }
       alert("Error reviewing camera submission: " + (err.message || err));
+    }
+  };
+
+  const handleMediaReview = async (item, status) => {
+    try {
+      await reviewMedia(item.kind, item.id, status);
+      setPendingMedia((prev) => prev.filter((media) => media.id !== item.id));
+    } catch (err) {
+      alert("Error reviewing media: " + (err.message || err));
     }
   };
 
@@ -195,10 +217,12 @@ export default function AdminPanel() {
 
   const handleSelectPhone = async (id) => {
     try {
-      const phoneDetails = await getSmartphoneById(id);
-      const phoneData = phoneDetails.data || phoneDetails;
+      const phoneData = await getSmartphoneById(id);
       setSelectedPhone(phoneData);
-      setPhoneForm(phoneData); 
+      setPhoneForm({
+        ...phoneData,
+        buildModels: (phoneData.buildModels || []).join(", "),
+      });
     } catch (err) {
       console.error("Error fetching phone details:", err);
       alert("Failed to retrieve selected phone data.");
@@ -224,9 +248,32 @@ export default function AdminPanel() {
 
     try {
       setIsSaving(true);
-      await apiFetch(`/api/smartphones/${selectedPhone.id}`, {
-        method: "PUT",
-        body: JSON.stringify(phoneForm),
+
+      await updateSmartphone(selectedPhone.id, {
+        modelName: phoneForm.modelName,
+        imageUrl: phoneForm.imageUrl || null,
+        releaseDate: phoneForm.releaseDate || null,
+        buildModels: phoneForm.buildModels
+          .split(",")
+          .map((code) => code.trim())
+          .filter(Boolean),
+      });
+
+      // Cameras are separate resources; only send the ones that changed.
+      for (const cam of phoneForm.cameras || []) {
+        const original = selectedPhone.cameras.find((item) => item.id === cam.id);
+        const changes = cameraChanges(original, cam);
+
+        if (Object.keys(changes).length > 0) {
+          await updateCamera(cam.id, changes);
+        }
+      }
+
+      const refreshed = await getSmartphoneById(selectedPhone.id);
+      setSelectedPhone(refreshed);
+      setPhoneForm({
+        ...refreshed,
+        buildModels: (refreshed.buildModels || []).join(", "),
       });
       alert("Changes to the phone and cameras have been successfully saved!");
     } catch (err) {
@@ -235,12 +282,6 @@ export default function AdminPanel() {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleImageStatusChange = (id, newStatus) => {
-    setImagesList((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, status: newStatus } : img))
-    );
   };
 
   if (isForbidden) {
@@ -324,6 +365,8 @@ export default function AdminPanel() {
               <StatCard title="Published Reviews" value={stats.publishedReviews} />
               <StatCard title="Pending Reviews" value={stats.pendingReviews} />
               <StatCard title="Phones in Database" value={stats.phonesInDatabase} />
+              <StatCard title="Camera Submissions" value={stats.databaseSubmissions} />
+              <StatCard title="Pending Camera Submissions" value={stats.pendingSubmissions} />
             </div>
           </div>
         )}
@@ -343,7 +386,7 @@ export default function AdminPanel() {
                   <div key={cam.id} className="camera-card">
                     <div>
                       <div style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--primary)", marginBottom: "0.25rem" }}>
-                        {cam.resolvedPhoneName}
+                        {phoneDisplayName(cam.phone, cam.smartphoneId)}
                       </div>
                       <div className="camera-card-header">
                         <h4 className="camera-card-title">{cam.type ? cam.type.toUpperCase() : "Camera"}</h4>
@@ -357,11 +400,20 @@ export default function AdminPanel() {
                         <div className="spec-item"><span className="spec-label">OIS</span><span className="spec-value">{cam.ois || "—"}</span></div>
                         <div className="spec-item"><span className="spec-label">Optical Zoom</span><span className="spec-value">{cam.opticalZoom !== undefined ? (cam.opticalZoom ? "Yes" : "No") : "—"}</span></div>
                         <div className="spec-item"><span className="spec-label">Variable Aperture</span><span className="spec-value">{cam.variableAperture !== undefined ? (cam.variableAperture ? "Yes" : "No") : "—"}</span></div>
+                        <div className="spec-item"><span className="spec-label">Sensor</span><span className="spec-value">{[cam.sensorFormat && `${cam.sensorFormat}"`, cam.sensorModel].filter(Boolean).join(" · ") || "—"}</span></div>
+                        <div className="spec-item"><span className="spec-label">Video Modes</span><span className="spec-value">{cam.videoModes?.length ?? 0}</span></div>
                       </div>
 
-                      {cam.samples && (
+                      {/* Sample coverage is informational only - approval does not require sample photos. */}
+                      {cam.samples && (cam.samples.needsApertureSamples || cam.samples.needsZoomSamples) && (
                         <div style={{ fontSize: "0.85rem", marginBottom: "1rem", color: cam.samples.satisfied ? "var(--success)" : "#d97706" }}>
-                          <strong>EXIF:</strong> {cam.samples.satisfied ? "Requirements met" : `Required samples: ${cam.samples.required}`}
+                          <strong>Samples:</strong>{" "}
+                          {cam.samples.satisfied
+                            ? "Coverage complete"
+                            : [
+                                cam.samples.needsApertureSamples && `apertures ${cam.samples.apertureValues}/${cam.samples.required}`,
+                                cam.samples.needsZoomSamples && `focal lengths ${cam.samples.focalLengthValues}/${cam.samples.required}`,
+                              ].filter(Boolean).join(", ")}
                         </div>
                       )}
                     </div>
@@ -407,10 +459,36 @@ export default function AdminPanel() {
                       type="text" 
                       name="imageUrl"
                       className="editor-input" 
-                      value={phoneForm.imageUrl || ""} 
-                      onChange={handleFormChange} 
+                      value={phoneForm.imageUrl || ""}
+                      onChange={handleFormChange}
                     />
                   </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                    <label style={{ fontSize: "0.85rem", fontWeight: "600" }}>Release Date (YYYY, YYYY-MM or YYYY-MM-DD):</label>
+                    <input
+                      type="text"
+                      name="releaseDate"
+                      className="editor-input"
+                      value={phoneForm.releaseDate || ""}
+                      onChange={handleFormChange}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                    <label style={{ fontSize: "0.85rem", fontWeight: "600" }}>Model Codes (comma-separated, e.g. SM-S928B, SM-S928U):</label>
+                    <input
+                      type="text"
+                      name="buildModels"
+                      className="editor-input"
+                      value={phoneForm.buildModels || ""}
+                      onChange={handleFormChange}
+                    />
+                  </div>
+
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", margin: 0 }}>
+                    Saving also marks this phone as verified.
+                  </p>
 
                   <div>
                     <h4 style={{ margin: "0 0 0.75rem 0", fontSize: "1rem" }}>Camera Modules</h4>
@@ -449,8 +527,9 @@ export default function AdminPanel() {
 
                               <div className="spec-item">
                                 <span className="spec-label">Aperture (f/)</span>
-                                <input 
-                                  type="text" 
+                                <input
+                                  type="number"
+                                  step="any"
                                   className="editor-input"
                                   style={{ padding: "0.3rem 0.5rem", fontSize: "0.85rem", marginTop: "0.2rem" }}
                                   value={cam.aperture || ""}
@@ -460,13 +539,17 @@ export default function AdminPanel() {
 
                               <div className="spec-item">
                                 <span className="spec-label">OIS</span>
-                                <input 
-                                  type="text" 
+                                <select
                                   className="editor-input"
                                   style={{ padding: "0.3rem 0.5rem", fontSize: "0.85rem", marginTop: "0.2rem" }}
                                   value={cam.ois || ""}
                                   onChange={(e) => handleCameraFieldChange(idx, "ois", e.target.value)}
-                                />
+                                >
+                                  <option value="">Unknown</option>
+                                  <option value="none">None</option>
+                                  <option value="optical">Optical</option>
+                                  <option value="sensor_shift">Sensor-shift</option>
+                                </select>
                               </div>
                             </div>
                           </div>
@@ -524,26 +607,35 @@ export default function AdminPanel() {
         {activeTab === "images" && (
           <div className="admin-section">
             <h3 className="admin-section-title">Image & Sample Manager</h3>
-            <div className="image-manager-grid">
-              {imagesList.map((img) => (
-                <div key={img.id} className="image-card">
-                  <div className="image-preview" />
-                  <div className="image-card-footer">
-                    <div style={{ fontSize: "0.85rem", fontWeight: "600" }}>{img.name}</div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{img.phone}</div>
-                    <div style={{ fontSize: "0.75rem", fontWeight: "600", color: img.status === "Approved" ? "var(--success)" : "#d97706" }}>
-                      Status: {img.status}
-                    </div>
-                    <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.25rem" }}>
-                      {img.status !== "Approved" && (
-                        <button type="button" className="btn btn-success" style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }} onClick={() => handleImageStatusChange(img.id, "Approved")}>OK</button>
+            {pendingMedia.length === 0 ? (
+              <p style={{ color: "var(--text-secondary)", margin: 0, fontSize: "0.9rem" }}>No pending photos or videos.</p>
+            ) : (
+              <div className="image-manager-grid">
+                {pendingMedia.map((item) => (
+                  <div key={item.id} className="image-card">
+                    <a className="image-preview" href={item.url} target="_blank" rel="noreferrer" style={{ display: "block", overflow: "hidden" }}>
+                      {item.kind === "photos" ? (
+                        <img src={item.thumbUrl || item.url} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <video src={item.url} muted preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       )}
-                      <button type="button" className="btn btn-danger" style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }} onClick={() => handleImageStatusChange(img.id, "Rejected")}>Reject</button>
+                    </a>
+                    <div className="image-card-footer">
+                      <div style={{ fontSize: "0.85rem", fontWeight: "600" }}>
+                        {item.kind === "photos" ? "Photo" : `Video · ${Math.round(item.fps)} fps`} · {item.widthPx}×{item.heightPx}
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                        Uploaded {new Date(item.uploadDate).toLocaleDateString()}
+                      </div>
+                      <div style={{ display: "flex", gap: "0.3rem", marginTop: "0.25rem" }}>
+                        <button type="button" className="btn btn-success" style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }} onClick={() => handleMediaReview(item, "verified")}>Verify</button>
+                        <button type="button" className="btn btn-danger" style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }} onClick={() => handleMediaReview(item, "deleted")}>Delete</button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -563,7 +655,8 @@ export default function AdminPanel() {
               title="Hidden Reviews"
               columns={[
                 { key: "title", label: "Review Title" },
-                { key: "authorId", label: "Author ID" },
+                { key: "authorName", label: "Author" },
+                { key: "updatedAt", label: "Last Updated" },
               ]}
               rows={hiddenReviews}
               emptyMessage="No hidden reviews."

@@ -20,8 +20,10 @@ function ReviewThread() {
       setError("");
 
       try {
-        const phoneData = await getSmartphoneById(phoneId);
-        const reviewsData = await getReviewsBySmartphoneId(phoneId);
+        const [phoneData, reviewsData] = await Promise.all([
+          getSmartphoneById(phoneId),
+          getReviewsBySmartphoneId(phoneId),
+        ]);
 
         setPhone(phoneData);
         setReviews(reviewsData);
@@ -69,9 +71,18 @@ function ReviewThread() {
         <div>
           {reviews.map((review) => (
             <div key={review.id}>
-              <h3>{review.title}</h3>
+              <h3>
+                {review.title}
+                {review.isComparison && " (comparison)"}
+              </h3>
 
-              <p>Author: {review.authorId}</p>
+              <p>Author: {review.authorName || review.authorId}</p>
+
+              {review.excerpt && <p>{review.excerpt}</p>}
+
+              <p>
+                {review.likeCount} likes · {review.commentCount} comments
+              </p>
 
               <button
                 type="button"

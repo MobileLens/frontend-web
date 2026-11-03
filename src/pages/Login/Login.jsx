@@ -35,23 +35,24 @@ function Login() {
         password,
       });
 
-      const token =
-        data.token ||
-        data.accessToken ||
-        data.data?.token ||
-        data.data?.accessToken;
-
-      if (!token) {
+      if (!data.token) {
         throw new Error(
           "Login succeeded, but no authentication token was returned."
         );
       }
 
-      saveToken(token);
+      saveToken(data.token);
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError(err.message || "Login failed.");
+
+      if (err.code === "EMAIL_NOT_VERIFIED") {
+        setError("Please confirm your e-mail address before logging in.");
+      } else if (err.code === "USER_BANNED") {
+        setError("Your account has been banned.");
+      } else {
+        setError(err.message || "Login failed.");
+      }
     } finally {
       setLoading(false);
     }

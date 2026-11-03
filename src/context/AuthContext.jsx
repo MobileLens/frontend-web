@@ -58,6 +58,7 @@ export function AuthProvider({ children }) {
         currentUser,
         loading,
         isStaff: STAFF_ROLES.includes(currentUser?.role),
+        isAdmin: currentUser?.role === "admin",
         refreshUser,
       }}
     >

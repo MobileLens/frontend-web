@@ -1,0 +1,74 @@
+/*
+ * Kolory aplikacji: paleta MobileLens (brand-assets/brand/colors.json), czerń i biel o wysokim kontraście.
+ * Jedyny kolor poza skalą szarości to czerwień dla błędów i działań nieodwracalnych.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --bg-color: #ffffff;          /* paper */
+  --card-bg: #ffffff;
+  --surface-muted: #f2f2f2;     /* snow: tła pól specyfikacji, nagłówki tabel */
+  --text-primary: #111111;      /* ink */
+  --text-secondary: #474747;    /* inkSoft */
+  --border-color: #cdcdcd;      /* grey: linie podziału, obramowania kart */
+  --border-strong: #111111;     /* pola formularzy i przyciski */
+
+  --primary: #111111;           /* akcent = ink */
+  --primary-hover: #000000;
+  --on-primary: #ffffff;        /* tekst na tle --primary */
+
+  --danger: #c00000;
+  --danger-bg: #fdeaea;
+  --success-bg: #f2f2f2;
+
+  --focus-ring: #111111;
+  --radius: 8px;
+  --shadow: none;
+  --overlay-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #0a0a0a;        /* night */
+    --card-bg: #111111;
+    --surface-muted: #1c1c1c;
+    --text-primary: #f2f2f2;    /* snow */
+    --text-secondary: #c8c8c8;  /* snowSoft */
+    --border-color: #333333;
+    --border-strong: #c8c8c8;
+
+    --primary: #f2f2f2;
+    --primary-hover: #ffffff;
+    --on-primary: #0a0a0a;
+
+    --danger: #ff6b6b;
+    --danger-bg: #2a1212;
+    --success-bg: #1c1c1c;
+
+    --focus-ring: #f2f2f2;
+    --overlay-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}

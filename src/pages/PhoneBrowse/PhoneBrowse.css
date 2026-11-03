@@ -7,19 +7,14 @@
   max-width: 36rem;
   margin-bottom: 1.75rem;
   padding: 0.25rem 0.25rem 0.25rem 1.1rem;
-  background-color: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
   box-sizing: border-box;
-  transition: border-color 0.15s;
-}
-
-.catalog-search:hover {
-  border-color: var(--text-secondary, #4b5563);
 }
 
 .catalog-search:focus-within {
-  border-color: var(--text-primary, #1f2937);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 .catalog-search-input {
@@ -31,11 +26,11 @@
   background: transparent;
   font: inherit;
   font-size: 0.9rem;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .catalog-search-input::placeholder {
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
   opacity: 0.7;
 }
 
@@ -55,14 +50,14 @@
 }
 
 .catalog-search-button:hover {
-  background-color: var(--bg-color, #f4f6f9);
+  background-color: var(--surface-muted);
 }
 
 .catalog-search-button svg {
   width: 1.1rem;
   height: 1.1rem;
   fill: none;
-  stroke: var(--text-primary, #1f2937);
+  stroke: var(--text-primary);
   stroke-width: 1.75;
   stroke-linecap: round;
 }
@@ -81,8 +76,8 @@
   top: 5.5rem;
   max-height: calc(100vh - 7rem);
   overflow-y: auto;
-  background-color: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
 }
 
@@ -99,7 +94,7 @@
   margin: 0;
   padding: 1rem 1.1rem;
   border: 0;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .filter-title {
@@ -109,7 +104,7 @@
   margin-bottom: 0.15rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .filter-title + * {
@@ -120,7 +115,7 @@
   margin: 0;
   font-size: 0.75rem;
   line-height: 1.4;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 .filter-brand-list {
@@ -153,7 +148,7 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.85rem 1.1rem;
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg);
 }
 
 .filter-actions .ui-btn-primary {
@@ -202,24 +197,24 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.25rem 0.6rem;
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid var(--border-color);
   border-radius: 999px;
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg);
   font: inherit;
   font-size: 0.8rem;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
 .catalog-chip:hover {
-  border-color: var(--text-secondary, #4b5563);
+  border-color: var(--text-secondary);
 }
 
 .catalog-chip span {
   font-size: 0.95rem;
   line-height: 1;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 .catalog-chip-clear {
@@ -229,7 +224,7 @@
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--primary, #2563eb);
+  color: var(--primary);
   cursor: pointer;
 }
 
@@ -248,7 +243,7 @@
 .catalog-page-info {
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 @media (max-width: 900px) {

@@ -24,3 +24,22 @@ export async function getReviewById(reviewId) {
     `/api/reviews/${encodeURIComponent(reviewId)}?include=comments&comment_limit=50`
   );
 }
+
+// Admins can set any status; a moderator can only publish a pending review or return it to
+// its author ("draft"). Returns { ok, status, review }.
+export async function setReviewStatus(reviewId, status) {
+  return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
+
+// Author or admin. Removes the review's media, comments and likes too.
+export async function deleteReview(reviewId) {
+  return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}`, { method: "DELETE" });
+}
+
+// Comment author or admin.
+export async function deleteComment(commentId) {
+  return apiFetch(`/api/reviews/comments/${encodeURIComponent(commentId)}`, { method: "DELETE" });
+}

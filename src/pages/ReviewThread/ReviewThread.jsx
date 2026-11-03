@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { getSmartphoneById } from "../../api/smartphones";
 import { getReviewsBySmartphoneId } from "../../api/reviews";
+import "../../styles/reviews.css";
+
+const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "medium" });
 
 function ReviewThread() {
   const { phoneId } = useParams();
-  const navigate = useNavigate();
 
   const [phone, setPhone] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -39,64 +41,55 @@ function ReviewThread() {
   }, [phoneId]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p className="page-status">Loading…</p>;
   }
 
-  if (error) {
-    return <p>{error}</p>;
+  if (error || !phone) {
+    return <p className="page-status page-status-error">{error || "Phone not found."}</p>;
   }
 
-  if (!phone) {
-    return <p>Phone not found.</p>;
-  }
+  const phoneName = [phone.brandName, phone.modelName].filter(Boolean).join(" ");
 
   return (
-    <main>
-      <button
-        type="button"
-        onClick={() => navigate(`/phone/${phoneId}`)}
-      >
-        Back to phone
-      </button>
+    <main className="page">
+      <div className="page-narrow">
+        <Link to={`/phone/${phoneId}`} className="text-link">← {phoneName}</Link>
 
-      <h1>Reviews</h1>
-
-      <h2>
-        {phone.brandName || phone.brandId} {phone.modelName}
-      </h2>
-
-      {reviews.length === 0 ? (
-        <p>No reviews found.</p>
-      ) : (
-        <div>
-          {reviews.map((review) => (
-            <div key={review.id}>
-              <h3>
-                {review.title}
-                {review.isComparison && " (comparison)"}
-              </h3>
-
-              <p>Author: {review.authorName || review.authorId}</p>
-
-              {review.excerpt && <p>{review.excerpt}</p>}
-
-              <p>
-                {review.likeCount} likes · {review.commentCount} comments
-              </p>
-
-              <button
-                type="button"
-                onClick={() =>
-                    navigate(`/review/${review.id}`
-                  )
-                }
-              >
-                Read
-              </button>
-            </div>
-          ))}
+        <div className="page-header review-thread-header">
+          <h1 className="page-title">Reviews</h1>
+          <span className="page-subtitle">
+            {reviews.length} {reviews.length === 1 ? "review" : "reviews"} mentioning {phoneName}
+          </span>
         </div>
-      )}
+
+        {reviews.length === 0 ? (
+          <p className="page-status">No reviews yet.</p>
+        ) : (
+          <ul className="review-list">
+            {reviews.map((review) => (
+              <li key={review.id}>
+                <Link to={`/review/${review.id}`} className="review-card">
+                  {review.coverUrl && <img className="review-card-cover" src={review.coverUrl} alt="" loading="lazy" />}
+                  <div className="review-card-body">
+                    {review.isComparison && (
+                      <span className="review-card-tag">
+                        Comparison: {(review.phones || []).map((item) => item.modelName).join(" vs ")}
+                      </span>
+                    )}
+                    <h2 className="review-card-title">{review.title}</h2>
+                    {review.excerpt && <p className="review-card-excerpt">{review.excerpt}</p>}
+                    <p className="review-meta">
+                      {review.authorName || "A deleted user"} · {dateFormat.format(new Date(review.updatedAt))}
+                      {" · "}{review.likeCount} {review.likeCount === 1 ? "like" : "likes"}
+                      {" · "}{review.commentCount} {review.commentCount === 1 ? "comment" : "comments"}
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </main>
   );
 }

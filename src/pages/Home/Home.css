@@ -1,13 +1,13 @@
 /* Karty telefonów, siatki i skeletony: src/styles/shared.css */
 
 .home {
-  --home-text: var(--text-primary, #1f2937);
-  --home-muted: var(--text-secondary, #4b5563);
-  --home-border: var(--border-color, #e5e7eb);
-  --home-surface: var(--card-bg, #ffffff);
-  --home-inset: var(--bg-color, #f4f6f9);
-  --home-primary: var(--primary, #2563eb);
-  --home-primary-hover: var(--primary-hover, #1d4ed8);
+  --home-text: var(--text-primary);
+  --home-muted: var(--text-secondary);
+  --home-border: var(--border-color);
+  --home-surface: var(--card-bg);
+  --home-inset: var(--surface-muted);
+  --home-primary: var(--primary);
+  --home-primary-hover: var(--primary-hover);
 
   padding: 3rem 2.5rem 5rem;
   text-align: left;
@@ -40,18 +40,13 @@
   max-width: 28rem;
   padding: 0.25rem 0.25rem 0.25rem 1.1rem;
   background-color: var(--home-surface);
-  border: 1px solid var(--home-border);
+  border: 1px solid var(--border-strong);
   border-radius: 999px;
   box-sizing: border-box;
-  transition: border-color 0.15s;
-}
-
-.home-search:hover {
-  border-color: var(--home-muted);
 }
 
 .home-search:focus-within {
-  border-color: var(--home-text);
+  box-shadow: 0 0 0 1px var(--home-primary);
 }
 
 .home-search-input {
@@ -146,7 +141,7 @@
 }
 
 .home-status-error {
-  color: var(--danger, #dc2626);
+  color: var(--danger);
 }
 
 /* Release list (new releases) */

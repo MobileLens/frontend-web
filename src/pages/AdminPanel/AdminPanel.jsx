@@ -291,7 +291,7 @@ export default function AdminPanel() {
         <p className="forbidden-text">
           You do not have permission to access the admin panel.
         </p>
-        <a href="/" className="btn btn-primary" style={{ display: "inline-block", marginTop: "1rem", textDecoration: "none" }}>
+        <a href={import.meta.env.BASE_URL} className="btn btn-primary" style={{ display: "inline-block", marginTop: "1rem", textDecoration: "none" }}>
           Return to Home
         </a>
       </div>

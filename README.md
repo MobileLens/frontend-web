@@ -1,7 +1,7 @@
 # MobileLens – web frontend
 
 React + Vite client for MobileLens, a catalogue of smartphone cameras: specs, sample photos,
-comparisons and reviews. Live at <https://mobilelens.github.io/frontend-web/>.
+comparisons and reviews. Live at <https://mobilelens.me/>.
 
 ## Running locally
 
@@ -25,7 +25,7 @@ Other scripts: `npm run build`, `npm run preview`, `npm run lint`.
 | --- | --- | --- |
 | `API_TARGET` | dev server | Backend the `/api` and `/media` proxy points to |
 | `VITE_API_URL` | build | Backend origin when the app is hosted elsewhere (empty = same origin) |
-| `BASE_PATH` | build | Path the app is served from, e.g. `/frontend-web/` on GitHub Pages |
+| `BASE_PATH` | build | Path the app is served from, `/` on the custom domain, `/<repo>/` on a plain GitHub Pages URL |
 
 ## Features
 

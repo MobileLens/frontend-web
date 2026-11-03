@@ -30,7 +30,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          BASE_PATH: /${{ github.event.repository.name }}/
+          # Served from the root of the custom domain (public/CNAME)
+          BASE_PATH: /
           VITE_API_URL: https://mobilelens.duckdns.org
 
       # SPA fallback: GitHub Pages serves 404.html for unknown paths, so deep links load the app

@@ -8,7 +8,7 @@ const API_TARGET = process.env.API_TARGET || "https://mobilelens.duckdns.org";
 export default defineConfig({
   plugins: [react()],
 
-  // GitHub Pages serves the app from /<repo>/; set by the deploy workflow.
+  // "/" for the custom domain; set BASE_PATH=/<repo>/ if served from <user>.github.io/<repo>/.
   base: process.env.BASE_PATH || "/",
 
   server: {

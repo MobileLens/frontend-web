@@ -1,5 +1,8 @@
 import { getToken, removeToken } from "../utils/auth";
 
+// Empty in dev (Vite proxies /api); set at build time when the app is hosted elsewhere.
+const API_URL = import.meta.env.VITE_API_URL ?? "";
+
 export async function apiFetch(endpoint, options = {}) {
   const token = getToken();
 
@@ -16,7 +19,7 @@ export async function apiFetch(endpoint, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(endpoint, {
+  const response = await fetch(API_URL + endpoint, {
     ...options,
     headers,
   });

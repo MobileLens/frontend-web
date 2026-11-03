@@ -1,11 +1,11 @@
 .account-strong {
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .account-badge-muted {
-  background: rgba(75, 85, 99, 0.1);
-  color: var(--text-secondary, #4b5563);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
 }
 
 .account-top-alert {
@@ -14,8 +14,7 @@
 
 /* Zaproszenie do roli recenzenta */
 .account-highlight {
-  border-color: var(--primary, #2563eb);
-  box-shadow: 0 0 0 1px var(--primary, #2563eb) inset;
+  border: 2px solid var(--primary);
 }
 
 .account-highlight + .ui-card,
@@ -24,15 +23,9 @@
 }
 
 .account-danger {
-  border-color: #fecaca;
+  border-color: var(--danger);
 }
 
 .account-danger .ui-card-title {
-  color: var(--danger, #dc2626);
-}
-
-@media (prefers-color-scheme: dark) {
-  .account-danger {
-    border-color: #7f1d1d;
-  }
+  color: var(--danger);
 }

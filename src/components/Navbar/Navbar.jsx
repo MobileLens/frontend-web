@@ -2,6 +2,8 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logoutUser } from "../../api/auth";
 import { useAuth } from "../../context/useAuth";
 import { isLoggedIn } from "../../utils/auth";
+import logo from "../../assets/brand/mobilelens-logo-horizontal.svg";
+import logoInverse from "../../assets/brand/mobilelens-logo-horizontal-inverse.svg";
 import "./Navbar.css";
 
 function Navbar() {
@@ -24,7 +26,12 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-brand">MobileLens</Link>
+      <Link to="/" className="navbar-brand">
+        <picture>
+          <source srcSet={logoInverse} media="(prefers-color-scheme: dark)" />
+          <img src={logo} alt="MobileLens" width="138" height="28" />
+        </picture>
+      </Link>
 
       <div className="navbar-links">
         <NavLink to="/browse" className="nav-link">Browse</NavLink>

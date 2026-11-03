@@ -11,8 +11,8 @@
   display: inline-block;
   text-decoration: none;
   background: transparent;
-  border: 1px solid var(--border-color, #e5e7eb);
-  color: var(--text-primary, #1f2937);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -23,16 +23,15 @@
 }
 
 .phone-back-btn:hover {
-  background-color: var(--bg-color, #f4f6f9);
+  background-color: var(--surface-muted);
 }
 
 /* Nagłówek i główna karta produktu */
 .phone-header-card {
-  background: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: var(--shadow, 0 1px 3px 0 rgba(0, 0, 0, 0.05));
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 2rem;
@@ -49,8 +48,8 @@
 }
 
 .phone-image-wrapper {
-  background: var(--bg-color, #f4f6f9);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -76,7 +75,7 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
   letter-spacing: -0.025em;
 }
 
@@ -87,61 +86,19 @@
   margin-top: 0.5rem;
 }
 
-/* Przyciski akcji */
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: background-color 0.15s, border-color 0.15s;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-primary {
-  background-color: var(--primary, #2563eb);
-  color: #ffffff;
-}
-.btn-primary:hover {
-  background-color: var(--primary-hover, #1d4ed8);
-}
-
-.btn-outline {
-  background: transparent;
-  border-color: var(--border-color, #e5e7eb);
-  color: var(--text-primary, #1f2937);
-}
-.btn-outline:hover {
-  background-color: var(--bg-color, #f4f6f9);
-}
-
-.btn-danger-outline {
-  background: transparent;
-  border-color: var(--danger, #dc2626);
-  color: var(--danger, #dc2626);
-}
-.btn-danger-outline:hover {
-  background-color: #fee2e2;
-}
-
 .compare-alert {
   margin-top: 0.75rem;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 /* Sekcje specyfikacji */
 .phone-section {
-  background: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--shadow, 0 1px 3px 0 rgba(0, 0, 0, 0.05));
   margin-bottom: 2rem;
   box-sizing: border-box;
 }
@@ -149,10 +106,10 @@
 .phone-section-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
   margin-top: 0;
   margin-bottom: 1.25rem;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.75rem;
 }
 
@@ -170,8 +127,8 @@
 }
 
 .meta-item {
-  background: var(--spec-bg, #f8fafc);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   display: flex;
@@ -183,14 +140,14 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
   letter-spacing: 0.05em;
 }
 
 .meta-value {
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
   word-break: break-all;
 }
 
@@ -202,8 +159,8 @@
 }
 
 .camera-card {
-  background: var(--spec-bg, #f8fafc);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--surface-muted);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1.25rem;
 }
@@ -213,7 +170,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
 }
 
@@ -221,12 +178,12 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .camera-badge {
-  background: rgba(37, 99, 235, 0.1);
-  color: var(--primary, #2563eb);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.2rem 0.6rem;
@@ -250,25 +207,25 @@
   margin: 0;
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 .phone-badge-muted {
-  background: rgba(75, 85, 99, 0.1);
-  color: var(--text-secondary, #4b5563);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
 }
 
 .section-empty {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 .section-count {
   margin-left: 0.35rem;
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 /* Galeria zdjęć przykładowych */
@@ -291,9 +248,9 @@
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: 1px solid var(--border-color, #e5e7eb);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: var(--bg-color, #f4f6f9);
+  background: var(--surface-muted);
 }
 
 .photo-tile img {
@@ -314,12 +271,12 @@
   margin-top: 0.35rem;
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }
 
 .photo-camera {
   font-weight: 600;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .photo-more {
@@ -331,12 +288,12 @@
   margin: 0.75rem 0 0;
   font-size: 0.85rem;
   font-style: italic;
-  color: var(--text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .video-modes-container {
   margin-top: 1rem;
-  border-top: 1px dashed var(--border-color, #e5e7eb);
+  border-top: 1px dashed var(--border-color);
   padding-top: 0.75rem;
 }
 
@@ -344,7 +301,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
   margin-bottom: 0.5rem;
 }
 
@@ -355,18 +312,18 @@
 }
 
 .video-mode-badge {
-  background: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
   font-size: 0.8rem;
   font-family: monospace;
-  color: var(--text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .status-message {
   padding: 3rem 0;
   text-align: center;
   font-size: 1rem;
-  color: var(--text-secondary, #4b5563);
+  color: var(--text-secondary);
 }

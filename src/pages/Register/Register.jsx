@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/auth";
 import { saveToken } from "../../utils/auth";
-import "./Register.css";
+import "../../styles/auth.css";
 
 function Register() {
   const navigate = useNavigate();

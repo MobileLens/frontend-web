@@ -11,8 +11,9 @@ export async function searchSmartphones(query, limit = MAX_PAGE_SIZE) {
   return data.data;
 }
 
-export async function getSmartphoneById(id) {
-  return apiFetch(`/api/smartphones/${encodeURIComponent(id)}`);
+// fresh: skip the short browser cache (e.g. right after an edit).
+export async function getSmartphoneById(id, { fresh = false } = {}) {
+  return apiFetch(`/api/smartphones/${encodeURIComponent(id)}`, fresh ? { cache: "no-cache" } : {});
 }
 
 // sort: "name" (default) | "brand" | "trending" | "new"
@@ -37,7 +38,7 @@ export const CATALOGUE_PARAMS = [
 
 // Catalogue page: { data, page, limit, total, sort }. `params` is a URLSearchParams or plain object;
 // unknown and empty keys are dropped. Camera filters must all be met by one approved camera.
-export async function getCatalogue(params, limit = 24) {
+export async function getCatalogue(params, limit = 24, { fresh = false } = {}) {
   const source = params instanceof URLSearchParams ? Object.fromEntries(params) : params;
   const query = new URLSearchParams();
 
@@ -48,7 +49,7 @@ export async function getCatalogue(params, limit = 24) {
   }
   query.set("limit", String(Math.min(limit, MAX_PAGE_SIZE)));
 
-  return apiFetch(`/api/smartphones?${query}`);
+  return apiFetch(`/api/smartphones?${query}`, fresh ? { cache: "no-cache" } : {});
 }
 
 // Value ranges present in the catalogue, per back camera type (`types`) and for front cameras (`front`).
@@ -86,10 +87,25 @@ export async function updateSmartphone(id, changes) {
   });
 }
 
-// Moderator only. Accepts camera spec fields and an optional full videoModes list.
-export async function updateCamera(id, changes) {
-  return apiFetch(`/api/cameras/${encodeURIComponent(id)}`, {
-    method: "PATCH",
-    body: JSON.stringify(changes),
+// Moderators add verified phones (with an image). If the brand + model or a model code is already
+// in the catalogue, the existing phone comes back with `existing: true` instead.
+export async function createSmartphone({ brandId, modelName, releaseDate, buildModels, imageUrl }) {
+  return apiFetch("/api/smartphones", {
+    method: "POST",
+    body: JSON.stringify({ brandId, modelName, releaseDate, buildModels, imageUrl }),
   });
+}
+
+// Moderator only. Moves cameras, media, reviews, favourites and model codes of `sourceId`
+// into `targetId`, then deletes the source. Returns { moved, smartphone }.
+export async function mergeSmartphones(targetId, sourceId) {
+  return apiFetch(`/api/smartphones/${encodeURIComponent(targetId)}/merge`, {
+    method: "POST",
+    body: JSON.stringify({ sourceId }),
+  });
+}
+
+// Admin only. Deletes the phone with its cameras, photos and videos.
+export async function deleteSmartphone(id) {
+  return apiFetch(`/api/smartphones/${encodeURIComponent(id)}`, { method: "DELETE" });
 }

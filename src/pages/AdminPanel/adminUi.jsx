@@ -1,3 +1,5 @@
+import Icon from "../../components/Icon/Icon";
+
 // Building blocks shared by the admin panel tabs.
 
 export function Section({ title, count, actions, children }) {
@@ -72,11 +74,11 @@ export function Pager({ page, totalPages, onChange }) {
   return (
     <div className="admin-pager">
       <button type="button" className="ui-btn ui-btn-small" disabled={page <= 1} onClick={() => onChange(page - 1)}>
-        Previous
+        <Icon name="arrowLeft" /> Previous
       </button>
       <span>Page {page} of {totalPages}</span>
       <button type="button" className="ui-btn ui-btn-small" disabled={page >= totalPages} onClick={() => onChange(page + 1)}>
-        Next
+        Next <Icon name="arrowRight" />
       </button>
     </div>
   );

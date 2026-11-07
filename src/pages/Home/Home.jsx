@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getSmartphones } from "../../api/smartphones";
-import { PhoneCard, PhoneGridSkeleton, PhoneImage } from "../../components/PhoneCard/PhoneCard";
+import { getSmartphones, prefetchSmartphone } from "../../api/smartphones";
+import Icon from "../../components/Icon/Icon";
+import { CompareButton, PhoneCard, PhoneGridSkeleton, PhoneImage } from "../../components/PhoneCard/PhoneCard";
 import { formatReleaseDate, formatViews } from "../../utils/format";
 import "./Home.css";
 
@@ -12,24 +13,33 @@ const SKELETON_ROWS = 5;
 
 function ReleaseRow({ phone }) {
   return (
-    <Link to={`/phone/${phone.id}`} className="release-row">
-      <time className="release-date" dateTime={phone.releaseDate}>
-        {formatReleaseDate(phone.releaseDate)}
-      </time>
+    <div className="release-item">
+      <Link
+        to={`/phone/${phone.id}`}
+        state={{ preview: phone }}
+        className="release-row"
+        onMouseEnter={() => prefetchSmartphone(phone.id)}
+        onFocus={() => prefetchSmartphone(phone.id)}
+      >
+        <time className="release-date" dateTime={phone.releaseDate}>
+          {formatReleaseDate(phone.releaseDate)}
+        </time>
 
-      <span className="release-thumb">
-        <PhoneImage phone={phone} />
-      </span>
+        <span className="release-thumb">
+          <PhoneImage phone={phone} />
+        </span>
 
-      <span className="release-name">
-        {phone.brandName && <span className="phone-brand">{phone.brandName}</span>}
-        <span className="release-model">{phone.modelName}</span>
-      </span>
+        <span className="release-name">
+          {phone.brandName && <span className="phone-brand">{phone.brandName}</span>}
+          <span className="release-model">{phone.modelName}</span>
+        </span>
 
-      <svg className="release-arrow" viewBox="0 0 20 20" aria-hidden="true">
-        <path d="M8 5l5 5-5 5" />
-      </svg>
-    </Link>
+        <svg className="release-arrow" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M8 5l5 5-5 5" />
+        </svg>
+      </Link>
+      <CompareButton phone={phone} />
+    </div>
   );
 }
 
@@ -121,10 +131,7 @@ function Home() {
           />
 
           <button type="submit" className="home-search-button" aria-label="Search">
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <circle cx="8.5" cy="8.5" r="5.75" />
-              <path d="M13 13l4.25 4.25" />
-            </svg>
+            <Icon name="search" />
           </button>
         </form>
 

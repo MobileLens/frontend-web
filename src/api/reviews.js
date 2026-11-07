@@ -39,6 +39,29 @@ export async function deleteReview(reviewId) {
   return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}`, { method: "DELETE" });
 }
 
+// Published reviews only. Returns { liked, likeCount }.
+export async function likeReview(reviewId) {
+  return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}/like`, { method: "POST", keepCache: true });
+}
+
+export async function unlikeReview(reviewId) {
+  return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}/like`, { method: "DELETE", keepCache: true });
+}
+
+// Oldest first: { data, page, limit, total }.
+export async function getReviewComments(reviewId, page = 1, limit = 50) {
+  return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}/comments?page=${page}&limit=${limit}`);
+}
+
+// Up to 2000 characters. Returns the comment with authorName.
+export async function addComment(reviewId, content) {
+  return apiFetch(`/api/reviews/${encodeURIComponent(reviewId)}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
+    keepCache: true,
+  });
+}
+
 // Comment author or admin.
 export async function deleteComment(commentId) {
   return apiFetch(`/api/reviews/comments/${encodeURIComponent(commentId)}`, { method: "DELETE" });

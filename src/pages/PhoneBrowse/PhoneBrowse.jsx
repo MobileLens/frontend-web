@@ -1,74 +1,397 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getBrands } from "../../api/brands";
-import { getCatalogue, getCatalogueFacets } from "../../api/smartphones";
+import { getCatalogueFacets, peekCatalogueSearch, searchCatalogue } from "../../api/smartphones";
+import Icon from "../../components/Icon/Icon";
 import { PhoneCard, PhoneGridSkeleton } from "../../components/PhoneCard/PhoneCard";
-import { CAMERA_TYPE_LABELS, OIS_LABELS, formatViews } from "../../utils/format";
+import {
+  EMPTY_FILTER,
+  LENS_LABELS,
+  OPTIONAL_LENSES,
+  SORT_OPTIONS,
+  STABILISATION_OPTIONS,
+  anyLensVideoValues,
+  apertureLabel,
+  decodeFilter,
+  encodeFilter,
+  everyLensVideoValues,
+  filterChips,
+  focalLabel,
+  lensValues,
+  resolutionLabel,
+  searchBody,
+  sensorLabel,
+  videoWidthLabel,
+  withMax,
+  withMin,
+  withSensorFrom,
+  withSensorTo,
+  withVideoWidth,
+} from "../../utils/catalogueFilter";
+import { formatViews } from "../../utils/format";
 import "./PhoneBrowse.css";
 
 const PAGE_SIZE = 24;
+const COUNT_DELAY_MS = 300;
+const FIRST_RELEASE_YEAR = 2010;
 
-const SORT_OPTIONS = [
-  { value: "name", label: "Name (A–Z)" },
-  { value: "brand", label: "Brand" },
-  { value: "trending", label: "Most viewed" },
-  { value: "new", label: "Newest" },
-];
+const RELEASE_YEARS = Array.from(
+  { length: new Date().getFullYear() - FIRST_RELEASE_YEAR + 2 },
+  (_, index) => String(new Date().getFullYear() + 1 - index),
+);
 
-// Longer side of the video frame; the backend's facets use the same thresholds.
-const VIDEO_WIDTHS = [
-  { value: "854", label: "480p" },
-  { value: "1280", label: "720p" },
-  { value: "1920", label: "1080p" },
-  { value: "3840", label: "4K" },
-  { value: "7680", label: "8K" },
-];
-
-// URL keys edited in the filter panel (search and sort live outside it).
-const FILTER_KEYS = [
-  "brand_id", "verified", "release_from", "release_to",
-  "camera_type", "facing", "ois", "eq_focal_min", "eq_focal_max", "eq_aperture_max",
-  "resolution_min", "sensor_den_max", "optical_zoom", "variable_aperture",
-  "video_min_width", "video_min_fps",
-];
-const LIST_KEYS = ["brand_id", "ois"];
-
-function readDraft(params) {
-  const draft = {};
-
-  for (const key of FILTER_KEYS) {
-    const value = params.get(key) || "";
-    draft[key] = LIST_KEYS.includes(key) ? value.split(",").filter(Boolean) : value;
-  }
-
-  return draft;
+function toNumber(text) {
+  return text === "" ? null : Number(text);
 }
 
-function rangeHint(min, max, format = (value) => value) {
-  if (min === null || min === undefined || max === null || max === undefined) return "";
-  return min === max ? String(format(min)) : `${format(min)}–${format(max)}`;
+function Select({ label, value, options, format = String, anyLabel, onChange }) {
+  return (
+    <select
+      className="ui-select"
+      aria-label={label}
+      value={value ?? ""}
+      onChange={(event) => onChange(toNumber(event.target.value))}
+    >
+      <option value="">{anyLabel}</option>
+      {options.map((option) => (
+        <option key={option} value={option}>{format(option)}</option>
+      ))}
+    </select>
+  );
 }
 
-function chipLabel(key, value, brandNames) {
-  switch (key) {
-    case "brand_id": return brandNames.get(value) || "Brand";
-    case "verified": return value === "true" ? "Verified only" : "Unverified only";
-    case "release_from": return `Released from ${value}`;
-    case "release_to": return `Released until ${value}`;
-    case "camera_type": return CAMERA_TYPE_LABELS[value] || value;
-    case "facing": return value === "front" ? "Front camera" : "Back camera";
-    case "ois": return `OIS: ${OIS_LABELS[value] || value}`;
-    case "eq_focal_min": return `Focal ≥ ${value} mm`;
-    case "eq_focal_max": return `Focal ≤ ${value} mm`;
-    case "eq_aperture_max": return `Aperture ≤ f/${value}`;
-    case "resolution_min": return `≥ ${value} MP`;
-    case "sensor_den_max": return `Sensor ≥ 1/${value}″`;
-    case "optical_zoom": return "Optical zoom";
-    case "variable_aperture": return "Variable aperture";
-    case "video_min_width": return `Video ≥ ${VIDEO_WIDTHS.find((w) => w.value === value)?.label || value}`;
-    case "video_min_fps": return `Video ≥ ${value} fps`;
-    default: return value;
+function Row({ label, children }) {
+  return (
+    <div className="fp-row">
+      <span className="fp-row-label">{label}</span>
+      <div className="fp-row-controls">{children}</div>
+    </div>
+  );
+}
+
+function Toggle({ label, checked, onChange }) {
+  return (
+    <label className="fp-toggle">
+      <span>{label}</span>
+      <input type="checkbox" role="switch" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+    </label>
+  );
+}
+
+function Capsule({ selected, onClick, children }) {
+  return (
+    <button type="button" className={`fp-capsule ${selected ? "is-selected" : ""}`} aria-pressed={selected} onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+function VideoRow({ value = {}, values, onChange }) {
+  return (
+    <Row label="Video">
+      <Select
+        label="Video resolution"
+        anyLabel="Any"
+        value={value.width}
+        options={values.widths}
+        format={videoWidthLabel}
+        onChange={(width) => onChange(withVideoWidth(value, width, values))}
+      />
+      <Select
+        label="Video frame rate"
+        anyLabel="Any fps"
+        value={value.fps}
+        options={values.frameRates(value.width)}
+        format={(fps) => `${fps} fps`}
+        onChange={(fps) => onChange({ ...value, fps })}
+      />
+    </Row>
+  );
+}
+
+function FocalRow({ value, values, onChange }) {
+  return (
+    <Row label="Focal">
+      <Select label="Shortest focal length" anyLabel="From" value={value.focalMin} options={values.focals} format={focalLabel}
+        onChange={(next) => onChange(withMin(value, "focalMin", "focalMax", next))} />
+      <Select label="Longest focal length" anyLabel="To" value={value.focalMax} options={values.focals} format={focalLabel}
+        onChange={(next) => onChange(withMax(value, "focalMin", "focalMax", next))} />
+    </Row>
+  );
+}
+
+function ApertureRow({ value, values, onChange }) {
+  return (
+    <Row label="Aperture">
+      <Select label="Brightest aperture" anyLabel="From" value={value.apertureMin} options={values.apertures} format={apertureLabel}
+        onChange={(next) => onChange(withMin(value, "apertureMin", "apertureMax", next))} />
+      <Select label="Darkest aperture" anyLabel="To" value={value.apertureMax} options={values.apertures} format={apertureLabel}
+        onChange={(next) => onChange(withMax(value, "apertureMin", "apertureMax", next))} />
+    </Row>
+  );
+}
+
+function ResolutionRow({ value, values, onChange }) {
+  return (
+    <Row label="Resolution">
+      <Select label="Minimum resolution" anyLabel="Any" value={value.resolutionMin} options={values.resolutions}
+        format={(megapixels) => `≥ ${resolutionLabel(megapixels)}`}
+        onChange={(resolutionMin) => onChange({ ...value, resolutionMin })} />
+    </Row>
+  );
+}
+
+function LensOptions({ lens, value, values, onChange }) {
+  function toggleStabilisation(option) {
+    const current = value.ois || [];
+    onChange({
+      ...value,
+      ois: current.includes(option) ? current.filter((item) => item !== option) : [...current, option],
+    });
   }
+
+  return (
+    <>
+      <FocalRow value={value} values={values} onChange={onChange} />
+      <ApertureRow value={value} values={values} onChange={onChange} />
+
+      <Row label="Sensor">
+        <Select label="Smallest sensor" anyLabel="From" value={value.sensorFrom} options={values.sensors} format={sensorLabel}
+          onChange={(next) => onChange(withSensorFrom(value, next))} />
+        <Select label="Largest sensor" anyLabel="To" value={value.sensorTo} options={values.sensors} format={sensorLabel}
+          onChange={(next) => onChange(withSensorTo(value, next))} />
+      </Row>
+
+      <ResolutionRow value={value} values={values} onChange={onChange} />
+
+      <Row label="Stabilis.">
+        <div className="fp-capsules">
+          {STABILISATION_OPTIONS.map((option) => (
+            <Capsule key={option.value} selected={(value.ois || []).includes(option.value)} onClick={() => toggleStabilisation(option.value)}>
+              {option.label}
+            </Capsule>
+          ))}
+        </div>
+      </Row>
+
+      <VideoRow value={value.video} values={values.video} onChange={(video) => onChange({ ...value, video })} />
+
+      {lens === "wide" && (
+        <Toggle label="Variable aperture" checked={Boolean(value.variable)} onChange={(variable) => onChange({ ...value, variable })} />
+      )}
+      {lens === "tele" && (
+        <Toggle label="Optical zoom" checked={Boolean(value.zoom)} onChange={(zoom) => onChange({ ...value, zoom })} />
+      )}
+    </>
+  );
+}
+
+function Collapsible({ title, active, children }) {
+  return (
+    <details className="fp-section fp-details" open={active || undefined}>
+      <summary>
+        {title}
+        <Icon name="chevronDown" />
+      </summary>
+      <div className="fp-section-body">{children}</div>
+    </details>
+  );
+}
+
+// Edits a draft of the filter; nothing changes until "Show N phones". Sort applies at once.
+function FilterPanel({ initial, query, sort, brands, onSort, onApply }) {
+  const [draft, setDraft] = useState(initial);
+  const [selectedLens, setSelectedLens] = useState("wide");
+  const [facets, setFacets] = useState({});
+  const [count, setCount] = useState(null);
+
+  const verifiedOnly = !draft.allPhones;
+  const currentFacets = facets[verifiedOnly];
+  const body = useMemo(() => searchBody(draft, { q: query, page: 1, limit: 1 }), [draft, query]);
+  const bodyKey = JSON.stringify(body);
+
+  useEffect(() => {
+    let ignore = false;
+
+    getCatalogueFacets(verifiedOnly).then(
+      (data) => {
+        if (!ignore) setFacets((prev) => ({ ...prev, [verifiedOnly]: data }));
+      },
+      (err) => console.error(err),
+    );
+
+    return () => {
+      ignore = true;
+    };
+  }, [verifiedOnly]);
+
+  // The live number on the button, once the draft stops changing.
+  useEffect(() => {
+    let ignore = false;
+
+    const timer = setTimeout(() => {
+      searchCatalogue(JSON.parse(bodyKey)).then(
+        (result) => {
+          if (!ignore) setCount(result.total);
+        },
+        () => {
+          if (!ignore) setCount(null);
+        },
+      );
+    }, COUNT_DELAY_MS);
+
+    return () => {
+      ignore = true;
+      clearTimeout(timer);
+    };
+  }, [bodyKey]);
+
+  function patch(changes) {
+    setDraft((prev) => ({ ...prev, ...changes }));
+  }
+
+  function toggleList(key, value) {
+    setDraft((prev) => ({
+      ...prev,
+      [key]: prev[key].includes(value) ? prev[key].filter((item) => item !== value) : [...prev[key], value],
+    }));
+  }
+
+  function toggleLens(lens) {
+    if (draft.lenses.includes(lens)) {
+      const rest = { ...draft.lens };
+      delete rest[lens];
+      patch({ lenses: draft.lenses.filter((item) => item !== lens), lens: rest });
+      if (selectedLens === lens) setSelectedLens("wide");
+    } else {
+      patch({ lenses: [...draft.lenses, lens] });
+      setSelectedLens(lens);
+    }
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    onApply(draft);
+  }
+
+  const lensTabs = ["wide", ...OPTIONAL_LENSES.filter((lens) => draft.lenses.includes(lens))];
+  const lens = lensTabs.includes(selectedLens) ? selectedLens : "wide";
+  const lensConstraint = draft.lens[lens] || {};
+  const hasFilters = encodeFilter(draft) !== "";
+
+  return (
+    <form className="filter-panel" onSubmit={handleSubmit}>
+      <div className="fp-header">
+        <h2 className="fp-title">Filters</h2>
+        <button type="button" className="fp-clear" disabled={!hasFilters} onClick={() => setDraft(EMPTY_FILTER)}>
+          Clear all
+        </button>
+      </div>
+
+      <div className="fp-section">
+        <Row label="Sort by">
+          <select className="ui-select" aria-label="Sort by" value={sort} onChange={(event) => onSort(event.target.value)}>
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </Row>
+        <Toggle label="Verified only" checked={verifiedOnly} onChange={(checked) => patch({ allPhones: !checked })} />
+      </div>
+
+      {brands.length > 0 && (
+        <div className="fp-section">
+          <h3 className="fp-section-title">Brands</h3>
+          <div className="fp-capsules">
+            {brands.map((brand) => (
+              <Capsule key={brand.id} selected={draft.brands.includes(brand.id)} onClick={() => toggleList("brands", brand.id)}>
+                {brand.name}
+              </Capsule>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="fp-section">
+        <h3 className="fp-section-title">Lenses</h3>
+        <div className="fp-capsules">
+          {OPTIONAL_LENSES.map((item) => (
+            <Capsule key={item} selected={draft.lenses.includes(item)} onClick={() => toggleLens(item)}>
+              {LENS_LABELS[item]}
+            </Capsule>
+          ))}
+        </div>
+      </div>
+
+      <div className="fp-section">
+        <h3 className="fp-section-title">Lens options</h3>
+        {lensTabs.length > 1 && (
+          <div className="fp-segments">
+            {lensTabs.map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={item === lens ? "is-active" : ""}
+                aria-pressed={item === lens}
+                onClick={() => setSelectedLens(item)}
+              >
+                {LENS_LABELS[item]}
+              </button>
+            ))}
+          </div>
+        )}
+        <LensOptions
+          key={lens}
+          lens={lens}
+          value={lensConstraint}
+          values={lensValues(lens, currentFacets, lensConstraint)}
+          onChange={(value) => patch({ lens: { ...draft.lens, [lens]: value } })}
+        />
+      </div>
+
+      <Collapsible title="Any rear lens" active={draft.anyZoom || draft.anyVariable || draft.anyVideo.width != null || draft.anyVideo.fps != null}>
+        <Toggle label="Optical zoom" checked={draft.anyZoom} onChange={(anyZoom) => patch({ anyZoom })} />
+        <Toggle label="Variable aperture" checked={draft.anyVariable} onChange={(anyVariable) => patch({ anyVariable })} />
+        <VideoRow value={draft.anyVideo} values={anyLensVideoValues(currentFacets)} onChange={(anyVideo) => patch({ anyVideo })} />
+      </Collapsible>
+
+      <Collapsible title="Every rear lens" active={draft.allVideo.width != null || draft.allVideo.fps != null}>
+        <VideoRow value={draft.allVideo} values={everyLensVideoValues(currentFacets)} onChange={(allVideo) => patch({ allVideo })} />
+      </Collapsible>
+
+      <Collapsible title="Front camera" active={draft.twoFront || Object.keys(draft.front).length > 0}>
+        <FocalRow value={draft.front} values={lensValues("front", currentFacets, draft.front)} onChange={(front) => patch({ front })} />
+        <ApertureRow value={draft.front} values={lensValues("front", currentFacets, draft.front)} onChange={(front) => patch({ front })} />
+        <ResolutionRow value={draft.front} values={lensValues("front", currentFacets, draft.front)} onChange={(front) => patch({ front })} />
+        <VideoRow
+          value={draft.front.video}
+          values={lensValues("front", currentFacets, draft.front).video}
+          onChange={(video) => patch({ front: { ...draft.front, video } })}
+        />
+        <Toggle label="Two or more front cameras" checked={draft.twoFront} onChange={(twoFront) => patch({ twoFront })} />
+      </Collapsible>
+
+      <Collapsible title="Release date" active={Boolean(draft.releaseFrom || draft.releaseTo)}>
+        <Row label="Year">
+          <select className="ui-select" aria-label="Released from" value={draft.releaseFrom} onChange={(event) => patch({ releaseFrom: event.target.value })}>
+            <option value="">From</option>
+            {RELEASE_YEARS.map((year) => <option key={year} value={year}>{year}</option>)}
+          </select>
+          <select className="ui-select" aria-label="Released until" value={draft.releaseTo} onChange={(event) => patch({ releaseTo: event.target.value })}>
+            <option value="">To</option>
+            {RELEASE_YEARS.map((year) => <option key={year} value={year}>{year}</option>)}
+          </select>
+        </Row>
+      </Collapsible>
+
+      <div className="fp-footer">
+        <button type="submit" className="ui-btn ui-btn-primary">
+          <Icon name="search" />
+          {count === null ? "Show results" : `Show ${count.toLocaleString("en-US")} ${count === 1 ? "phone" : "phones"}`}
+        </button>
+      </div>
+    </form>
+  );
 }
 
 function SearchBar({ initialQuery, onSearch }) {
@@ -90,303 +413,41 @@ function SearchBar({ initialQuery, onSearch }) {
         onChange={(event) => setQuery(event.target.value)}
       />
       <button type="submit" className="catalog-search-button" aria-label="Search">
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <circle cx="8.5" cy="8.5" r="5.75" />
-          <path d="M13 13l4.25 4.25" />
-        </svg>
+        <Icon name="search" />
       </button>
-    </form>
-  );
-}
-
-function FilterPanel({ initial, brands, facets, onApply, onReset }) {
-  const [draft, setDraft] = useState(initial);
-  const [brandQuery, setBrandQuery] = useState("");
-
-  function set(key, value) {
-    setDraft((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function toggle(key, value) {
-    setDraft((prev) => ({
-      ...prev,
-      [key]: prev[key].includes(value)
-        ? prev[key].filter((item) => item !== value)
-        : [...prev[key], value],
-    }));
-  }
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    onApply(draft);
-  }
-
-  // Ranges actually present in the catalogue for the chosen kind of camera.
-  const facet = draft.facing === "front"
-    ? facets?.front
-    : draft.camera_type ? facets?.types?.[draft.camera_type] : null;
-  const maxFps = facet && draft.video_min_width
-    ? facet.videoMaxFpsByWidth?.[draft.video_min_width]
-    : null;
-
-  const visibleBrands = brands.filter((brand) =>
-    brand.name.toLowerCase().includes(brandQuery.trim().toLowerCase())
-  );
-
-  return (
-    <form className="filter-panel" onSubmit={handleSubmit}>
-      <fieldset className="filter-group">
-        <legend className="filter-title">Brand</legend>
-        {brands.length > 8 && (
-          <input
-            type="search"
-            className="ui-input filter-brand-search"
-            placeholder="Find brand"
-            aria-label="Find brand"
-            value={brandQuery}
-            onChange={(event) => setBrandQuery(event.target.value)}
-          />
-        )}
-        <div className="filter-brand-list">
-          {visibleBrands.map((brand) => (
-            <label key={brand.id} className="ui-check">
-              <input
-                type="checkbox"
-                checked={draft.brand_id.includes(brand.id)}
-                onChange={() => toggle("brand_id", brand.id)}
-              />
-              {brand.name}
-            </label>
-          ))}
-          {visibleBrands.length === 0 && <span className="filter-hint">No brands found.</span>}
-        </div>
-      </fieldset>
-
-      <fieldset className="filter-group">
-        <legend className="filter-title">Phone</legend>
-
-        <label className="ui-field">
-          <span className="ui-label">Data status</span>
-          <select className="ui-select" value={draft.verified} onChange={(event) => set("verified", event.target.value)}>
-            <option value="">All phones</option>
-            <option value="true">Verified by moderators</option>
-            <option value="false">Not verified yet</option>
-          </select>
-        </label>
-
-        <div className="ui-field-row">
-          <label className="ui-field">
-            <span className="ui-label">Released from</span>
-            <input
-              type="number"
-              className="ui-input"
-              placeholder="YYYY"
-              min="2000"
-              max="2100"
-              value={draft.release_from}
-              onChange={(event) => set("release_from", event.target.value)}
-            />
-          </label>
-          <label className="ui-field">
-            <span className="ui-label">Until</span>
-            <input
-              type="number"
-              className="ui-input"
-              placeholder="YYYY"
-              min="2000"
-              max="2100"
-              value={draft.release_to}
-              onChange={(event) => set("release_to", event.target.value)}
-            />
-          </label>
-        </div>
-      </fieldset>
-
-      <fieldset className="filter-group">
-        <legend className="filter-title">Camera</legend>
-        <p className="filter-hint">All camera conditions must be met by the same camera.</p>
-
-        <div className="ui-field-row">
-          <label className="ui-field">
-            <span className="ui-label">Side</span>
-            <select className="ui-select" value={draft.facing} onChange={(event) => set("facing", event.target.value)}>
-              <option value="">Any</option>
-              <option value="back">Back</option>
-              <option value="front">Front</option>
-            </select>
-          </label>
-          <label className="ui-field">
-            <span className="ui-label">Type</span>
-            <select className="ui-select" value={draft.camera_type} onChange={(event) => set("camera_type", event.target.value)}>
-              <option value="">Any</option>
-              {Object.entries(CAMERA_TYPE_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        <div className="ui-field-row">
-          <label className="ui-field">
-            <span className="ui-label">Focal from (mm)</span>
-            <input
-              type="number"
-              step="any"
-              min="0"
-              className="ui-input"
-              placeholder={rangeHint(facet?.eqFocalMin, facet?.eqFocalMax, Math.round) || "e.g. 24"}
-              value={draft.eq_focal_min}
-              onChange={(event) => set("eq_focal_min", event.target.value)}
-            />
-          </label>
-          <label className="ui-field">
-            <span className="ui-label">Focal to (mm)</span>
-            <input
-              type="number"
-              step="any"
-              min="0"
-              className="ui-input"
-              placeholder={rangeHint(facet?.eqFocalMin, facet?.eqFocalMax, Math.round) || "e.g. 120"}
-              value={draft.eq_focal_max}
-              onChange={(event) => set("eq_focal_max", event.target.value)}
-            />
-          </label>
-        </div>
-        <p className="filter-hint">Focal lengths are full-frame equivalents.</p>
-
-        <div className="ui-field-row">
-          <label className="ui-field">
-            <span className="ui-label">Aperture up to f/</span>
-            <input
-              type="number"
-              step="any"
-              min="0"
-              className="ui-input"
-              placeholder={rangeHint(facet?.eqApertureMin, facet?.eqApertureMax) || "e.g. 8"}
-              value={draft.eq_aperture_max}
-              onChange={(event) => set("eq_aperture_max", event.target.value)}
-            />
-          </label>
-          <label className="ui-field">
-            <span className="ui-label">Min. resolution (MP)</span>
-            <input
-              type="number"
-              step="any"
-              min="0"
-              className="ui-input"
-              placeholder={rangeHint(facet?.resolutionMpMin, facet?.resolutionMpMax, Math.round) || "e.g. 50"}
-              value={draft.resolution_min}
-              onChange={(event) => set("resolution_min", event.target.value)}
-            />
-          </label>
-        </div>
-
-        <label className="ui-field">
-          <span className="ui-label">Sensor at least 1/x″</span>
-          <input
-            type="number"
-            step="any"
-            min="0"
-            className="ui-input"
-            placeholder={rangeHint(facet?.sensorDenominatorMin, facet?.sensorDenominatorMax) || "e.g. 1.3 for 1/1.3″"}
-            value={draft.sensor_den_max}
-            onChange={(event) => set("sensor_den_max", event.target.value)}
-          />
-        </label>
-
-        <div className="filter-checks">
-          <span className="ui-label">Stabilisation</span>
-          {Object.entries(OIS_LABELS).map(([value, label]) => (
-            <label key={value} className="ui-check">
-              <input
-                type="checkbox"
-                checked={draft.ois.includes(value)}
-                onChange={() => toggle("ois", value)}
-              />
-              {label}
-            </label>
-          ))}
-        </div>
-
-        <div className="filter-checks">
-          <label className="ui-check">
-            <input
-              type="checkbox"
-              checked={draft.optical_zoom === "true"}
-              onChange={(event) => set("optical_zoom", event.target.checked ? "true" : "")}
-            />
-            Optical zoom lens
-          </label>
-          <label className="ui-check">
-            <input
-              type="checkbox"
-              checked={draft.variable_aperture === "true"}
-              onChange={(event) => set("variable_aperture", event.target.checked ? "true" : "")}
-            />
-            Variable aperture
-          </label>
-        </div>
-      </fieldset>
-
-      <fieldset className="filter-group">
-        <legend className="filter-title">Video</legend>
-        <div className="ui-field-row">
-          <label className="ui-field">
-            <span className="ui-label">Resolution</span>
-            <select className="ui-select" value={draft.video_min_width} onChange={(event) => set("video_min_width", event.target.value)}>
-              <option value="">Any</option>
-              {VIDEO_WIDTHS.map((width) => (
-                <option key={width.value} value={width.value}>{width.label} or more</option>
-              ))}
-            </select>
-          </label>
-          <label className="ui-field">
-            <span className="ui-label">Min. fps</span>
-            <input
-              type="number"
-              min="1"
-              className="ui-input"
-              placeholder={maxFps ? `up to ${maxFps}` : "e.g. 60"}
-              value={draft.video_min_fps}
-              onChange={(event) => set("video_min_fps", event.target.value)}
-            />
-          </label>
-        </div>
-        <p className="filter-hint">Resolution and frame rate must be met by one video mode.</p>
-      </fieldset>
-
-      <div className="filter-actions">
-        <button type="submit" className="ui-btn ui-btn-primary">Apply filters</button>
-        <button type="button" className="ui-btn" onClick={onReset}>Reset</button>
-      </div>
     </form>
   );
 }
 
 function PhoneBrowse() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const paramsKey = searchParams.toString();
 
-  const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const query = searchParams.get("q") || "";
+  const sort = searchParams.get("sort") || "name";
+  const filterText = searchParams.get("f") || "";
+  const filter = useMemo(() => decodeFilter(filterText), [filterText]);
 
   const [brands, setBrands] = useState([]);
-  const [facets, setFacets] = useState(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const requestedPage = Math.max(1, Number(searchParams.get("page")) || 1);
+  const bodyKey = JSON.stringify(searchBody(filter, { q: query, sort, page: requestedPage, limit: PAGE_SIZE }));
+
+  const [state, setState] = useState(() => ({
+    result: peekCatalogueSearch(JSON.parse(bodyKey)) ?? null,
+    loadedKey: null,
+    error: "",
+  }));
 
   useEffect(() => {
     let ignore = false;
 
-    async function loadOptions() {
-      const [brandsRes, facetsRes] = await Promise.allSettled([getBrands(), getCatalogueFacets()]);
-
-      if (ignore) return;
-      if (brandsRes.status === "fulfilled") setBrands(brandsRes.value);
-      if (facetsRes.status === "fulfilled") setFacets(facetsRes.value);
-    }
-
-    loadOptions();
+    getBrands().then(
+      (data) => {
+        if (!ignore) setBrands(data);
+      },
+      (err) => console.error(err),
+    );
 
     return () => {
       ignore = true;
@@ -396,74 +457,40 @@ function PhoneBrowse() {
   useEffect(() => {
     let ignore = false;
 
-    async function loadPhones() {
-      setLoading(true);
-      setError("");
-
-      try {
-        const data = await getCatalogue(new URLSearchParams(paramsKey), PAGE_SIZE);
-
-        if (!ignore) {
-          setResult(data);
-        }
-      } catch (err) {
+    searchCatalogue(JSON.parse(bodyKey)).then(
+      (result) => {
+        if (!ignore) setState({ result, loadedKey: bodyKey, error: "" });
+      },
+      (err) => {
         console.error(err);
-
-        if (!ignore) {
-          // 400 INVALID_FILTER explains which value is wrong
-          setError(err.status === 400 ? err.message : "Could not load phones.");
-          setResult(null);
-        }
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadPhones();
+        // 400 INVALID_FILTER explains which value is wrong
+        if (!ignore) setState({ result: null, loadedKey: bodyKey, error: err.status === 400 ? err.message : "Could not load phones." });
+      },
+    );
 
     return () => {
       ignore = true;
     };
-  }, [paramsKey]);
+  }, [bodyKey]);
 
   function updateParams(changes, { keepPage = false } = {}) {
     const next = new URLSearchParams(searchParams);
 
     for (const [key, value] of Object.entries(changes)) {
-      const normalized = Array.isArray(value) ? value.join(",") : value;
-
-      if (normalized === "" || normalized === null || normalized === undefined) {
-        next.delete(key);
+      if (value) {
+        next.set(key, value);
       } else {
-        next.set(key, normalized);
+        next.delete(key);
       }
     }
 
-    if (!keepPage) {
-      next.delete("page");
-    }
-
+    if (!keepPage) next.delete("page");
     setSearchParams(next);
   }
 
-  function handleApplyFilters(draft) {
-    updateParams(draft);
+  function applyFilter(nextFilter) {
+    updateParams({ f: encodeFilter(nextFilter) });
     setFiltersOpen(false);
-  }
-
-  function handleResetFilters() {
-    updateParams(Object.fromEntries(FILTER_KEYS.map((key) => [key, ""])));
-  }
-
-  function removeChip(key, value) {
-    if (LIST_KEYS.includes(key)) {
-      const remaining = (searchParams.get(key) || "").split(",").filter((item) => item && item !== value);
-      updateParams({ [key]: remaining });
-    } else {
-      updateParams({ [key]: "" });
-    }
   }
 
   function goToPage(page) {
@@ -471,16 +498,12 @@ function PhoneBrowse() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  const query = searchParams.get("q") || "";
-  const sort = searchParams.get("sort") || "name";
-  const brandNames = new Map(brands.map((brand) => [brand.id, brand.name]));
+  const { result, error } = state;
+  // The previous results stay on screen, dimmed, until the new ones arrive.
+  const updating = state.loadedKey !== bodyKey && !peekCatalogueSearch(JSON.parse(bodyKey));
 
-  const chips = FILTER_KEYS.flatMap((key) => {
-    const value = searchParams.get(key);
-    if (!value) return [];
-    const values = LIST_KEYS.includes(key) ? value.split(",").filter(Boolean) : [value];
-    return values.map((item) => ({ key, value: item, label: chipLabel(key, item, brandNames) }));
-  });
+  const brandNames = new Map(brands.map((brand) => [brand.id, brand.name]));
+  const chips = filterChips(filter, brandNames);
 
   const total = result?.total ?? 0;
   const page = result?.page ?? 1;
@@ -500,114 +523,86 @@ function PhoneBrowse() {
           )}
         </header>
 
-        <SearchBar
-          key={query}
-          initialQuery={query}
-          onSearch={(value) => updateParams({ q: value })}
-        />
+        <SearchBar key={query} initialQuery={query} onSearch={(value) => updateParams({ q: value })} />
+
+        <div className="catalog-toolbar">
+          <button
+            type="button"
+            className="ui-btn ui-btn-small"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            <Icon name="filter" />
+            {filtersOpen ? "Hide filters" : `Filters${chips.length ? ` (${chips.length})` : ""}`}
+          </button>
+        </div>
 
         <div className="catalog-layout">
           <aside className={`catalog-filters ${filtersOpen ? "is-open" : ""}`} aria-label="Filters">
             <FilterPanel
-              key={FILTER_KEYS.map((key) => searchParams.get(key) || "").join("|")}
-              initial={readDraft(searchParams)}
+              key={filterText}
+              initial={filter}
+              query={query}
+              sort={sort}
               brands={brands}
-              facets={facets}
-              onApply={handleApplyFilters}
-              onReset={handleResetFilters}
+              onSort={(value) => updateParams({ sort: value === "name" ? "" : value })}
+              onApply={applyFilter}
             />
           </aside>
 
-          <section className="catalog-results" aria-busy={loading}>
-            <div className="catalog-toolbar">
-              <button
-                type="button"
-                className="ui-btn ui-btn-small catalog-filters-toggle"
-                aria-expanded={filtersOpen}
-                onClick={() => setFiltersOpen((open) => !open)}
-              >
-                {filtersOpen ? "Hide filters" : `Filters${chips.length ? ` (${chips.length})` : ""}`}
-              </button>
-
-              <label className="catalog-sort">
-                <span className="ui-label">Sort by</span>
-                <select
-                  className="ui-select"
-                  value={sort}
-                  onChange={(event) => updateParams({ sort: event.target.value === "name" ? "" : event.target.value })}
-                >
-                  {SORT_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
+          <section className="catalog-results" aria-busy={updating}>
             {chips.length > 0 && (
               <ul className="catalog-chips" aria-label="Active filters">
                 {chips.map((chip) => (
-                  <li key={`${chip.key}-${chip.value}`}>
+                  <li key={chip.key}>
                     <button
                       type="button"
                       className="catalog-chip"
-                      onClick={() => removeChip(chip.key, chip.value)}
                       aria-label={`Remove filter: ${chip.label}`}
+                      onClick={() => applyFilter(chip.remove(filter))}
                     >
                       {chip.label}
-                      <span aria-hidden="true">×</span>
+                      <Icon name="close" />
                     </button>
                   </li>
                 ))}
                 <li>
-                  <button type="button" className="catalog-chip-clear" onClick={handleResetFilters}>
+                  <button type="button" className="catalog-chip-clear" onClick={() => applyFilter(EMPTY_FILTER)}>
                     Clear all
                   </button>
                 </li>
               </ul>
             )}
 
-            {loading && <PhoneGridSkeleton count={6} className="phone-grid phone-grid-3" />}
+            {updating && !result && !error && <PhoneGridSkeleton count={6} className="phone-grid phone-grid-3" />}
 
-            {!loading && error && <p className="page-status page-status-error">{error}</p>}
+            {error && !updating && <p className="page-status page-status-error">{error}</p>}
 
-            {!loading && !error && phones.length === 0 && (
+            {result && !updating && phones.length === 0 && (
               <p className="page-status">No phones match these criteria.</p>
             )}
 
-            {!loading && phones.length > 0 && (
-              <ul className="phone-grid phone-grid-3">
+            {phones.length > 0 && (
+              <ul className={`phone-grid phone-grid-3 ${updating ? "is-updating" : ""}`}>
                 {phones.map((phone) => (
                   <li key={phone.id}>
                     <PhoneCard
                       phone={phone}
-                      meta={[
-                        formatViews(phone.viewCount),
-                        phone.releaseDate?.slice(0, 4),
-                      ].filter(Boolean).join(" · ")}
+                      meta={[formatViews(phone.viewCount), phone.releaseDate?.slice(0, 4)].filter(Boolean).join(" · ")}
                     />
                   </li>
                 ))}
               </ul>
             )}
 
-            {!loading && totalPages > 1 && (
+            {totalPages > 1 && (
               <nav className="catalog-pagination" aria-label="Pages">
-                <button
-                  type="button"
-                  className="ui-btn ui-btn-small"
-                  disabled={page <= 1}
-                  onClick={() => goToPage(page - 1)}
-                >
-                  ← Previous
+                <button type="button" className="ui-btn ui-btn-small" disabled={page <= 1} onClick={() => goToPage(page - 1)}>
+                  <Icon name="arrowLeft" /> Previous
                 </button>
                 <span className="catalog-page-info">Page {page} of {totalPages}</span>
-                <button
-                  type="button"
-                  className="ui-btn ui-btn-small"
-                  disabled={page >= totalPages}
-                  onClick={() => goToPage(page + 1)}
-                >
-                  Next →
+                <button type="button" className="ui-btn ui-btn-small" disabled={page >= totalPages} onClick={() => goToPage(page + 1)}>
+                  Next <Icon name="arrowRight" />
                 </button>
               </nav>
             )}

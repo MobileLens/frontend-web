@@ -1,5 +1,23 @@
 /* Wspólne elementy stron: układ, karty telefonów, formularze, przyciski. */
 
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Strony wypełniają wysokość okna, żeby stopka była na dole */
+#root > main,
+#root > .page,
+#root > .admin-layout {
+  flex-grow: 1;
+}
+
 .page {
   padding: 3rem 2.5rem 5rem;
   text-align: left;
@@ -422,11 +440,16 @@
 }
 
 /* Przycisk na karcie (np. usuń z ulubionych) */
-.phone-card-action {
+.phone-card-actions {
   position: absolute;
   z-index: 2;
   top: 0.5rem;
   right: 0.5rem;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.phone-card-action {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -441,28 +464,109 @@
   transition: color 0.15s, border-color 0.15s;
 }
 
-.phone-card-action:hover {
+.phone-card-action:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.phone-card-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.phone-card-action.is-active {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.phone-card-action.is-active:hover {
+  background-color: var(--primary-hover);
+  color: var(--on-primary);
+}
+
+.phone-card-action svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.phone-card-action-danger:hover:not(:disabled) {
   border-color: var(--danger);
   color: var(--danger);
 }
 
-.phone-card-action svg {
-  width: 0.9rem;
-  height: 0.9rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
+/* Zdjęcia pojawiają się płynnie zamiast doskakiwać */
+.phone-card-media img,
+.release-thumb img,
+.compare-phone-image img {
+  transition: opacity 0.2s;
 }
 
-/* Wczytywanie */
+img.is-loading {
+  opacity: 0;
+}
+
+/* Pole hasła z przyciskiem pokaż/ukryj */
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 2.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: var(--text-primary);
+}
+
+/* Wczytywanie: delikatny błysk przesuwający się po szarym tle */
+
+.skeleton,
+.skeleton-area {
+  background-color: var(--surface-muted);
+  background-image: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  background-repeat: no-repeat;
+  background-size: 40% 100%;
+  animation: page-shimmer 1.3s ease-in-out infinite;
+}
 
 .skeleton {
   display: block;
   height: 0.8rem;
   border-radius: 4px;
-  background-color: var(--border-color);
-  animation: page-pulse 1.4s ease-in-out infinite;
+}
+
+.skeleton-title {
+  width: 55%;
+  height: 2rem;
+}
+
+.skeleton-block {
+  height: 16rem;
+  border-radius: 12px;
+}
+
+.skeleton-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .skeleton-line {
@@ -474,15 +578,21 @@
   margin-bottom: 0.4rem;
 }
 
-@keyframes page-pulse {
-  50% {
-    opacity: 0.45;
+@keyframes page-shimmer {
+  from {
+    background-position: -60% 0;
+  }
+
+  to {
+    background-position: 160% 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton {
+  .skeleton,
+  .skeleton-area {
     animation: none;
+    background-image: none;
   }
 }
 

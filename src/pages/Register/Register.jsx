@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/auth";
+import Icon from "../../components/Icon/Icon";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import { saveToken } from "../../utils/auth";
 import "../../styles/auth.css";
 
@@ -8,7 +10,6 @@ function Register() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,7 +21,6 @@ function Register() {
 
   function validateForm() {
     if (!username.trim()) return "Username is required.";
-    if (!name.trim()) return "Name is required.";
     if (!email.trim()) return "Email is required.";
     if (!password) return "Password is required.";
     if (password.length < 8) return "Password must be at least 8 characters long.";
@@ -48,7 +48,8 @@ function Register() {
 
     try {
       const data = await registerUser({
-        name: name.trim(),
+        // the backend's required display name; the site shows one username
+        name: username.trim(),
         username: username.trim(),
         email: email.trim(),
         password,
@@ -89,18 +90,6 @@ function Register() {
           </div>
 
           <div className="auth-field">
-            <label htmlFor="name" className="auth-label">Name</label>
-            <input
-              id="name"
-              type="text"
-              className="auth-input"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              autoComplete="name"
-            />
-          </div>
-
-          <div className="auth-field">
             <label htmlFor="email" className="auth-label">Email</label>
             <input
               id="email"
@@ -114,9 +103,8 @@ function Register() {
 
           <div className="auth-field">
             <label htmlFor="password" className="auth-label">Password</label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               className="auth-input"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -126,9 +114,8 @@ function Register() {
 
           <div className="auth-field">
             <label htmlFor="confirmPassword" className="auth-label">Confirm Password</label>
-            <input
+            <PasswordInput
               id="confirmPassword"
-              type="password"
               className="auth-input"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
@@ -152,7 +139,7 @@ function Register() {
           {info && <p role="status">{info}</p>}
 
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Creating account..." : "Register"}
+            <Icon name="user" /> {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 

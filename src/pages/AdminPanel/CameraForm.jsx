@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { CAMERA_TYPE_LABELS, OIS_LABELS } from "../../utils/format";
 import { Field } from "./adminUi";
 import {
@@ -197,14 +198,14 @@ export default function CameraForm({ camera, submitLabel, onSubmit, onCancel }) 
               onChange={(event) => setMode(index, "note", event.target.value)}
             />
             <button type="button" className="ui-btn ui-btn-small" onClick={() => removeMode(index)}>
-              Remove
+              <Icon name="trash" /> Remove
             </button>
           </div>
         ))}
 
         <div>
           <button type="button" className="ui-btn ui-btn-small" onClick={addMode} disabled={form.videoModes.length >= 30}>
-            Add video mode
+            <Icon name="plus" /> Add video mode
           </button>
         </div>
       </div>
@@ -213,11 +214,11 @@ export default function CameraForm({ camera, submitLabel, onSubmit, onCancel }) 
 
       <div className="ui-actions">
         <button type="submit" className="ui-btn ui-btn-primary" disabled={saving}>
-          {saving ? "Saving…" : submitLabel}
+          <Icon name="save" /> {saving ? "Saving…" : submitLabel}
         </button>
         {onCancel && (
           <button type="button" className="ui-btn" onClick={onCancel} disabled={saving}>
-            Cancel
+            <Icon name="close" /> Cancel
           </button>
         )}
       </div>

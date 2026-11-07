@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { getPendingMedia, reviewMedia, updateMediaMetadata } from "../../api/admin";
 import { round } from "../../utils/format";
 import { EmptyNote, Field, LoadState, Section } from "./adminUi";
@@ -105,10 +106,10 @@ function MetadataForm({ item, onSaved, onCancel }) {
 
       <div className="ui-actions">
         <button type="submit" className="ui-btn ui-btn-small ui-btn-primary" disabled={saving}>
-          {saving ? "Saving…" : "Save"}
+          <Icon name="save" /> {saving ? "Saving…" : "Save"}
         </button>
         <button type="button" className="ui-btn ui-btn-small" onClick={onCancel} disabled={saving}>
-          Cancel
+          <Icon name="close" /> Cancel
         </button>
       </div>
     </form>
@@ -183,13 +184,13 @@ export default function MediaTab({ notify }) {
               ) : (
                 <div className="ui-actions">
                   <button type="button" className="ui-btn ui-btn-small ui-btn-primary" disabled={busyId === item.id} onClick={() => decide(item, "verified")}>
-                    Verify
+                    <Icon name="check" /> Verify
                   </button>
                   <button type="button" className="ui-btn ui-btn-small" disabled={busyId === item.id} onClick={() => setEditingId(item.id)}>
-                    Edit
+                    <Icon name="edit" /> Edit
                   </button>
                   <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={busyId === item.id} onClick={() => decide(item, "deleted")}>
-                    Delete
+                    <Icon name="trash" /> Delete
                   </button>
                 </div>
               )}

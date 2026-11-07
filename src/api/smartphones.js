@@ -1,3 +1,4 @@
+import { cached, peekCache } from "./cache";
 import { apiFetch } from "./client";
 
 // The backend caps catalogue pages at 50 phones.
@@ -13,7 +14,21 @@ export async function searchSmartphones(query, limit = MAX_PAGE_SIZE) {
 
 // fresh: skip the short browser cache (e.g. right after an edit).
 export async function getSmartphoneById(id, { fresh = false } = {}) {
-  return apiFetch(`/api/smartphones/${encodeURIComponent(id)}`, fresh ? { cache: "no-cache" } : {});
+  return cached(
+    `phone:${id}`,
+    () => apiFetch(`/api/smartphones/${encodeURIComponent(id)}`, fresh ? { cache: "no-cache" } : {}),
+    { fresh },
+  );
+}
+
+// The phone if it is already loaded, so its page can show it at once.
+export function peekSmartphone(id) {
+  return peekCache(`phone:${id}`);
+}
+
+// Loads a phone ahead of a likely click; a failure shows up when the page really asks for it.
+export function prefetchSmartphone(id) {
+  getSmartphoneById(id).catch(() => {});
 }
 
 // sort: "name" (default) | "brand" | "trending" | "new"
@@ -23,7 +38,7 @@ export async function getSmartphones({ sort = "name", limit = MAX_PAGE_SIZE, pag
     limit: String(Math.min(limit, MAX_PAGE_SIZE)),
     page: String(page),
   });
-  const data = await apiFetch(`/api/smartphones?${params}`);
+  const data = await cached(`list:${params}`, () => apiFetch(`/api/smartphones?${params}`));
 
   return data.data;
 }
@@ -53,8 +68,25 @@ export async function getCatalogue(params, limit = 24, { fresh = false } = {}) {
 }
 
 // Value ranges present in the catalogue, per back camera type (`types`) and for front cameras (`front`).
-export async function getCatalogueFacets() {
-  return apiFetch("/api/smartphones/facets");
+export async function getCatalogueFacets(verifiedOnly = false) {
+  const query = verifiedOnly ? "?verified=true" : "";
+  return cached(`facets${query}`, () => apiFetch(`/api/smartphones/facets${query}`));
+}
+
+// POST /search: the same answer as getCatalogue, with several cameras and the filters of the mobile apps.
+export async function searchCatalogue(body) {
+  const json = JSON.stringify(body);
+
+  return cached(`search:${json}`, () => apiFetch("/api/smartphones/search", {
+    method: "POST",
+    body: json,
+    keepCache: true,
+  }));
+}
+
+// The search answer if it is already loaded.
+export function peekCatalogueSearch(body) {
+  return peekCache(`search:${JSON.stringify(body)}`);
 }
 
 // Verified sample photos: { data, page, limit, total }; each photo has thumbUrl/mediumUrl/url and exif* fields.
@@ -75,6 +107,7 @@ export async function compareSmartphones(ids) {
 export async function recordSmartphoneView(id) {
   return apiFetch(`/api/smartphones/${encodeURIComponent(id)}/view`, {
     method: "POST",
+    keepCache: true,
   });
 }
 

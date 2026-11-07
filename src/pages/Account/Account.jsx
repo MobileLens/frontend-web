@@ -7,8 +7,11 @@ import {
   deleteAccount,
   exportAccountData,
   getPromotionOffer,
-  updateProfile,
+  updateUsername,
 } from "../../api/account";
+import Icon from "../../components/Icon/Icon";
+import { PageSkeleton } from "../../components/PhoneCard/PhoneCard";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import { useAuth } from "../../context/useAuth";
 import { isLoggedIn, removeToken, saveToken } from "../../utils/auth";
 import "./Account.css";
@@ -41,16 +44,15 @@ function Feedback({ state }) {
 }
 
 function ProfileSection({ user, onSaved }) {
-  const [name, setName] = useState(user.name || "");
-  const [username, setUsername] = useState(user.username || "");
+  const [username, setUsername] = useState(user.username || user.name || "");
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!name.trim() || !username.trim()) {
-      setFeedback({ type: "error", text: "Name and username are required." });
+    if (!username.trim()) {
+      setFeedback({ type: "error", text: "Username is required." });
       return;
     }
 
@@ -58,7 +60,7 @@ function ProfileSection({ user, onSaved }) {
     setFeedback(null);
 
     try {
-      await updateProfile({ name: name.trim(), username: username.trim() });
+      await updateUsername(username.trim());
       await onSaved();
       setFeedback({ type: "success", text: "Profile updated." });
     } catch (err) {
@@ -74,22 +76,16 @@ function ProfileSection({ user, onSaved }) {
       <p className="ui-card-text">Your username is shown next to your reviews and comments.</p>
 
       <form className="ui-form" onSubmit={handleSubmit}>
-        <div className="ui-field-row">
-          <label className="ui-field">
-            <span className="ui-label">Name</span>
-            <input className="ui-input" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />
-          </label>
-          <label className="ui-field">
-            <span className="ui-label">Username</span>
-            <input className="ui-input" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" />
-          </label>
-        </div>
+        <label className="ui-field">
+          <span className="ui-label">Username</span>
+          <input className="ui-input" value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" />
+        </label>
 
         <Feedback state={feedback} />
 
         <div className="ui-actions">
           <button type="submit" className="ui-btn ui-btn-primary" disabled={saving}>
-            {saving ? "Saving…" : "Save profile"}
+            <Icon name="save" /> {saving ? "Saving…" : "Save profile"}
           </button>
         </div>
       </form>
@@ -155,7 +151,7 @@ function EmailSection({ user, onSaved }) {
 
         <div className="ui-actions">
           <button type="submit" className="ui-btn ui-btn-primary" disabled={saving || !newEmail.trim()}>
-            {saving ? "Saving…" : "Change e-mail"}
+            <Icon name="mail" /> {saving ? "Saving…" : "Change e-mail"}
           </button>
         </div>
       </form>
@@ -214,8 +210,7 @@ function PasswordSection() {
       <form className="ui-form" onSubmit={handleSubmit}>
         <label className="ui-field">
           <span className="ui-label">Current password</span>
-          <input
-            type="password"
+          <PasswordInput
             className="ui-input"
             value={currentPassword}
             onChange={(event) => setCurrentPassword(event.target.value)}
@@ -226,8 +221,7 @@ function PasswordSection() {
         <div className="ui-field-row">
           <label className="ui-field">
             <span className="ui-label">New password</span>
-            <input
-              type="password"
+            <PasswordInput
               className="ui-input"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
@@ -236,8 +230,7 @@ function PasswordSection() {
           </label>
           <label className="ui-field">
             <span className="ui-label">Repeat new password</span>
-            <input
-              type="password"
+            <PasswordInput
               className="ui-input"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
@@ -250,7 +243,7 @@ function PasswordSection() {
 
         <div className="ui-actions">
           <button type="submit" className="ui-btn ui-btn-primary" disabled={saving}>
-            {saving ? "Saving…" : "Change password"}
+            <Icon name="key" /> {saving ? "Saving…" : "Change password"}
           </button>
         </div>
       </form>
@@ -287,10 +280,10 @@ function PromotionSection({ offer, onAnswered }) {
 
       <div className="ui-actions">
         <button type="button" className="ui-btn ui-btn-primary" disabled={busy} onClick={() => answer("accept")}>
-          Accept
+          <Icon name="check" /> Accept
         </button>
         <button type="button" className="ui-btn" disabled={busy} onClick={() => answer("reject")}>
-          Decline
+          <Icon name="close" /> Decline
         </button>
       </div>
     </section>
@@ -333,7 +326,7 @@ function DataSection() {
 
       <div className="ui-actions">
         <button type="button" className="ui-btn" disabled={busy} onClick={handleExport}>
-          {busy ? "Preparing…" : "Download my data (JSON)"}
+          <Icon name="download" /> {busy ? "Preparing…" : "Download my data (JSON)"}
         </button>
       </div>
     </section>
@@ -385,7 +378,7 @@ function DeleteSection() {
 
         <div className="ui-actions">
           <button type="submit" className="ui-btn ui-btn-danger" disabled={busy || confirmation !== "DELETE"}>
-            {busy ? "Deleting…" : "Delete my account"}
+            <Icon name="trash" /> {busy ? "Deleting…" : "Delete my account"}
           </button>
         </div>
       </form>
@@ -446,11 +439,7 @@ function Account() {
 
   if (loading || !currentUser) {
     return (
-      <main className="page">
-        <div className="page-narrow">
-          <p className="page-status">Loading account…</p>
-        </div>
-      </main>
+      <PageSkeleton />
     );
   }
 
@@ -473,7 +462,7 @@ function Account() {
 
         {offer && <PromotionSection offer={offer} onAnswered={handleOfferAnswered} />}
 
-        <ProfileSection key={`${currentUser.name}|${currentUser.username}`} user={currentUser} onSaved={refreshUser} />
+        <ProfileSection key={currentUser.username || currentUser.name} user={currentUser} onSaved={refreshUser} />
         <EmailSection user={currentUser} onSaved={refreshUser} />
         <PasswordSection />
         <DataSection />

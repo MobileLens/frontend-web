@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { createBrand, deleteBrand, getBrands, updateBrand } from "../../api/brands";
 import { getCatalogue } from "../../api/smartphones";
 import { EmptyNote, Field, LoadState, Section } from "./adminUi";
@@ -44,10 +45,10 @@ function BrandForm({ brand, submitLabel, onSubmit, onCancel }) {
 
       <div className="ui-actions">
         <button type="submit" className="ui-btn ui-btn-small ui-btn-primary" disabled={saving}>
-          {saving ? "Saving…" : submitLabel}
+          <Icon name="save" /> {saving ? "Saving…" : submitLabel}
         </button>
         {onCancel && (
-          <button type="button" className="ui-btn ui-btn-small" onClick={onCancel} disabled={saving}>Cancel</button>
+          <button type="button" className="ui-btn ui-btn-small" onClick={onCancel} disabled={saving}><Icon name="close" /> Cancel</button>
         )}
       </div>
     </form>
@@ -108,7 +109,7 @@ export default function BrandsTab({ isAdmin, notify }) {
       count={brands?.length}
       actions={!adding && (
         <button type="button" className="ui-btn ui-btn-small ui-btn-primary" onClick={() => setAdding(true)}>
-          Add brand
+          <Icon name="plus" /> Add brand
         </button>
       )}
     >
@@ -153,10 +154,10 @@ export default function BrandsTab({ isAdmin, notify }) {
                   <span className="admin-list-title">{brand.name}</span>
                 </div>
                 <div className="ui-actions admin-list-actions">
-                  <button type="button" className="ui-btn ui-btn-small" onClick={() => setEditingId(brand.id)}>Edit</button>
+                  <button type="button" className="ui-btn ui-btn-small" onClick={() => setEditingId(brand.id)}><Icon name="edit" /> Edit</button>
                   {isAdmin && (
                     <button type="button" className="ui-btn ui-btn-small ui-btn-danger" onClick={() => handleDelete(brand)}>
-                      Delete
+                      <Icon name="trash" /> Delete
                     </button>
                   )}
                 </div>

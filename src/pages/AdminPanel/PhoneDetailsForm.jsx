@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { uploadDeviceImage } from "../../api/admin";
 import { getBrands } from "../../api/brands";
 import { Field } from "./adminUi";
@@ -132,7 +133,7 @@ export default function PhoneDetailsForm({ phone, submitLabel, onSubmit, onCance
             </label>
             {image.preview && (
               <button type="button" className="ui-btn ui-btn-small" onClick={() => setImage({ preview: null, changed: true, value: null })}>
-                Remove image
+                <Icon name="trash" /> Remove image
               </button>
             )}
           </div>
@@ -143,10 +144,10 @@ export default function PhoneDetailsForm({ phone, submitLabel, onSubmit, onCance
 
       <div className="ui-actions">
         <button type="submit" className="ui-btn ui-btn-primary" disabled={saving || uploading}>
-          {saving ? "Saving…" : submitLabel}
+          <Icon name="save" /> {saving ? "Saving…" : submitLabel}
         </button>
         {onCancel && (
-          <button type="button" className="ui-btn" onClick={onCancel} disabled={saving}>Cancel</button>
+          <button type="button" className="ui-btn" onClick={onCancel} disabled={saving}><Icon name="close" /> Cancel</button>
         )}
       </div>
     </form>

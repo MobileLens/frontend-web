@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { Link } from "react-router-dom";
 import { getHiddenReviews, getPendingReviews } from "../../api/admin";
 import { deleteReview, setReviewStatus } from "../../api/reviews";
@@ -72,14 +73,14 @@ export default function ReviewsTab({ isAdmin, notify, onChanged }) {
             {pending.data.map((review) => (
               <ReviewItem key={review.id} review={review}>
                 <button type="button" className="ui-btn ui-btn-small ui-btn-primary" disabled={busyId === review.id} onClick={() => publish(review)}>
-                  Publish
+                  <Icon name="check" /> Publish
                 </button>
                 <button type="button" className="ui-btn ui-btn-small" disabled={busyId === review.id} onClick={() => returnToAuthor(review)}>
-                  Return to author
+                  <Icon name="arrowLeft" /> Return to author
                 </button>
                 {isAdmin && (
                   <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={busyId === review.id} onClick={() => remove(review)}>
-                    Delete
+                    <Icon name="trash" /> Delete
                   </button>
                 )}
               </ReviewItem>
@@ -103,10 +104,10 @@ export default function ReviewsTab({ isAdmin, notify, onChanged }) {
               {hidden.data.map((review) => (
                 <ReviewItem key={review.id} review={review}>
                   <button type="button" className="ui-btn ui-btn-small" disabled={busyId === review.id} onClick={() => publish(review)}>
-                    Publish again
+                    <Icon name="check" /> Publish again
                   </button>
                   <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={busyId === review.id} onClick={() => remove(review)}>
-                    Delete
+                    <Icon name="trash" /> Delete
                   </button>
                 </ReviewItem>
               ))}

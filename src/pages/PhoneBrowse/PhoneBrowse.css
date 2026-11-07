@@ -1,11 +1,11 @@
-/* Wyszukiwarka (ten sam kształt co na stronie głównej) */
+/* Wyszukiwarka, na środku jak na stronie głównej */
 
 .catalog-search {
   display: flex;
   align-items: center;
   width: 100%;
   max-width: 36rem;
-  margin-bottom: 1.75rem;
+  margin: 0 auto 2rem;
   padding: 0.25rem 0.25rem 0.25rem 1.1rem;
   background-color: var(--card-bg);
   border: 1px solid var(--border-strong);
@@ -45,6 +45,8 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
+  font-size: 1.05rem;
+  color: var(--text-primary);
   cursor: pointer;
   transition: background-color 0.15s;
 }
@@ -53,133 +55,268 @@
   background-color: var(--surface-muted);
 }
 
-.catalog-search-button svg {
-  width: 1.1rem;
-  height: 1.1rem;
-  fill: none;
-  stroke: var(--text-primary);
-  stroke-width: 1.75;
-  stroke-linecap: round;
-}
-
 /* Układ: filtry + wyniki */
 
 .catalog-layout {
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   align-items: start;
-  gap: 2rem;
+  gap: 1.75rem;
 }
 
 .catalog-filters {
   position: sticky;
   top: 5.5rem;
-  max-height: calc(100vh - 7rem);
+  max-height: calc(100vh - 6.5rem);
   overflow-y: auto;
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 14px;
+  scrollbar-width: thin;
 }
+
+/* Panel filtrów: stały rytm odstępów, jedna linia na parametr */
 
 .filter-panel {
   display: flex;
   flex-direction: column;
 }
 
-.filter-group {
+.fp-header {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  min-width: 0;
-  margin: 0;
-  padding: 1rem 1.1rem;
-  border: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--border-color);
 }
 
-.filter-title {
-  float: left;
-  width: 100%;
+.fp-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.fp-clear {
   padding: 0;
-  margin-bottom: 0.15rem;
-  font-size: 0.9rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.fp-clear:disabled {
+  color: var(--text-secondary);
+  text-decoration: none;
+  opacity: 0.6;
+  cursor: default;
+}
+
+.fp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.fp-section-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  color: var(--text-primary);
+}
+
+.fp-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.fp-row {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fp-row-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.fp-row-controls {
+  display: flex;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.fp-row-controls .ui-select {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.35rem;
+  border-color: var(--border-color);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.fp-row-controls .ui-select:hover {
+  border-color: var(--border-strong);
+}
+
+.fp-capsules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.fp-capsule {
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.fp-capsule:hover {
+  border-color: var(--border-strong);
+}
+
+.fp-capsule.is-selected {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.fp-segments {
+  display: flex;
+  padding: 0.15rem;
+  border-radius: 8px;
+  background-color: var(--surface-muted);
+}
+
+.fp-segments button {
+  flex: 1;
+  min-width: 0;
+  padding: 0.25rem 0.2rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.fp-segments button.is-active {
+  background-color: var(--card-bg);
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.filter-title + * {
-  clear: both;
-}
-
-.filter-hint {
-  margin: 0;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: var(--text-secondary);
-}
-
-.filter-brand-list {
+/* Przełącznik zamiast zwykłego pola wyboru */
+.fp-toggle {
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  max-height: 11rem;
-  overflow-y: auto;
-}
-
-.filter-checks {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.filter-panel .ui-input,
-.filter-panel .ui-select {
-  padding: 0.4rem 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
 }
 
-.filter-panel .ui-label {
-  font-size: 0.7rem;
+.fp-toggle input {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 2rem;
+  height: 1.15rem;
+  margin: 0;
+  border-radius: 999px;
+  background-color: var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.15s;
 }
 
-.filter-actions {
+.fp-toggle input::after {
+  content: "";
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background-color: var(--card-bg);
+  transition: transform 0.15s;
+}
+
+.fp-toggle input:checked {
+  background-color: var(--primary);
+}
+
+.fp-toggle input:checked::after {
+  transform: translateX(0.85rem);
+}
+
+.fp-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  list-style: none;
+  cursor: pointer;
+}
+
+.fp-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.fp-details summary .icon {
+  color: var(--text-secondary);
+  transition: transform 0.15s;
+}
+
+.fp-details[open] summary .icon {
+  transform: rotate(180deg);
+}
+
+.fp-details {
+  gap: 0;
+}
+
+.fp-footer {
   position: sticky;
   bottom: 0;
   display: flex;
-  gap: 0.5rem;
-  padding: 0.85rem 1.1rem;
+  padding: 0.75rem 1rem;
   background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
 }
 
-.filter-actions .ui-btn-primary {
+.fp-footer .ui-btn {
   flex: 1;
 }
 
-/* Pasek nad wynikami */
+/* Wyniki */
 
 .catalog-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.catalog-sort {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.catalog-sort .ui-select {
-  width: auto;
-  padding: 0.35rem 0.6rem;
-  font-size: 0.85rem;
-}
-
-.catalog-filters-toggle {
   display: none;
-  margin-right: auto;
+  margin-bottom: 1rem;
 }
 
 .catalog-chips {
@@ -202,18 +339,18 @@
   background-color: var(--card-bg);
   font: inherit;
   font-size: 0.8rem;
+  text-align: left;
   color: var(--text-primary);
   cursor: pointer;
   transition: border-color 0.15s;
 }
 
 .catalog-chip:hover {
-  border-color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
-.catalog-chip span {
-  font-size: 0.95rem;
-  line-height: 1;
+.catalog-chip .icon {
+  flex: none;
   color: var(--text-secondary);
 }
 
@@ -224,12 +361,15 @@
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
   cursor: pointer;
 }
 
-.catalog-chip-clear:hover {
-  text-decoration: underline;
+.phone-grid.is-updating {
+  opacity: 0.55;
+  transition: opacity 0.15s;
 }
 
 .catalog-pagination {
@@ -263,13 +403,7 @@
     display: block;
   }
 
-  .catalog-filters-toggle {
-    display: inline-flex;
-  }
-}
-
-@media (max-width: 640px) {
-  .catalog-sort .ui-label {
-    display: none;
+  .catalog-toolbar {
+    display: flex;
   }
 }

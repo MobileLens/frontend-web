@@ -88,10 +88,25 @@
   user-select: none;
 }
 
+.auth-notice {
+  margin: 0 0 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background-color: var(--success-bg);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.auth-link-error {
+  margin-bottom: 0.85rem;
+}
+
 .auth-btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   width: 100%;
   padding: 0.5rem 1rem;
   background-color: var(--primary);

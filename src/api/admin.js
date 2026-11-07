@@ -9,6 +9,16 @@ export function getAdminDashboard() {
   return apiFetch("/api/admin/dashboard", FRESH);
 }
 
+// Queues the dashboard doesn't count: { pendingPhotos, pendingVideos, unverifiedPhones }.
+export async function getPendingCounts() {
+  const [media, phones] = await Promise.all([
+    getPendingMedia(),
+    apiFetch("/api/smartphones?verified=false&limit=1", FRESH),
+  ]);
+
+  return { pendingPhotos: media.photos.length, pendingVideos: media.videos.length, unverifiedPhones: phones.total };
+}
+
 // Users
 
 // [{ id, name, email, username, role, createdAt, isDeleted }]

@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { Link } from "react-router-dom";
 import { reviewCamera } from "../../api/admin";
 import { createCamera, deleteCamera, updateCamera } from "../../api/cameras";
@@ -68,7 +69,7 @@ function MergeBox({ phone, onMerged, notify }) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <button type="submit" className="ui-btn">Search</button>
+        <button type="submit" className="ui-btn"><Icon name="search" /> Search</button>
       </form>
 
       {results?.length === 0 && <EmptyNote>No other phones match.</EmptyNote>}
@@ -83,7 +84,7 @@ function MergeBox({ phone, onMerged, notify }) {
               </div>
               <div className="ui-actions admin-list-actions">
                 <button type="button" className="ui-btn ui-btn-small" disabled={busy} onClick={() => merge(item)}>
-                  Merge into this phone
+                  <Icon name="merge" /> Merge into this phone
                 </button>
               </div>
             </li>
@@ -162,7 +163,7 @@ export default function PhoneEditor({ phoneId, isAdmin, notify, onClose, onChang
   }
 
   const back = (
-    <button type="button" className="ui-btn ui-btn-small" onClick={onClose}>← All phones</button>
+    <button type="button" className="ui-btn ui-btn-small" onClick={onClose}><Icon name="arrowLeft" /> All phones</button>
   );
 
   if (!phone) {
@@ -181,7 +182,7 @@ export default function PhoneEditor({ phoneId, isAdmin, notify, onClose, onChang
         title={phoneName(phone)}
         actions={
           <>
-            <Link className="ui-btn ui-btn-small" to={`/phone/${phone.id}`}>View page</Link>
+            <Link className="ui-btn ui-btn-small" to={`/phone/${phone.id}`}><Icon name="eye" /> View page</Link>
             {back}
           </>
         }
@@ -208,7 +209,7 @@ export default function PhoneEditor({ phoneId, isAdmin, notify, onClose, onChang
         count={phone.cameras.length}
         actions={!addingCamera && (
           <button type="button" className="ui-btn ui-btn-small ui-btn-primary" onClick={() => setAddingCamera(true)}>
-            Add camera
+            <Icon name="plus" /> Add camera
           </button>
         )}
       >
@@ -243,9 +244,9 @@ export default function PhoneEditor({ phoneId, isAdmin, notify, onClose, onChang
                     )}
                   </div>
                   <div className="ui-actions admin-list-actions">
-                    <button type="button" className="ui-btn ui-btn-small" onClick={() => setEditingCameraId(camera.id)}>Edit</button>
+                    <button type="button" className="ui-btn ui-btn-small" onClick={() => setEditingCameraId(camera.id)}><Icon name="edit" /> Edit</button>
                     <button type="button" className="ui-btn ui-btn-small ui-btn-danger" onClick={() => removeCamera(camera, slotLabel(slot))}>
-                      Delete
+                      <Icon name="trash" /> Delete
                     </button>
                   </div>
                 </>
@@ -267,7 +268,7 @@ export default function PhoneEditor({ phoneId, isAdmin, notify, onClose, onChang
           <p className="admin-hint admin-section-intro">
             Removes the phone with its cameras, photos and videos. Comparison reviews stay; reviews only about this phone are deleted.
           </p>
-          <button type="button" className="ui-btn ui-btn-danger" onClick={removePhone}>Delete {phoneName(phone)}</button>
+          <button type="button" className="ui-btn ui-btn-danger" onClick={removePhone}><Icon name="trash" /> Delete {phoneName(phone)}</button>
         </Section>
       )}
     </>

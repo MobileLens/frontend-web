@@ -3,24 +3,32 @@ import { Link } from "react-router-dom";
 
 import { compareSmartphones, searchSmartphones } from "../../api/smartphones";
 import {
+  MAX_COMPARE_PHONES,
   addPhoneToCompare,
   clearComparePhones,
-  getComparePhones,
   removePhoneFromCompare,
 } from "../../api/compare";
+import { VideoLines } from "../../components/CameraSpecs/CameraSpecs";
+import Icon from "../../components/Icon/Icon";
 import { PhoneImage } from "../../components/PhoneCard/PhoneCard";
 import {
-  bestVideoMode,
   cameraSlots,
   compareSlots,
+  equivalentAperture,
   formatAperture,
+  formatAutofocus,
+  formatEquivalentAperture,
   formatEquivalentFocal,
+  formatFocalLength,
+  formatMegapixels,
+  formatPixelPitch,
+  formatSensorSize,
   slotLabel,
 } from "../../utils/camera";
-import { OIS_LABELS, formatReleaseDate, formatVideoMode } from "../../utils/format";
+import { OIS_LABELS, formatReleaseDate, round } from "../../utils/format";
+import { useCompareList } from "../../utils/useCompareList";
 import "./PhoneComparison.css";
 
-const MAX_PHONES = 4;
 const SEARCH_DELAY_MS = 250;
 
 const GENERAL_ROWS = [
@@ -31,39 +39,45 @@ const GENERAL_ROWS = [
   { label: "Model codes", value: (phone) => (phone.buildModels.length ? phone.buildModels.join(", ") : null) },
 ];
 
-// `score` marks the best value in a row; higher wins unless `lowerIsBetter`.
+// `score` marks the best value in a row; higher wins unless `lowerIsBetter`. Scores are rounded
+// like the values on screen, so two cameras that read the same tie.
+//
+// The winner on light is the 35 mm equivalent aperture: a lower actual f-number can still mean less
+// light when the sensor is smaller. Likewise the winner on resolution is what a photo can really
+// have, not the sensor's pixel count (a 50 MP sensor may only output 12.5 MP).
 const CAMERA_ROWS = [
+  { label: "Focal length (35 mm equiv.)", value: formatEquivalentFocal },
+  { label: "Focal length (actual)", value: formatFocalLength },
   {
-    label: "Resolution",
-    value: (camera) => `${camera.resolutionMp} MP`,
-    score: (camera) => camera.resolutionMp,
+    label: "Aperture (35 mm equiv.)",
+    value: formatEquivalentAperture,
+    score: (camera) => {
+      const aperture = equivalentAperture(camera);
+      return aperture ? round(aperture, 1) : null;
+    },
+    lowerIsBetter: true,
   },
+  { label: "Aperture (actual)", value: formatAperture },
   {
-    label: "Sensor",
-    value: (camera) => [camera.sensorFormat && `${camera.sensorFormat}″`, camera.sensorModel].filter(Boolean).join(" · ") || null,
+    label: "Max usable resolution",
+    value: (camera) => formatMegapixels(camera.activeResolutionMp),
+    score: (camera) => camera.activeResolutionMp,
+  },
+  { label: "Sensor resolution", value: (camera) => formatMegapixels(camera.resolutionMp) },
+  {
+    label: "Sensor size",
+    value: (camera) => [formatSensorSize(camera), camera.sensorModel].filter(Boolean).join(" · "),
     score: (camera) => camera.sensorDenominator,
     lowerIsBetter: true,
   },
   {
     label: "Pixel pitch",
-    value: (camera) => (camera.pixelPitchUm ? `${camera.pixelPitchUm} μm` : null),
-    score: (camera) => camera.pixelPitchUm,
+    value: formatPixelPitch,
+    score: (camera) => (camera.pixelPitchUm ? round(camera.pixelPitchUm, 2) : null),
   },
-  {
-    label: "Aperture",
-    value: formatAperture,
-    score: (camera) => camera.aperture,
-    lowerIsBetter: true,
-  },
-  { label: "Focal length (equiv.)", value: formatEquivalentFocal },
   { label: "Stabilisation", value: (camera) => OIS_LABELS[camera.ois] || null },
-  {
-    label: "Best video",
-    value: (camera) => {
-      const mode = bestVideoMode(camera);
-      return mode ? formatVideoMode(mode) : null;
-    },
-  },
+  { label: "Autofocus", value: formatAutofocus },
+  { label: "Video", value: (camera) => <VideoLines modes={camera.videoModes} /> },
 ];
 
 function bestIndexes(values, lowerIsBetter) {
@@ -141,7 +155,7 @@ function AddPhoneSearch({ selectedIds, onAdd }) {
                   {phone.brandName && <span className="phone-brand">{phone.brandName} </span>}
                   <strong>{phone.modelName}</strong>
                 </span>
-                <span className="compare-add-plus" aria-hidden="true">+</span>
+                <span className="compare-add-plus" aria-hidden="true"><Icon name="plus" /></span>
               </button>
             </li>
           ))}
@@ -152,7 +166,7 @@ function AddPhoneSearch({ selectedIds, onAdd }) {
 }
 
 function Compare() {
-  const [selected, setSelected] = useState(getComparePhones);
+  const selected = useCompareList();
   const [details, setDetails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -197,23 +211,22 @@ function Compare() {
   }, [idsKey]);
 
   function handleAdd(phone) {
-    const result = addPhoneToCompare({
+    addPhoneToCompare({
       id: phone.id,
       modelName: phone.modelName,
       brandName: phone.brandName,
-      imageUrl: phone.imageThumbUrl || phone.imageUrl,
+      imageUrl: phone.imageUrl,
+      imageThumbUrl: phone.imageThumbUrl,
     });
-    setSelected(result.phones);
   }
 
   function handleRemove(phoneId) {
-    setSelected(removePhoneFromCompare(phoneId));
+    removePhoneFromCompare(phoneId);
     setDetails((prev) => prev.filter((phone) => phone.id !== phoneId));
   }
 
   function handleClear() {
     clearComparePhones();
-    setSelected([]);
     setDetails([]);
   }
 
@@ -228,14 +241,14 @@ function Compare() {
         <header className="page-header">
           <h1 className="page-title">Compare phones</h1>
           <span className="page-subtitle">
-            {selected.length} of {MAX_PHONES} selected
+            {selected.length} of {MAX_COMPARE_PHONES} selected
             {selected.length > 0 && (
               <> · <button type="button" className="compare-clear" onClick={handleClear}>Clear</button></>
             )}
           </span>
         </header>
 
-        {selected.length < MAX_PHONES && <AddPhoneSearch selectedIds={ids} onAdd={handleAdd} />}
+        {selected.length < MAX_COMPARE_PHONES && <AddPhoneSearch selectedIds={ids} onAdd={handleAdd} />}
 
         {selected.length < 2 && (
           <div className="compare-empty">
@@ -251,7 +264,7 @@ function Compare() {
                   aria-label={`Remove ${selected[0].modelName}`}
                   onClick={() => handleRemove(selected[0].id)}
                 >
-                  ×
+                  <Icon name="close" />
                 </button>
               </div>
             )}
@@ -263,7 +276,7 @@ function Compare() {
         )}
 
         {selected.length >= 2 && loading && phones.length === 0 && (
-          <p className="page-status">Loading comparison…</p>
+          <div className="skeleton compare-skeleton" aria-hidden="true" />
         )}
 
         {error && <p className="page-status page-status-error">{error}</p>}
@@ -282,7 +295,7 @@ function Compare() {
                         aria-label={`Remove ${phone.modelName} from comparison`}
                         onClick={() => handleRemove(phone.id)}
                       >
-                        ×
+                        <Icon name="close" />
                       </button>
                       <Link to={`/phone/${phone.id}`} className="compare-phone-link">
                         <span className="compare-phone-image"><PhoneImage phone={phone} /></span>
@@ -290,7 +303,7 @@ function Compare() {
                         <span className="compare-phone-model">{phone.modelName}</span>
                       </Link>
                       <Link to={`/phone/${phone.id}/reviews`} className="text-link compare-reviews">
-                        Reviews
+                        <Icon name="comment" /> Reviews
                       </Link>
                     </th>
                   ))}
@@ -350,8 +363,8 @@ function Compare() {
 
         {phones.length >= 2 && (
           <p className="compare-legend">
-            <span className="compare-best-swatch" aria-hidden="true" /> Best value in the row. Focal lengths are
-            full-frame equivalents; a lower f-number and sensor fraction (1/x″) are better.
+            <span className="compare-best-swatch" aria-hidden="true" /> Best value in the row. The 35 mm equivalent
+            aperture decides which camera gathers more light; the actual f-number alone doesn't.
           </p>
         )}
       </div>

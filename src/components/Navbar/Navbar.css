@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: center;
   height: 4.5rem;
-  padding: 0 1.5rem;
+  padding: 0 1.5rem 0 0.5rem;
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
@@ -12,14 +12,21 @@
   box-sizing: border-box;
 }
 
+/* Cała wysokość paska jest klikalna, nie tylko sam rysunek logo */
 .navbar-brand {
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  align-self: stretch;
+  padding: 0 1rem;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.navbar-brand:hover {
+  background-color: var(--surface-muted);
 }
 
 .navbar-brand img {
-  display: block;
   height: 1.75rem;
   width: auto;
 }
@@ -38,6 +45,9 @@
 }
 
 .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
   font-size: 0.9rem;
@@ -53,12 +63,29 @@
 
 .nav-link.active {
   font-weight: 600;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.35em;
+  background-color: var(--surface-muted);
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background-color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--on-primary);
+  box-sizing: border-box;
 }
 
 .nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.4rem 0.9rem;
   border: 1px solid var(--border-strong);
   border-radius: 6px;
@@ -67,6 +94,7 @@
   font-weight: 500;
   line-height: 1.4;
   text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.15s;
 }
@@ -90,27 +118,38 @@
   background-color: var(--primary-hover);
 }
 
-.nav-account {
-  max-width: 10rem;
+.nav-account-name {
+  max-width: 9rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .navbar {
     height: auto;
     min-height: 4.5rem;
     flex-wrap: wrap;
     gap: 0.5rem;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem 0.5rem 0;
+  }
+
+  .navbar-brand {
+    min-height: 3rem;
   }
 
   .navbar-links {
     flex-wrap: wrap;
+    padding-left: 0.5rem;
   }
 
   .navbar-actions {
     margin-left: 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-account-name {
+    display: none;
   }
 }

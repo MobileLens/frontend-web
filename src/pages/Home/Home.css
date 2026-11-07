@@ -160,7 +160,15 @@
   border-top: 1px solid var(--home-border);
 }
 
+.release-item {
+  display: flex;
+  align-items: center;
+  padding-right: 0.75rem;
+}
+
 .release-row {
+  flex: 1;
+  min-width: 0;
   display: grid;
   grid-template-columns: 7.5rem 2.75rem minmax(0, 1fr) 1.25rem;
   grid-template-areas: "date thumb name arrow";

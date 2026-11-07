@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
+import Icon from "../../components/Icon/Icon";
 import { DataTable, Section, StatCard } from "./adminUi";
 import { formatDateTime } from "./adminUtils";
+
+// Work waiting for a moderator, each with the tab that handles it.
+const QUEUES = [
+  ["pendingReviews", "Reviews to verify", "reviews"],
+  ["pendingSubmissions", "Cameras to verify", "cameras"],
+  ["pendingPhotos", "Gallery photos to verify", "media"],
+  ["pendingVideos", "Gallery videos to verify", "media"],
+  ["unverifiedPhones", "Phones to verify", "phones"],
+];
 
 const STATS = [
   ["visitsLast24h", "Visits (24 h)"],
@@ -8,9 +18,7 @@ const STATS = [
   ["activeUsers", "Active users (30 days)"],
   ["registrationsLast30Days", "Sign-ups (30 days)"],
   ["publishedReviews", "Published reviews"],
-  ["pendingReviews", "Reviews to verify"],
   ["phonesInDatabase", "Phones"],
-  ["pendingSubmissions", "Cameras to verify"],
   ["databaseSubmissions", "Camera submissions"],
   ["activeBans", "Active bans"],
   ["totalBans", "All bans"],
@@ -33,15 +41,26 @@ const banColumns = [
   { key: "active", label: "Status", render: (row) => (row.active ? "Active" : "Ended") },
 ];
 
-export default function OverviewTab({ dashboard, isAdmin, onOpenTab }) {
+export default function OverviewTab({ dashboard, stats, isAdmin, onOpenTab }) {
   if (!dashboard) return null;
 
   const openButton = (tab, label) => (
-    <button type="button" className="ui-btn ui-btn-small" onClick={() => onOpenTab(tab)}>{label}</button>
+    <button type="button" className="ui-btn ui-btn-small" onClick={() => onOpenTab(tab)}><Icon name="arrowRight" /> {label}</button>
   );
 
   return (
     <>
+      <Section title="Waiting for you">
+        <div className="stats-grid">
+          {QUEUES.map(([key, title, tab]) => (
+            <button key={key} type="button" className="stat-card stat-card-link" onClick={() => onOpenTab(tab)}>
+              <span className="stat-title">{title}</span>
+              <span className="stat-value">{stats[key] ?? "—"}</span>
+            </button>
+          ))}
+        </div>
+      </Section>
+
       <Section title="Statistics">
         <div className="stats-grid">
           {STATS.map(([key, title]) => (

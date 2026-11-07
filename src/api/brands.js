@@ -1,8 +1,9 @@
+import { cached } from "./cache";
 import { apiFetch } from "./client";
 
 // [{ id, name, logoUrl }], alphabetical. fresh: skip the five-minute browser cache (after an edit).
 export function getBrands({ fresh = false } = {}) {
-  return apiFetch("/api/brands", fresh ? { cache: "no-cache" } : {});
+  return cached("brands", () => apiFetch("/api/brands", fresh ? { cache: "no-cache" } : {}), { fresh });
 }
 
 // Moderator only.

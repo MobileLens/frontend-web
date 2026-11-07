@@ -192,6 +192,42 @@
   background: var(--surface-muted);
 }
 
+.review-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.review-reactions {
+  margin-top: 1.5rem;
+}
+
+.review-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.review-comment-form textarea {
+  resize: vertical;
+}
+
+.review-comment-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.review-comment-login {
+  margin-bottom: 1rem;
+}
+
+.review-comments-more {
+  margin-top: 1rem;
+}
+
 .review-comments {
   margin: 0;
   padding: 0;

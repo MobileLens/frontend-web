@@ -230,8 +230,32 @@
   color: var(--primary);
 }
 
+.compare-skeleton {
+  height: 24rem;
+  border-radius: 12px;
+}
+
+/* Tryby wideo w komórce tabeli: jeden pod drugim, tekstem jak reszta tabeli */
+.compare-table .spec-video-lines {
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.compare-table .spec-video-line {
+  font-size: inherit;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+.compare-table .spec-value {
+  font-size: inherit;
+  font-weight: 400;
+}
+
 .compare-reviews {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   margin-top: 0.4rem;
   font-size: 0.8rem;
 }

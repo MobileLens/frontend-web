@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getAdminDashboard } from "../../api/admin";
+import { getAdminDashboard, getPendingCounts } from "../../api/admin";
+import { PageSkeleton } from "../../components/PhoneCard/PhoneCard";
 import { useAuth } from "../../context/useAuth";
 import BrandsTab from "./BrandsTab";
 import CamerasTab from "./CamerasTab";
@@ -17,8 +18,8 @@ const TABS = [
   { id: "overview", label: "Overview" },
   { id: "reviews", label: "Reviews", badge: (stats) => stats.pendingReviews },
   { id: "cameras", label: "Camera submissions", badge: (stats) => stats.pendingSubmissions },
-  { id: "media", label: "Photos & videos" },
-  { id: "phones", label: "Phones" },
+  { id: "media", label: "Photos & videos", badge: (stats) => (stats.pendingPhotos ?? 0) + (stats.pendingVideos ?? 0) },
+  { id: "phones", label: "Phones", badge: (stats) => stats.unverifiedPhones },
   { id: "brands", label: "Brands" },
   { id: "users", label: "Users & bans" },
 ];
@@ -43,7 +44,7 @@ export default function AdminPanel() {
   const { currentUser, loading: authLoading, isStaff, isAdmin } = useAuth();
 
   if (authLoading) {
-    return <p className="page-status">Loading…</p>;
+    return <PageSkeleton />;
   }
 
   if (!isStaff) {
@@ -58,6 +59,7 @@ function StaffPanel({ currentUser, isAdmin }) {
   const activeTab = TABS.some((tab) => tab.id === searchParams.get("tab")) ? searchParams.get("tab") : "overview";
 
   const dashboard = useAdminData(getAdminDashboard);
+  const pendingCounts = useAdminData(getPendingCounts);
   const [notice, setNotice] = useState(null);
 
   const notify = useCallback((text, type = "success") => {
@@ -76,13 +78,18 @@ function StaffPanel({ currentUser, isAdmin }) {
   }
 
   // Stats and badges follow whatever a tab just changed.
-  const refreshDashboard = dashboard.reload;
+  const reloadDashboard = dashboard.reload;
+  const reloadCounts = pendingCounts.reload;
+  const refreshDashboard = useCallback(() => {
+    reloadDashboard();
+    reloadCounts();
+  }, [reloadDashboard, reloadCounts]);
 
   if (dashboard.error?.status === 401 || dashboard.error?.status === 403) {
     return <AccessDenied loggedIn />;
   }
 
-  const stats = dashboard.data?.stats || {};
+  const stats = { ...dashboard.data?.stats, ...pendingCounts.data };
   const tabProps = { isAdmin, notify, onChanged: refreshDashboard };
 
   return (
@@ -115,7 +122,7 @@ function StaffPanel({ currentUser, isAdmin }) {
         {activeTab === "overview" && (
           <>
             <LoadState loading={dashboard.loading} error={dashboard.error} errorMessage="Could not load the dashboard." />
-            <OverviewTab dashboard={dashboard.data} isAdmin={isAdmin} onOpenTab={openTab} />
+            <OverviewTab dashboard={dashboard.data} stats={stats} isAdmin={isAdmin} onOpenTab={openTab} />
           </>
         )}
         {activeTab === "reviews" && <ReviewsTab {...tabProps} />}

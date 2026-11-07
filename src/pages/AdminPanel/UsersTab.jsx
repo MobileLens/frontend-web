@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import {
   banUser,
   cancelPromotionOffer,
@@ -104,9 +105,9 @@ function BanForm({ user, onBanned, onCancel }) {
 
       <div className="ui-actions">
         <button type="submit" className="ui-btn ui-btn-small ui-btn-danger" disabled={saving}>
-          {saving ? "Banning…" : `Ban ${user.name}`}
+          <Icon name="save" /> {saving ? "Banning…" : `Ban ${user.name}`}
         </button>
-        <button type="button" className="ui-btn ui-btn-small" onClick={onCancel} disabled={saving}>Cancel</button>
+        <button type="button" className="ui-btn ui-btn-small" onClick={onCancel} disabled={saving}><Icon name="close" /> Cancel</button>
       </div>
     </form>
   );
@@ -210,7 +211,7 @@ export default function UsersTab({ currentUser, isAdmin, notify, onChanged }) {
       if (user.role !== "user" || banned || pendingOffers.has(user.id)) return null;
       return (
         <button type="button" className="ui-btn ui-btn-small" disabled={busy} onClick={() => setRole(user, "reviewer")}>
-          Offer reviewer role
+          <Icon name="star" /> Offer reviewer role
         </button>
       );
     }
@@ -231,13 +232,13 @@ export default function UsersTab({ currentUser, isAdmin, notify, onChanged }) {
           ))}
         </select>
         {banned ? (
-          <button type="button" className="ui-btn ui-btn-small" disabled={busy} onClick={() => unban(user)}>Unban</button>
+          <button type="button" className="ui-btn ui-btn-small" disabled={busy} onClick={() => unban(user)}><Icon name="check" /> Unban</button>
         ) : (
           user.role !== "admin" && (
-            <button type="button" className="ui-btn ui-btn-small" disabled={busy} onClick={() => setBanningId(user.id)}>Ban</button>
+            <button type="button" className="ui-btn ui-btn-small" disabled={busy} onClick={() => setBanningId(user.id)}><Icon name="ban" /> Ban</button>
           )
         )}
-        <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={busy} onClick={() => remove(user)}>Delete</button>
+        <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={busy} onClick={() => remove(user)}><Icon name="trash" /> Delete</button>
       </>
     );
   }
@@ -367,7 +368,7 @@ export default function UsersTab({ currentUser, isAdmin, notify, onChanged }) {
                 render: (row) =>
                   row.status === "pending" && (isAdmin || row.offeredBy === currentUser?.id) && (
                     <button type="button" className="ui-btn ui-btn-small" disabled={busyId === row.userId} onClick={() => cancelOffer(row)}>
-                      Withdraw
+                      <Icon name="close" /> Withdraw
                     </button>
                   ),
               },
@@ -402,7 +403,7 @@ export default function UsersTab({ currentUser, isAdmin, notify, onChanged }) {
                           disabled={busyId === row.userId}
                           onClick={() => unban({ id: row.userId, name: row.userName })}
                         >
-                          Unban
+                          <Icon name="check" /> Unban
                         </button>
                       ),
                   },

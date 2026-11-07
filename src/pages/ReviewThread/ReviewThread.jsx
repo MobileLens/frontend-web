@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import { PageSkeleton } from "../../components/PhoneCard/PhoneCard";
 import { getSmartphoneById } from "../../api/smartphones";
 import { getReviewsBySmartphoneId } from "../../api/reviews";
 import "../../styles/reviews.css";
@@ -41,7 +42,7 @@ function ReviewThread() {
   }, [phoneId]);
 
   if (loading) {
-    return <p className="page-status">Loading…</p>;
+    return <PageSkeleton />;
   }
 
   if (error || !phone) {

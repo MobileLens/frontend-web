@@ -1,5 +1,28 @@
 const STORAGE_KEY = "comparePhones";
-const MAX_COMPARE_PHONES = 4;
+const COMPARE_EVENT = "compare-change";
+
+export const MAX_COMPARE_PHONES = 4;
+
+function save(phones) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(phones));
+  window.dispatchEvent(new Event(COMPARE_EVENT));
+}
+
+// For useCompareList: the list changed in this tab or another one.
+export function subscribeCompare(listener) {
+  window.addEventListener(COMPARE_EVENT, listener);
+  window.addEventListener("storage", listener);
+
+  return () => {
+    window.removeEventListener(COMPARE_EVENT, listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
+// The stored text of the list: it only changes when the list does, so React can compare it.
+export function getCompareSnapshot() {
+  return localStorage.getItem(STORAGE_KEY) || "[]";
+}
 
 export function getComparePhones() {
   const storedPhones = localStorage.getItem(STORAGE_KEY);
@@ -14,12 +37,6 @@ export function getComparePhones() {
     console.error("Could not read compare phones:", error);
     return [];
   }
-}
-
-export function isPhoneInCompare(phoneId) {
-  const phones = getComparePhones();
-
-  return phones.some((phone) => phone.id === phoneId);
 }
 
 export function addPhoneToCompare(phone) {
@@ -43,7 +60,7 @@ export function addPhoneToCompare(phone) {
 
   const updatedPhones = [...phones, phone];
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPhones));
+  save(updatedPhones);
 
   return {
     success: true,
@@ -58,11 +75,12 @@ export function removePhoneFromCompare(phoneId) {
     (phone) => phone.id !== phoneId
   );
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedPhones));
+  save(updatedPhones);
 
   return updatedPhones;
 }
 
 export function clearComparePhones() {
   localStorage.removeItem(STORAGE_KEY);
+  window.dispatchEvent(new Event(COMPARE_EVENT));
 }

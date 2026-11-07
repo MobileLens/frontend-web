@@ -29,16 +29,22 @@ Other scripts: `npm run build`, `npm run preview`, `npm run lint`.
 
 ## Features
 
-- **Catalogue** (`/browse`): search, filters for brand, release date, camera and video specs.
-- **Phone page** (`/phone/:id`): specs per camera, sample photo gallery, favourites, compare.
-- **Compare** (`/compare`): 2–4 phones side by side (kept in the browser).
-- **Reviews** (`/phone/:id/reviews`, `/review/:id`).
-- **Account** (`/account`): profile, e-mail, password, reviewer invitation, data export, deletion.
+- **Catalogue** (`/browse`): search and the filters of the mobile apps (brands, required lenses, options per
+  lens, any rear lens, every rear lens, front camera), with a live result count. Filters live in the URL.
+- **Phone page** (`/phone/:id`): a tab per lens with specs grouped as in the mobile apps, sample photos, favourites.
+- **Compare** (`/compare`): 2–4 phones side by side (kept in the browser), lenses matched by role. The best
+  value is judged on the 35 mm equivalent aperture and the max usable resolution.
+- **Reviews** (`/phone/:id/reviews`, `/review/:id`): likes and comments.
+- **Account** (`/account`): username, e-mail, password, reviewer invitation, data export, deletion.
+  Password reset at `/forgot-password` and `/reset-password`.
+- **Theme**: auto, light or dark, stored in the browser.
 - **Admin panel** (`/admin_panel`, moderators and admins):
-  - Overview: statistics, reviews waiting for verification, recent bans and hidden reviews.
+  - Overview: queues waiting for a moderator (reviews, cameras, gallery photos and videos, phones), statistics,
+    recent bans and hidden reviews.
   - Reviews: publish or return pending reviews; admins restore or delete hidden ones.
     Admins hide published reviews and delete comments from the review page.
-  - Camera submissions: approve (optionally with corrections) or reject.
+  - Camera submissions, grouped by phone: approve all, approve (optionally with corrections) or reject one,
+    and correct the phone itself.
   - Photos & videos: verify, delete or correct the details of uploaded samples.
   - Phones: add, edit and verify phones, upload images, add/edit/delete cameras and video
     modes, merge duplicates; admins delete phones.

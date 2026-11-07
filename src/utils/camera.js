@@ -1,7 +1,31 @@
 import { CAMERA_TYPE_LABELS, equivalentFocal } from "./format";
 
+// How spec values read everywhere, the same as the iOS app (Models/ValueFormatter.swift):
+// 35 mm equivalents: focal length whole ("26 mm"), aperture one decimal ("f/9.2").
+// Actual values: focal length up to two decimals ("4.3 mm", "9 mm"); aperture and pixel pitch two
+// decimals without a trailing zero but at least one ("f/1.78", "f/2.0", "1.4 µm").
+// Ranges have one prefix and unit ("24–240 mm", "f/1.5–2.4").
+
 const FACING_ORDER = { back: 0, front: 1, other: 2 };
 const TYPE_ORDER = { wide: 0, ultrawide: 1, tele: 2, macro: 3, other: 4 };
+
+const FULL_FRAME_DIAGONAL_MM = 43.27;
+
+function twoDecimalsTrimmed(value) {
+  const text = value.toFixed(2);
+  return text.endsWith("0") ? text.slice(0, -1) : text;
+}
+
+function upToTwoDecimals(value) {
+  return String(Number(value.toFixed(2)));
+}
+
+function range(low, high, format) {
+  const first = format(low);
+  if (high === null || high === undefined) return first;
+  const second = format(high);
+  return first === second ? first : `${first}–${second}`;
+}
 
 // Back cameras first, then by full-frame equivalent focal length (ultra-wide, wide, tele...).
 export function sortCameras(cameras) {
@@ -11,30 +35,196 @@ export function sortCameras(cameras) {
   );
 }
 
+// Actual aperture: "f/1.8" or "f/1.5–2.4".
 export function formatAperture(camera) {
   if (!camera.aperture) return "—";
-  return camera.variableAperture && camera.apertureNarrow
-    ? `f/${camera.aperture}–f/${camera.apertureNarrow}`
-    : `f/${camera.aperture}`;
+  return `f/${range(camera.aperture, camera.variableAperture ? camera.apertureNarrow : null, twoDecimalsTrimmed)}`;
+}
+
+// Actual focal length: "4.3 mm" or "6.9–19.2 mm".
+export function formatFocalLength(camera) {
+  if (!camera.focalLengthMm) return "—";
+  return `${range(camera.focalLengthMm, camera.opticalZoom ? camera.focalLengthMaxMm : null, upToTwoDecimals)} mm`;
 }
 
 // "24 mm" or "70–200 mm" for zoom lenses, full-frame equivalent.
 export function formatEquivalentFocal(camera) {
-  const min = equivalentFocal(camera);
-  if (!min) return "—";
-  return camera.opticalZoom && camera.focalLengthMaxMm
-    ? `${min}–${equivalentFocal(camera, camera.focalLengthMaxMm)} mm`
-    : `${min} mm`;
+  if (!equivalentFocal(camera)) return "—";
+  const longest = camera.opticalZoom && camera.focalLengthMaxMm ? camera.focalLengthMaxMm * camera.cropFactor : null;
+  return `${range(camera.focalLengthMm * camera.cropFactor, longest, (value) => value.toFixed(0))} mm`;
 }
 
-// Mode with the largest frame, then the highest frame rate.
-export function bestVideoMode(camera) {
-  const modes = camera.videoModes || [];
-  if (modes.length === 0) return null;
+// The f-number times the crop factor: unlike the actual f-number, it says which camera gathers more light.
+export function equivalentAperture(camera) {
+  return camera.aperture && camera.cropFactor ? camera.aperture * camera.cropFactor : null;
+}
 
-  return [...modes].sort((a, b) =>
-    (Math.max(b.widthPx, b.heightPx) - Math.max(a.widthPx, a.heightPx)) || (b.fpsMax - a.fpsMax)
-  )[0];
+export function formatEquivalentAperture(camera) {
+  const widest = equivalentAperture(camera);
+  if (!widest) return "—";
+  const narrowest = camera.variableAperture && camera.apertureNarrow ? camera.apertureNarrow * camera.cropFactor : null;
+  return `f/${range(widest, narrowest, (value) => value.toFixed(1))}`;
+}
+
+export function formatPixelPitch(camera) {
+  return camera.pixelPitchUm ? `${twoDecimalsTrimmed(camera.pixelPitchUm)} µm` : "—";
+}
+
+export function formatMegapixels(value) {
+  return value ? `${upToTwoDecimals(value)} MP` : "—";
+}
+
+// "Yes" or "No" only for a known zone count; unknown stays unknown, never "No".
+export function formatAutofocus(camera) {
+  if (camera.afZones === null || camera.afZones === undefined) return "—";
+  return camera.afZones > 0 ? "Yes" : "No";
+}
+
+// The exact format, or one estimated from the crop factor: 1/2.27", ≈1/2.55".
+export function formatSensorSize(camera) {
+  const exact = camera.sensorFormat?.trim().replace(/["″”]+$/, "");
+  if (exact) return `${exact}"`;
+  if (!(camera.cropFactor > 0)) return "—";
+
+  const denominator = (16 * camera.cropFactor) / FULL_FRAME_DIAGONAL_MM;
+  return denominator <= 1.05 ? `≈${upToTwoDecimals(1 / denominator)}"` : `≈1/${upToTwoDecimals(denominator)}"`;
+}
+
+function rawAspectRatio(camera) {
+  if (camera.photoWidthPx > 0 && camera.photoHeightPx > 0) {
+    return Math.max(camera.photoWidthPx, camera.photoHeightPx) / Math.min(camera.photoWidthPx, camera.photoHeightPx);
+  }
+
+  const sides = (camera.aspectRatio || "").split(":").map(Number);
+  if (sides.length !== 2 || !sides.every((side) => side > 0)) return null;
+  return Math.max(...sides) / Math.min(...sides);
+}
+
+// The photo's pixels when they are the sensor's (within 5 %); a smaller photo is a binned output.
+function sensorPixels(camera) {
+  if (!(camera.photoWidthPx > 0 && camera.photoHeightPx > 0 && camera.resolutionMp > 0)) return null;
+  const photoMp = (camera.photoWidthPx * camera.photoHeightPx) / 1_000_000;
+  if (Math.abs(photoMp - camera.resolutionMp) / camera.resolutionMp > 0.05) return null;
+
+  return {
+    width: Math.max(camera.photoWidthPx, camera.photoHeightPx),
+    height: Math.min(camera.photoWidthPx, camera.photoHeightPx),
+  };
+}
+
+export function formatSensorPixels(camera) {
+  const pixels = sensorPixels(camera);
+  return pixels ? `${pixels.width} × ${pixels.height} px` : null;
+}
+
+// "≈5.65 × 4.23 mm": from the pixels and pixel pitch when known, otherwise from the crop factor.
+export function formatSensorDimensions(camera) {
+  const ratio = rawAspectRatio(camera);
+  const millimetres = (width, height) => `≈${width.toFixed(2)} × ${height.toFixed(2)} mm`;
+
+  if (camera.pixelPitchUm > 0) {
+    const pixels = sensorPixels(camera);
+    if (pixels) return millimetres((pixels.width * camera.pixelPitchUm) / 1000, (pixels.height * camera.pixelPitchUm) / 1000);
+
+    if (ratio && camera.resolutionMp > 0) {
+      const width = Math.sqrt(camera.resolutionMp * 1_000_000 * ratio);
+      return millimetres((width * camera.pixelPitchUm) / 1000, ((width / ratio) * camera.pixelPitchUm) / 1000);
+    }
+  }
+
+  if (camera.cropFactor > 0 && ratio) {
+    const height = FULL_FRAME_DIAGONAL_MM / camera.cropFactor / Math.sqrt(1 + ratio * ratio);
+    return millimetres(height * ratio, height);
+  }
+
+  return null;
+}
+
+const STANDARD_RATIOS = [["4:3", 4 / 3], ["3:2", 3 / 2], ["16:9", 16 / 9], ["1:1", 1]];
+
+// The stored value or the photo's shape, snapped to a standard ratio when close (1.35:1 reads 4:3).
+export function formatAspectRatio(camera) {
+  const ratio = rawAspectRatio(camera);
+  if (!ratio) return camera.aspectRatio?.trim() || "—";
+
+  const match = STANDARD_RATIOS.find(([, value]) => Math.abs(ratio - value) / value < 0.02);
+  return match ? match[0] : `${ratio.toFixed(2)}:1`;
+}
+
+// Longer side of the frame -> the name people know. Other sizes are left out of the summary.
+const VIDEO_LABELS = [
+  { label: "480p", min: 640, max: 854 },
+  { label: "720p", min: 1280, max: 1280 },
+  { label: "1080p", min: 1920, max: 1920 },
+  { label: "1440p", min: 2560, max: 2560 },
+  { label: "2.7K", min: 2688, max: 2720 },
+  { label: "4K", min: 3840, max: 4096 },
+  { label: "5.3K", min: 5280, max: 5344 },
+  { label: "5.7K", min: 5728, max: 5792 },
+  { label: "6K", min: 6016, max: 6144 },
+  { label: "8K", min: 7680, max: 8192 },
+];
+
+function videoAspect(mode) {
+  const short = Math.min(mode.widthPx, mode.heightPx);
+  return short > 0 ? Math.max(mode.widthPx, mode.heightPx) / short : null;
+}
+
+function isOpenGate(mode) {
+  const ratio = videoAspect(mode);
+  return (ratio !== null && ratio <= 1.55) || /open gate/i.test(mode.note || "");
+}
+
+/**
+ * The Video lines, as in the mobile apps: from the highest resolution down, a resolution is listed
+ * only if it adds a higher frame rate ("4K up to 60 fps", "1080p up to 240 fps"), then the best open
+ * gate mode. Returns [{ text, note }].
+ */
+export function videoSummary(modes) {
+  const best = new Map();
+
+  for (const mode of modes || []) {
+    const ratio = videoAspect(mode);
+    if (isOpenGate(mode) || ratio === null || ratio < 1.7 || ratio > 1.92) continue;
+
+    const side = Math.max(mode.widthPx, mode.heightPx);
+    const index = VIDEO_LABELS.findIndex(({ min, max }) => side >= min && side <= max);
+    if (index === -1) continue;
+
+    const fps = Math.round(mode.fpsMax);
+    const note = mode.note?.trim() || null;
+    const current = best.get(index);
+
+    // Of two modes with the same top rate, the one with a note explains it.
+    if (!current || fps > current.fps || (fps === current.fps && !current.note && note)) {
+      best.set(index, { fps, note });
+    }
+  }
+
+  let highestShown = 0;
+  const entries = [];
+
+  for (const [index, { fps, note }] of [...best].sort((a, b) => b[0] - a[0])) {
+    if (fps <= highestShown) continue;
+    highestShown = fps;
+    entries.push({ text: `${VIDEO_LABELS[index].label} up to ${fps} fps`, note });
+  }
+
+  const pixels = (mode) => mode.widthPx * mode.heightPx;
+  const openGate = (modes || []).filter(isOpenGate).reduce(
+    (top, mode) => (!top || pixels(mode) > pixels(top) || (pixels(mode) === pixels(top) && mode.fpsMax > top.fpsMax) ? mode : top),
+    null,
+  );
+
+  if (openGate) {
+    const note = openGate.note?.trim();
+    entries.push({
+      text: `Open gate ${openGate.widthPx}×${openGate.heightPx} up to ${Math.round(openGate.fpsMax)} fps`,
+      note: note && !/^open gate$/i.test(note) ? note : null,
+    });
+  }
+
+  return entries;
 }
 
 /**

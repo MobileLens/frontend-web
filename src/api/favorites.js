@@ -1,18 +1,25 @@
+import { cached, invalidateCache } from "./cache";
 import { apiFetch } from "./client";
 
 // Newest first: [{ smartphoneId, addedAt, modelName, brandName, imageUrl, imageThumbUrl, releaseDate, verified }].
 export function getFavorites() {
-  return apiFetch("/api/favorites");
+  return cached("favorites", () => apiFetch("/api/favorites"));
 }
 
-export function addFavorite(smartphoneId) {
-  return apiFetch(`/api/favorites/${encodeURIComponent(smartphoneId)}`, {
+export async function addFavorite(smartphoneId) {
+  const result = await apiFetch(`/api/favorites/${encodeURIComponent(smartphoneId)}`, {
     method: "POST",
+    keepCache: true,
   });
+  invalidateCache("favorites");
+  return result;
 }
 
-export function removeFavorite(smartphoneId) {
-  return apiFetch(`/api/favorites/${encodeURIComponent(smartphoneId)}`, {
+export async function removeFavorite(smartphoneId) {
+  const result = await apiFetch(`/api/favorites/${encodeURIComponent(smartphoneId)}`, {
     method: "DELETE",
+    keepCache: true,
   });
+  invalidateCache("favorites");
+  return result;
 }

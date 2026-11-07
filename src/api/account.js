@@ -1,3 +1,4 @@
+import { siteUrl } from "./auth";
 import { apiFetch } from "./client";
 
 // better-auth: { session, user } for a valid token, null otherwise. user carries `role` and `username`.
@@ -5,10 +6,11 @@ export function getSession() {
   return apiFetch("/api/auth/get-session");
 }
 
-export function updateProfile({ name, username }) {
+// The site shows one username; the backend's required `name` (shown on reviews) keeps the same value.
+export function updateUsername(username) {
   return apiFetch("/api/auth/update-user", {
     method: "POST",
-    body: JSON.stringify({ name, username }),
+    body: JSON.stringify({ name: username, username }),
   });
 }
 
@@ -16,7 +18,7 @@ export function updateProfile({ name, username }) {
 export function changeEmail(newEmail) {
   return apiFetch("/api/auth/change-email", {
     method: "POST",
-    body: JSON.stringify({ newEmail, callbackURL: "/account" }),
+    body: JSON.stringify({ newEmail, callbackURL: siteUrl("/account") }),
   });
 }
 

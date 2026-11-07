@@ -1,4 +1,5 @@
 .phone-details-page {
+  width: 100%;
   max-width: 900px;
   margin: 2.5rem auto;
   padding: 0 1.5rem;
@@ -8,7 +9,9 @@
 
 /* Przycisk powrotu */
 .phone-back-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   text-decoration: none;
   background: transparent;
   border: 1px solid var(--border-color);
@@ -40,13 +43,6 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-  .phone-header-card {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-}
-
 .phone-image-wrapper {
   background: var(--surface-muted);
   border: 1px solid var(--border-color);
@@ -68,7 +64,8 @@
 .phone-info-content {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
+  min-width: 0;
 }
 
 .phone-title {
@@ -79,21 +76,45 @@
   letter-spacing: -0.025em;
 }
 
+.phone-subline {
+  margin: 0;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
+
+.phone-codes {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.phone-badge-muted {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
 .phone-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin-top: 0.5rem;
 }
 
 .compare-alert {
-  margin-top: 0.75rem;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
-/* Sekcje specyfikacji */
+.meta-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+/* Sekcje */
 .phone-section {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
@@ -109,110 +130,6 @@
   color: var(--text-primary);
   margin-top: 0;
   margin-bottom: 1.25rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.75rem;
-}
-
-/* Siatka metadanych ogólnych */
-.meta-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-@media (max-width: 700px) {
-  .meta-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.meta-item {
-  background: var(--surface-muted);
-  border: 1px solid var(--border-color);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.meta-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  letter-spacing: 0.05em;
-}
-
-.meta-value {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  word-break: break-all;
-}
-
-/* Kafelki aparatów */
-.cameras-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.camera-card {
-  background: var(--surface-muted);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.25rem;
-}
-
-.camera-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem;
-}
-
-.camera-title {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.camera-badge {
-  border: 1px solid var(--border-strong);
-  color: var(--text-primary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-}
-
-.camera-specs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-@media (max-width: 700px) {
-  .camera-specs-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Tryby wideo */
-.phone-subline {
-  margin: 0;
-  font-size: 0.875rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-secondary);
-}
-
-.phone-badge-muted {
-  border-color: var(--border-color);
-  color: var(--text-secondary);
 }
 
 .section-empty {
@@ -221,11 +138,76 @@
   color: var(--text-secondary);
 }
 
+.section-error {
+  color: var(--danger);
+}
+
 .section-count {
   margin-left: 0.35rem;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-secondary);
+}
+
+/* Zakładki obiektywów */
+.lens-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.lens-tab {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+  min-width: 5.5rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.lens-tab:hover {
+  border-color: var(--border-strong);
+}
+
+.lens-tab.is-active {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.lens-tab-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.lens-tab-focal {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+
+/* Wczytywanie */
+.phone-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.phone-skeleton-tile {
+  height: 6rem;
+  border-radius: 14px;
 }
 
 /* Galeria zdjęć przykładowych */
@@ -238,19 +220,13 @@
   list-style: none;
 }
 
-@media (max-width: 700px) {
-  .photo-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 .photo-tile {
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: var(--surface-muted);
+  background-color: var(--surface-muted);
 }
 
 .photo-tile img {
@@ -283,47 +259,31 @@
   margin-top: 1.25rem;
 }
 
-/* Notatka moderatora pod specyfikacją aparatu */
-.camera-note {
-  margin: 0.75rem 0 0;
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--text-secondary);
-}
-
-.video-modes-container {
-  margin-top: 1rem;
-  border-top: 1px dashed var(--border-color);
-  padding-top: 0.75rem;
-}
-
-.video-modes-title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.video-modes-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.video-mode-badge {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-family: monospace;
-  color: var(--text-primary);
-}
-
 .status-message {
-  padding: 3rem 0;
+  padding: 3rem 0 0;
   text-align: center;
   font-size: 1rem;
   color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .phone-header-card {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .phone-actions {
+    justify-content: center;
+  }
+
+  .phone-section {
+    padding: 1.1rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

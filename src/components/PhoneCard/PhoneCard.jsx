@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { addPhoneToCompare, MAX_COMPARE_PHONES, removePhoneFromCompare } from "../../api/compare";
+import { prefetchSmartphone } from "../../api/smartphones";
+import { useCompareList } from "../../utils/useCompareList";
+import Icon from "../Icon/Icon";
 
 export function PhoneImage({ phone }) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const src = phone.imageThumbUrl || phone.imageUrl;
 
   if (!src || failed) {
@@ -19,18 +24,73 @@ export function PhoneImage({ phone }) {
       src={src}
       alt=""
       loading="lazy"
+      decoding="async"
+      className={loaded ? "is-loaded" : "is-loading"}
+      onLoad={() => setLoaded(true)}
       onError={() => setFailed(true)}
     />
   );
 }
 
-// `phoneId` overrides `phone.id` (favourites list items carry `smartphoneId`).
+// Adds a phone to the comparison or takes it out. `phone` needs id, modelName, brandName and an image.
+export function CompareButton({ phone, className = "phone-card-action" }) {
+  const list = useCompareList();
+  const inCompare = list.some((item) => item.id === phone.id);
+  const full = !inCompare && list.length >= MAX_COMPARE_PHONES;
+
+  const label = inCompare
+    ? `Remove ${phone.modelName} from comparison`
+    : full
+      ? `Comparison is full (${MAX_COMPARE_PHONES} phones)`
+      : `Add ${phone.modelName} to comparison`;
+
+  function handleClick() {
+    if (inCompare) {
+      removePhoneFromCompare(phone.id);
+    } else {
+      addPhoneToCompare({
+        id: phone.id,
+        modelName: phone.modelName,
+        brandName: phone.brandName,
+        imageUrl: phone.imageUrl,
+        imageThumbUrl: phone.imageThumbUrl,
+      });
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${className} ${inCompare ? "is-active" : ""}`}
+      title={label}
+      aria-label={label}
+      aria-pressed={inCompare}
+      disabled={full}
+      onClick={handleClick}
+    >
+      <Icon name={inCompare ? "check" : "compare"} />
+    </button>
+  );
+}
+
+// `phoneId` overrides `phone.id` (favourites list items carry `smartphoneId`). `action` adds a button.
 export function PhoneCard({ phone, phoneId = phone.id, rank, meta, action }) {
+  const identified = { ...phone, id: phoneId };
+
   return (
     <div className="phone-card">
-      {action}
+      <div className="phone-card-actions">
+        {action}
+        <CompareButton phone={identified} />
+      </div>
 
-      <Link to={`/phone/${phoneId}`} className="phone-card-link">
+      <Link
+        to={`/phone/${phoneId}`}
+        state={{ preview: identified }}
+        className="phone-card-link"
+        onMouseEnter={() => prefetchSmartphone(phoneId)}
+        onFocus={() => prefetchSmartphone(phoneId)}
+      >
         <div className="phone-card-media">
           {rank && (
             <span className="phone-card-rank" aria-hidden="true">
@@ -56,7 +116,7 @@ export function PhoneGridSkeleton({ count = 4, className = "phone-grid" }) {
       {Array.from({ length: count }, (_, index) => (
         <li key={index}>
           <div className="phone-card">
-            <div className="phone-card-media" />
+            <div className="phone-card-media skeleton-area" />
             <div className="phone-card-body">
               <span className="skeleton skeleton-line-short" />
               <span className="skeleton skeleton-line" />
@@ -65,5 +125,19 @@ export function PhoneGridSkeleton({ count = 4, className = "phone-grid" }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+// Placeholder while a lazily loaded page or its data arrives.
+export function PageSkeleton() {
+  return (
+    <div className="page" aria-hidden="true">
+      <div className="page-narrow skeleton-page">
+        <span className="skeleton skeleton-title" />
+        <span className="skeleton skeleton-line" />
+        <span className="skeleton skeleton-line-short" />
+        <span className="skeleton skeleton-block" />
+      </div>
+    </div>
   );
 }

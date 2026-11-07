@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import Icon from "../../components/Icon/Icon";
 import { createSmartphone, getCatalogue } from "../../api/smartphones";
 import PhoneDetailsForm from "./PhoneDetailsForm";
 import PhoneEditor from "./PhoneEditor";
@@ -63,7 +64,7 @@ export default function PhonesTab({ isAdmin, notify, onChanged }) {
         count={data?.total}
         actions={!adding && (
           <button type="button" className="ui-btn ui-btn-small ui-btn-primary" onClick={() => setAdding(true)}>
-            Add phone
+            <Icon name="plus" /> Add phone
           </button>
         )}
       >
@@ -82,7 +83,7 @@ export default function PhonesTab({ isAdmin, notify, onChanged }) {
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
           />
-          <button type="submit" className="ui-btn">Search</button>
+          <button type="submit" className="ui-btn"><Icon name="search" /> Search</button>
         </form>
 
         <label className="ui-check admin-filter">
@@ -115,7 +116,7 @@ export default function PhonesTab({ isAdmin, notify, onChanged }) {
                 </div>
               </div>
               <div className="ui-actions admin-list-actions">
-                <button type="button" className="ui-btn ui-btn-small" onClick={() => setSelectedId(phone.id)}>Edit</button>
+                <button type="button" className="ui-btn ui-btn-small" onClick={() => setSelectedId(phone.id)}><Icon name="edit" /> Edit</button>
               </div>
             </li>
           ))}

@@ -1,9 +1,11 @@
+import { clearCache } from "./cache";
 import { getToken, removeToken } from "../utils/auth";
 
 // Empty in dev (Vite proxies /api); set at build time when the app is hosted elsewhere.
 const API_URL = import.meta.env.VITE_API_URL ?? "";
 
-export async function apiFetch(endpoint, options = {}) {
+// keepCache: a POST that changes nothing shown in the app (a search, a counted view).
+export async function apiFetch(endpoint, { keepCache = false, ...options } = {}) {
   const token = getToken();
 
   const headers = {
@@ -52,6 +54,10 @@ export async function apiFetch(endpoint, options = {}) {
     error.code = errorData?.code;
     error.data = errorData;
     throw error;
+  }
+
+  if (options.method && options.method !== "GET" && !keepCache) {
+    clearCache();
   }
 
   if (response.status === 204) {

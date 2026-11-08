@@ -1,0 +1,60 @@
+.phone-row-scroller {
+  position: relative;
+}
+
+.phone-row-arrow {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  top: calc(50% - 1.75rem);
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background-color: var(--card-bg);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  box-shadow: var(--overlay-shadow);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.phone-row-arrow:hover {
+  background-color: var(--surface-muted);
+}
+
+.phone-row-arrow.is-back {
+  left: -1.25rem;
+}
+
+.phone-row-arrow.is-forward {
+  right: -1.25rem;
+}
+
+/* Myszka: strzałki zamiast cienkiego paska przewijania. Dotyk: zwykłe przesuwanie palcem. */
+@media (hover: hover) and (pointer: fine) {
+  .phone-row-arrow {
+    display: flex;
+  }
+
+  .phone-row-scroller .phone-row {
+    scrollbar-width: none;
+  }
+
+  .phone-row-scroller .phone-row::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .phone-row-arrow.is-back {
+    left: -0.5rem;
+  }
+
+  .phone-row-arrow.is-forward {
+    right: -0.5rem;
+  }
+}

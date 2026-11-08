@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getSmartphones, prefetchSmartphone } from "../../api/smartphones";
 import Icon from "../../components/Icon/Icon";
 import { CompareButton, PhoneCard, PhoneGridSkeleton, PhoneImage } from "../../components/PhoneCard/PhoneCard";
+import PhoneRow from "../../components/PhoneRow/PhoneRow";
 import { formatReleaseDate, formatViews } from "../../utils/format";
 import "./Home.css";
 
@@ -163,7 +164,7 @@ function Home() {
         )}
 
         {trending.length > 0 && (
-          <ol className="phone-row">
+          <PhoneRow label="Trending phones">
             {trending.map((phone, index) => (
               <li key={phone.id}>
                 <PhoneCard
@@ -173,7 +174,7 @@ function Home() {
                 />
               </li>
             ))}
-          </ol>
+          </PhoneRow>
         )}
       </section>
 

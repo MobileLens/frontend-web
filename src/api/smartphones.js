@@ -90,10 +90,12 @@ export function peekCatalogueSearch(body) {
 }
 
 // Verified sample photos: { data, page, limit, total }; each photo has thumbUrl/mediumUrl/url and exif* fields.
-export async function getSmartphonePhotos(id, page = 1, limit = 12) {
-  return apiFetch(
-    `/api/smartphones/${encodeURIComponent(id)}/photos?page=${page}&limit=${limit}`
-  );
+// cameraId: only that camera's photos.
+export async function getSmartphonePhotos(id, page = 1, limit = 12, { cameraId } = {}) {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (cameraId) params.set("camera_id", cameraId);
+
+  return apiFetch(`/api/smartphones/${encodeURIComponent(id)}/photos?${params}`);
 }
 
 // Full details (cameras with video modes) for 2-4 phones, in the order given.

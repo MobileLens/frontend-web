@@ -80,16 +80,6 @@ export function formatAutofocus(camera) {
   return camera.afZones > 0 ? "Yes" : "No";
 }
 
-// The exact format, or one estimated from the crop factor: 1/2.27", ≈1/2.55".
-export function formatSensorSize(camera) {
-  const exact = camera.sensorFormat?.trim().replace(/["″”]+$/, "");
-  if (exact) return `${exact}"`;
-  if (!(camera.cropFactor > 0)) return "—";
-
-  const denominator = (16 * camera.cropFactor) / FULL_FRAME_DIAGONAL_MM;
-  return denominator <= 1.05 ? `≈${upToTwoDecimals(1 / denominator)}"` : `≈1/${upToTwoDecimals(denominator)}"`;
-}
-
 function rawAspectRatio(camera) {
   if (camera.photoWidthPx > 0 && camera.photoHeightPx > 0) {
     return Math.max(camera.photoWidthPx, camera.photoHeightPx) / Math.min(camera.photoWidthPx, camera.photoHeightPx);
@@ -117,27 +107,54 @@ export function formatSensorPixels(camera) {
   return pixels ? `${pixels.width} × ${pixels.height} px` : null;
 }
 
-// "≈5.65 × 4.23 mm": from the pixels and pixel pitch when known, otherwise from the crop factor.
-export function formatSensorDimensions(camera) {
+// The sensor's size in millimetres, the same way as the iOS app (CameraSpecification.swift):
+// a. with the pixel pitch: pixels × pitch (the photo's pixels, else derived from the megapixels and the raw ratio);
+// b. otherwise from the crop factor: diagonal 43.27 / crop split by the raw ratio;
+// c. otherwise null.
+function sensorSizeMm(camera) {
   const ratio = rawAspectRatio(camera);
-  const millimetres = (width, height) => `≈${width.toFixed(2)} × ${height.toFixed(2)} mm`;
+  const pitchMm = camera.pixelPitchUm / 1000;
 
   if (camera.pixelPitchUm > 0) {
     const pixels = sensorPixels(camera);
-    if (pixels) return millimetres((pixels.width * camera.pixelPitchUm) / 1000, (pixels.height * camera.pixelPitchUm) / 1000);
+    if (pixels) return { width: pixels.width * pitchMm, height: pixels.height * pitchMm };
 
     if (ratio && camera.resolutionMp > 0) {
       const width = Math.sqrt(camera.resolutionMp * 1_000_000 * ratio);
-      return millimetres((width * camera.pixelPitchUm) / 1000, ((width / ratio) * camera.pixelPitchUm) / 1000);
+      return { width: width * pitchMm, height: (width / ratio) * pitchMm };
     }
   }
 
   if (camera.cropFactor > 0 && ratio) {
     const height = FULL_FRAME_DIAGONAL_MM / camera.cropFactor / Math.sqrt(1 + ratio * ratio);
-    return millimetres(height * ratio, height);
+    return { width: height * ratio, height };
   }
 
   return null;
+}
+
+// "≈5.65 × 4.23 mm"
+export function formatSensorDimensions(camera) {
+  const size = sensorSizeMm(camera);
+  return size ? `≈${size.width.toFixed(2)} × ${size.height.toFixed(2)} mm` : null;
+}
+
+// The stored format as it is (1/1.28", 1"), otherwise an estimate marked with "≈". The estimate uses
+// the same size as the millimetre line, so the two agree. The "inch" of sensor names is the old
+// vidicon tube convention, not 25.4 mm: 16 mm of diagonal per inch from 1/2" up, 18 mm for smaller
+// sensors (the 16 mm rule alone shows a 7.06 mm sensor as 1/2.27" instead of 1/2.55").
+export function formatSensorSize(camera) {
+  const exact = camera.sensorFormat?.trim().replace(/["″”]+$/, "");
+  if (exact) return `${exact}"`;
+
+  const size = sensorSizeMm(camera);
+  const diagonal = size ? Math.hypot(size.width, size.height) : camera.cropFactor > 0 ? FULL_FRAME_DIAGONAL_MM / camera.cropFactor : null;
+  if (!diagonal) return "—";
+
+  const denominator = (diagonal < 8 ? 18 : 16) / diagonal;
+  return denominator < 1.05
+    ? `≈${Number((1 / denominator).toFixed(1))}"`
+    : `≈1/${upToTwoDecimals(denominator)}"`;
 }
 
 const STANDARD_RATIOS = [["4:3", 4 / 3], ["3:2", 3 / 2], ["16:9", 16 / 9], ["1:1", 1]];

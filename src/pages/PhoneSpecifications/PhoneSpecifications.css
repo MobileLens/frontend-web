@@ -149,54 +149,6 @@
   color: var(--text-secondary);
 }
 
-/* Zakładki obiektywów */
-.lens-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.25rem;
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-
-.lens-tab {
-  flex: 1 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.05rem;
-  min-width: 5.5rem;
-  padding: 0.5rem 0.85rem;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: none;
-  font: inherit;
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: background-color 0.15s, border-color 0.15s;
-}
-
-.lens-tab:hover {
-  border-color: var(--border-strong);
-}
-
-.lens-tab.is-active {
-  border-color: var(--primary);
-  background-color: var(--primary);
-  color: var(--on-primary);
-}
-
-.lens-tab-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.lens-tab-focal {
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  opacity: 0.75;
-}
-
 /* Wczytywanie */
 .phone-skeleton-grid {
   display: grid;
@@ -218,41 +170,6 @@
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-.photo-tile {
-  display: block;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--surface-muted);
-}
-
-.photo-tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.2s;
-}
-
-.photo-tile:hover img {
-  transform: scale(1.03);
-}
-
-.photo-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  margin-top: 0.35rem;
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-secondary);
-}
-
-.photo-camera {
-  font-weight: 600;
-  color: var(--text-primary);
 }
 
 .photo-more {

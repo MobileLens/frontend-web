@@ -5,6 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Footer from "./components/Footer/Footer";
 import Navbar from "./components/Navbar/Navbar";
 import { PageSkeleton } from "./components/PhoneCard/PhoneCard";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop";
 
 import Home from "./pages/Home/Home";
 import PhoneBrowse from "./pages/PhoneBrowse/PhoneBrowse";
@@ -53,6 +54,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <ScrollToTop />
         <Navbar />
 
         <Suspense fallback={<PageSkeleton />}>

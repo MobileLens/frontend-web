@@ -95,7 +95,7 @@ export default function CameraSpecs({ camera }) {
             title="Resolution"
             value={formatMegapixels(camera.resolutionMp)}
             caption={formatSensorPixels(camera)}
-            detail={binned ? `Max usable: ${formatMegapixels(camera.activeResolutionMp)}` : null}
+            detail={binned ? `Binned to ${formatMegapixels(camera.activeResolutionMp)}` : null}
           />
           <Tile
             icon="sensor"

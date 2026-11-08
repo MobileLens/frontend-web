@@ -44,3 +44,24 @@ export const CAMERA_TYPE_LABELS = {
   macro: "Macro",
   other: "Other",
 };
+
+function formatShutter(seconds) {
+  if (!seconds) return null;
+  return seconds >= 1 ? `${round(seconds, 1)} s` : `1/${Math.round(1 / seconds)} s`;
+}
+
+// A sample photo's settings: "f/1.88 · 1/120 s · ISO 100 · 2× digital".
+export function photoCaption(photo) {
+  return [
+    photo.exifAperture && `f/${round(photo.exifAperture, 2)}`,
+    formatShutter(photo.exifShutterSpeed),
+    photo.exifIso && `ISO ${photo.exifIso}`,
+    photo.exifDigitalZoom > 1 && `${round(photo.exifDigitalZoom, 1)}× digital`,
+  ].filter(Boolean).join(" · ");
+}
+
+// The camera a sample photo was taken with: "Wide (main)", "Front · Wide (main)".
+export function photoCameraLabel(photo) {
+  const type = CAMERA_TYPE_LABELS[photo.cameraType] || "Camera";
+  return photo.facing === "front" ? `Front · ${type}` : type;
+}

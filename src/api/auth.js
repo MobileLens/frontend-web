@@ -41,6 +41,14 @@ export async function loginUser({
   });
 }
 
+// Sends the confirmation link again to an unverified address. Answers { status: true }.
+export async function resendVerification(email) {
+  return apiFetch("/api/auth/send-verification-email", {
+    method: "POST",
+    body: JSON.stringify({ email, callbackURL: siteUrl("/login?verified=1") }),
+  });
+}
+
 // Sends a reset link when the account exists; the answer doesn't say whether it does.
 export async function requestPasswordReset(email) {
   return apiFetch("/api/auth/request-password-reset", {

@@ -184,7 +184,7 @@ function PhoneGroup({ group, notify, onDropped, onPhoneChanged, decide }) {
 
                 <div className="admin-camera-specs-grid">
                   <Spec label="Resolution">{camera.resolutionMp && `${round(camera.resolutionMp)} MP`}</Spec>
-                  <Spec label="Max usable">{camera.activeResolutionMp && `${round(camera.activeResolutionMp)} MP`}</Spec>
+                  <Spec label="Binned">{camera.activeResolutionMp && `${round(camera.activeResolutionMp)} MP`}</Spec>
                   <Spec label="Sensor">
                     {[camera.sensorFormat && `${camera.sensorFormat}"`, camera.sensorModel].filter(Boolean).join(" · ")}
                   </Spec>

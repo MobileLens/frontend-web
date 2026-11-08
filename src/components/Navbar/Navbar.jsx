@@ -6,7 +6,6 @@ import { useCompareList } from "../../utils/useCompareList";
 import logo from "../../assets/brand/mobilelens-logo-horizontal.svg";
 import logoInverse from "../../assets/brand/mobilelens-logo-horizontal-inverse.svg";
 import Icon from "../Icon/Icon";
-import ThemeSwitch from "../ThemeSwitch/ThemeSwitch";
 import "./Navbar.css";
 
 function Navbar() {
@@ -48,8 +47,6 @@ function Navbar() {
         {loggedIn && <NavLink to="/favorites" className="nav-link"><Icon name="heart" /> Favorites</NavLink>}
 
         <div className="navbar-actions">
-          <ThemeSwitch compact />
-
           {loggedIn ? (
             <>
               {isStaff && (

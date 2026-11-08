@@ -3,17 +3,9 @@ import { Link, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../../api/auth";
 import Icon from "../../components/Icon/Icon";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
+import PasswordChecklist from "../../components/PasswordInput/PasswordChecklist";
+import { passwordProblem } from "../../utils/password";
 import "../../styles/auth.css";
-
-// Same rule as the backend.
-function passwordProblem(password) {
-  if (password.length < 8) return "Password must be at least 8 characters long.";
-  if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
-  if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter.";
-  if (!/[0-9]/.test(password)) return "Password must contain at least one number.";
-  if (!/[^A-Za-z0-9]/.test(password)) return "Password must contain at least one special character.";
-  return "";
-}
 
 // The page behind the link from the reset e-mail: ?token=... or ?error=INVALID_TOKEN.
 function ResetPassword() {
@@ -67,7 +59,9 @@ function ResetPassword() {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 autoComplete="new-password"
+                aria-describedby="password-rules"
               />
+              <div id="password-rules"><PasswordChecklist password={password} /></div>
             </div>
 
             <div className="auth-field">

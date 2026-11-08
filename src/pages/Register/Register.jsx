@@ -2,8 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/auth";
 import Icon from "../../components/Icon/Icon";
+import PasswordChecklist from "../../components/PasswordInput/PasswordChecklist";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
+import ResendVerification from "../../components/ResendVerification/ResendVerification";
 import { saveToken } from "../../utils/auth";
+import { passwordProblem } from "../../utils/password";
 import "../../styles/auth.css";
 
 function Register() {
@@ -16,18 +19,16 @@ function Register() {
   const [acceptTerms, setAcceptTerms] = useState(false);
 
   const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
+  // The address the confirmation link went to, once the account exists.
+  const [sentTo, setSentTo] = useState("");
   const [loading, setLoading] = useState(false);
 
   function validateForm() {
     if (!username.trim()) return "Username is required.";
     if (!email.trim()) return "Email is required.";
     if (!password) return "Password is required.";
-    if (password.length < 8) return "Password must be at least 8 characters long.";
-    if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
-    if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter.";
-    if (!/[0-9]/.test(password)) return "Password must contain at least one number.";
-    if (!/[^A-Za-z0-9]/.test(password)) return "Password must contain at least one special character.";
+    const problem = passwordProblem(password);
+    if (problem) return problem;
     if (password !== confirmPassword) return "Passwords do not match.";
     if (!acceptTerms) return "You must accept the Terms of Service.";
     return "";
@@ -36,7 +37,6 @@ function Register() {
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-    setInfo("");
 
     const validationError = validateForm();
     if (validationError) {
@@ -57,7 +57,7 @@ function Register() {
 
       // No token when the backend requires e-mail verification before the first login.
       if (!data.token) {
-        setInfo("Account created. Check your e-mail to confirm your address, then log in.");
+        setSentTo(email.trim());
         return;
       }
 
@@ -76,6 +76,17 @@ function Register() {
       <h1 className="auth-title">Create an account</h1>
 
       <div className="auth-card">
+        {sentTo ? (
+          <div className="auth-inbox">
+            <Icon name="mail" className="auth-inbox-icon" />
+            <h2 className="auth-inbox-title">Check your inbox</h2>
+            <p>
+              We've sent a confirmation link to <strong>{sentTo}</strong>. Open it to activate your account,
+              then log in. If it isn't there in a few minutes, check the spam folder.
+            </p>
+            <ResendVerification email={sentTo} startCooling />
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
             <label htmlFor="username" className="auth-label">Username</label>
@@ -109,7 +120,9 @@ function Register() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               autoComplete="new-password"
+              aria-describedby="password-rules"
             />
+            <div id="password-rules"><PasswordChecklist password={password} /></div>
           </div>
 
           <div className="auth-field">
@@ -136,12 +149,12 @@ function Register() {
           </div>
 
           {error && <p role="alert" className="auth-error">{error}</p>}
-          {info && <p role="status">{info}</p>}
 
           <button type="submit" className="auth-btn" disabled={loading}>
             <Icon name="user" /> {loading ? "Creating account..." : "Register"}
           </button>
         </form>
+        )}
 
         <p className="auth-footer">
           Already have an account?{" "}

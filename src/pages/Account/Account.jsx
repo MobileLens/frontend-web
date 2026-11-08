@@ -14,6 +14,7 @@ import { PageSkeleton } from "../../components/PhoneCard/PhoneCard";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import { useAuth } from "../../context/useAuth";
 import { isLoggedIn, removeToken, saveToken } from "../../utils/auth";
+import { passwordProblem } from "../../utils/password";
 import "./Account.css";
 
 const ROLE_LABELS = {
@@ -23,15 +24,6 @@ const ROLE_LABELS = {
   admin: "Administrator",
 };
 
-// Same rule as the backend (and the registration form).
-function passwordProblem(password) {
-  if (password.length < 8) return "Password must be at least 8 characters long.";
-  if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
-  if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter.";
-  if (!/[0-9]/.test(password)) return "Password must contain at least one number.";
-  if (!/[^A-Za-z0-9]/.test(password)) return "Password must contain at least one special character.";
-  return "";
-}
 
 function Feedback({ state }) {
   if (!state?.text) return null;

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser } from "../../api/auth";
 import Icon from "../../components/Icon/Icon";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
+import ResendVerification from "../../components/ResendVerification/ResendVerification";
 import { saveToken } from "../../utils/auth";
 import "../../styles/auth.css";
 
@@ -18,6 +19,8 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
+  // Set when the address isn't confirmed yet, so the link can be sent again.
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event) {
@@ -54,7 +57,8 @@ function Login() {
       console.error(err);
 
       if (err.code === "EMAIL_NOT_VERIFIED") {
-        setError("Please confirm your e-mail address before logging in.");
+        setUnverifiedEmail(email.trim());
+        setError("Please confirm your e-mail address first: open the link we sent you.");
       } else if (err.code === "USER_BANNED") {
         setError("Your account has been banned.");
       } else {
@@ -98,6 +102,7 @@ function Login() {
           </div>
 
           {error && <p role="alert" className="auth-error">{error}</p>}
+          {unverifiedEmail && <ResendVerification key={unverifiedEmail} email={unverifiedEmail} />}
 
           <button type="submit" className="auth-btn" disabled={loading}>
             <Icon name="login" /> {loading ? "Logging in..." : "Log in"}

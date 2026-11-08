@@ -17,9 +17,9 @@ import Icon from "../../components/Icon/Icon";
 import { isLoggedIn } from "../../utils/auth";
 import { formatEquivalentFocal, sortCameras } from "../../utils/camera";
 import {
-  CAMERA_TYPE_LABELS,
   formatReleaseDate,
-  round,
+  photoCameraLabel,
+  photoCaption,
 } from "../../utils/format";
 import { useCompareList } from "../../utils/useCompareList";
 import "./PhoneSpecifications.css";
@@ -27,25 +27,6 @@ import "./PhoneSpecifications.css";
 const PHOTOS_PER_PAGE = 12;
 
 const LENS_NAMES = { wide: "Wide", ultrawide: "Ultra-wide", tele: "Telephoto", macro: "Macro", other: "Other" };
-
-function formatShutter(seconds) {
-  if (!seconds) return null;
-  return seconds >= 1 ? `${round(seconds, 1)} s` : `1/${Math.round(1 / seconds)} s`;
-}
-
-function photoCaption(photo) {
-  return [
-    photo.exifAperture && `f/${round(photo.exifAperture, 2)}`,
-    formatShutter(photo.exifShutterSpeed),
-    photo.exifIso && `ISO ${photo.exifIso}`,
-    photo.exifDigitalZoom > 1 && `${round(photo.exifDigitalZoom, 1)}× digital`,
-  ].filter(Boolean).join(" · ");
-}
-
-function cameraLabel(camera) {
-  const type = CAMERA_TYPE_LABELS[camera.type] || "Camera";
-  return camera.facing === "front" ? `Front · ${type}` : type;
-}
 
 function lensTabName(camera) {
   const name = LENS_NAMES[camera.type] || "Camera";
@@ -112,7 +93,7 @@ function SamplePhotos({ phoneId }) {
                 </a>
                 <div className="photo-meta">
                   <span className="photo-camera">
-                    {cameraLabel({ type: photo.cameraType, facing: photo.facing })}
+                    {photoCameraLabel(photo)}
                   </span>
                   {caption && <span>{caption}</span>}
                 </div>

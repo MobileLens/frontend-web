@@ -9,15 +9,8 @@ import Icon from "../Icon/Icon";
 import ThemeSwitch from "../ThemeSwitch/ThemeSwitch";
 import "./Footer.css";
 
-const GITHUB = "https://github.com/MobileLens";
 const MAX_BRANDS = 6;
 
-const REPOSITORIES = [
-  ["Android app", `${GITHUB}/android-app`],
-  ["iOS app", `${GITHUB}/ios-app`],
-  ["Web app", `${GITHUB}/frontend-web`],
-  ["Backend API", `${GITHUB}/backend-api`],
-];
 
 function countCameras(facets) {
   if (!facets) return null;
@@ -55,7 +48,7 @@ function Footer() {
     [phones, "phones"],
     [cameras, "cameras"],
     [brands.length || null, "brands"],
-  ].filter(([value]) => value !== null);
+  ].filter(([value]) => Number.isFinite(value)); // an odd answer leaves its number out instead of breaking the page
 
   return (
     <footer className="site-footer">
@@ -63,10 +56,7 @@ function Footer() {
         <div className="site-footer-about">
           <img className="logo-on-light" src={logo} alt="MobileLens" width="138" height="28" />
           <img className="logo-on-dark" src={logoInverse} alt="MobileLens" width="138" height="28" />
-          <p>
-            Phone cameras compared by what they really are: 35 mm equivalent focal lengths and apertures,
-            measured on real devices.
-          </p>
+          <p>A catalogue of smartphone cameras: specs, sample photos, comparisons and reviews.</p>
 
           {stats.length > 0 && (
             <dl className="site-footer-stats">
@@ -101,16 +91,6 @@ function Footer() {
           </nav>
         )}
 
-        <nav aria-label="Source code">
-          <h2>Source code</h2>
-          <ul>
-            {REPOSITORIES.map(([label, url]) => (
-              <li key={url}>
-                <a href={url} target="_blank" rel="noreferrer"><Icon name="github" /> {label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </div>
 
       <div className="site-footer-bottom">

@@ -19,11 +19,6 @@
   align-self: stretch;
   padding: 0 1rem;
   border-radius: 6px;
-  transition: background-color 0.15s;
-}
-
-.navbar-brand:hover {
-  background-color: var(--surface-muted);
 }
 
 .navbar-brand img {
@@ -63,7 +58,9 @@
 
 .nav-link.active {
   font-weight: 600;
-  background-color: var(--surface-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.35em;
 }
 
 .nav-badge {

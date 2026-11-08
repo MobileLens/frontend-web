@@ -27,6 +27,7 @@ import {
 } from "../../utils/camera";
 import { OIS_LABELS, formatReleaseDate, round } from "../../utils/format";
 import { useCompareList } from "../../utils/useCompareList";
+import CompareGallery from "./CompareGallery";
 import "./PhoneComparison.css";
 
 const SEARCH_DELAY_MS = 250;
@@ -59,7 +60,7 @@ const CAMERA_ROWS = [
   },
   { label: "Aperture (actual)", value: formatAperture },
   {
-    label: "Max usable resolution",
+    label: "Binned resolution",
     value: (camera) => formatMegapixels(camera.activeResolutionMp),
     score: (camera) => camera.activeResolutionMp,
   },
@@ -367,6 +368,8 @@ function Compare() {
             aperture decides which camera gathers more light; the actual f-number alone doesn't.
           </p>
         )}
+
+        {phones.length >= 2 && <CompareGallery phones={phones} slots={slots} slotsByPhone={slotsByPhone} />}
       </div>
     </main>
   );

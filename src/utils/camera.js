@@ -1,4 +1,5 @@
 import { CAMERA_TYPE_LABELS, equivalentFocal } from "./format";
+import { binnedPixelPitch, formatMp } from "./photoResolutions";
 
 // How spec values read everywhere, the same as the iOS app (Models/ValueFormatter.swift):
 // 35 mm equivalents: focal length whole ("26 mm"), aperture one decimal ("f/9.2").
@@ -74,6 +75,18 @@ export function formatMegapixels(value) {
   return value ? `${upToTwoDecimals(value)} MP` : "—";
 }
 
+// "2.4 µm binned (12.5 MP)", only for a photo size that is an n×n binning of the sensor.
+export function formatBinnedPitch(camera) {
+  const binned = binnedPixelPitch(camera);
+  return binned ? `${twoDecimalsTrimmed(binned.pitchUm)} µm binned (${formatMp(binned.mp)} MP)` : null;
+}
+
+// What a photo can be at most: the largest photo size, or the sensor when the sizes are unknown.
+export function largestPhotoMp(camera) {
+  const sizes = camera.photoResolutionsMp || [];
+  return sizes.length ? Math.max(...sizes) : camera.resolutionMp || null;
+}
+
 // "Yes" or "No" only for a known zone count; unknown stays unknown, never "No".
 export function formatAutofocus(camera) {
   if (camera.afZones === null || camera.afZones === undefined) return "—";
@@ -139,13 +152,15 @@ export function formatSensorDimensions(camera) {
   return size ? `≈${size.width.toFixed(2)} × ${size.height.toFixed(2)} mm` : null;
 }
 
-// The stored format as it is (1/1.28", 1"), otherwise an estimate marked with "≈". The estimate uses
-// the same size as the millimetre line, so the two agree. The "inch" of sensor names is the old
-// vidicon tube convention, not 25.4 mm: 16 mm of diagonal per inch from 1/2" up, 18 mm for smaller
-// sensors (the 16 mm rule alone shows a 7.06 mm sensor as 1/2.27" instead of 1/2.55").
+// The stored format as it is (1/1.28", 1"), otherwise an estimate marked with "≈": the backend's
+// sensorFormatApprox, so every client shows the same, or the same formula here for older answers.
+// The "inch" of sensor names is the old vidicon tube convention, not 25.4 mm: 16 mm of diagonal per
+// inch from 1/2" up, 18 mm for smaller sensors (the 16 mm rule alone shows a 7.06 mm sensor as
+// 1/2.27" instead of 1/2.55").
 export function formatSensorSize(camera) {
   const exact = camera.sensorFormat?.trim().replace(/["″”]+$/, "");
   if (exact) return `${exact}"`;
+  if (camera.sensorFormatApprox) return `≈${camera.sensorFormatApprox}"`;
 
   const size = sensorSizeMm(camera);
   const diagonal = size ? Math.hypot(size.width, size.height) : camera.cropFactor > 0 ? FULL_FRAME_DIAGONAL_MM / camera.cropFactor : null;

@@ -19,13 +19,16 @@ import {
   formatAutofocus,
   formatEquivalentAperture,
   formatEquivalentFocal,
+  formatBinnedPitch,
   formatFocalLength,
   formatMegapixels,
   formatPixelPitch,
   formatSensorSize,
+  largestPhotoMp,
   slotLabel,
 } from "../../utils/camera";
 import { OIS_LABELS, formatReleaseDate, round } from "../../utils/format";
+import { photoSizesSummary } from "../../utils/photoResolutions";
 import { useCompareList } from "../../utils/useCompareList";
 import CompareGallery from "./CompareGallery";
 import "./PhoneComparison.css";
@@ -44,8 +47,9 @@ const GENERAL_ROWS = [
 // like the values on screen, so two cameras that read the same tie.
 //
 // The winner on light is the 35 mm equivalent aperture: a lower actual f-number can still mean less
-// light when the sensor is smaller. Likewise the winner on resolution is what a photo can really
-// have, not the sensor's pixel count (a 50 MP sensor may only output 12.5 MP).
+// light when the sensor is smaller. Likewise the winner on resolution is the largest photo the
+// camera app takes, not the sensor's pixel count (a 50 MP sensor may only output 12.5 MP); with
+// unknown photo sizes the sensor counts.
 const CAMERA_ROWS = [
   { label: "Focal length (35 mm equiv.)", value: formatEquivalentFocal },
   { label: "Focal length (actual)", value: formatFocalLength },
@@ -60,20 +64,35 @@ const CAMERA_ROWS = [
   },
   { label: "Aperture (actual)", value: formatAperture },
   {
-    label: "Binned resolution",
-    value: (camera) => formatMegapixels(camera.activeResolutionMp),
-    score: (camera) => camera.activeResolutionMp,
+    label: "Resolution",
+    value: (camera) => {
+      const photos = photoSizesSummary(camera);
+      return (
+        <>
+          {formatMegapixels(camera.resolutionMp)}
+          {photos && <span className="compare-cell-note">{photos}</span>}
+        </>
+      );
+    },
+    score: largestPhotoMp,
   },
-  { label: "Sensor resolution", value: (camera) => formatMegapixels(camera.resolutionMp) },
   {
     label: "Sensor size",
     value: (camera) => [formatSensorSize(camera), camera.sensorModel].filter(Boolean).join(" · "),
-    score: (camera) => camera.sensorDenominator,
+    score: (camera) => camera.sensorDenominator ?? camera.sensorDenominatorApprox,
     lowerIsBetter: true,
   },
   {
     label: "Pixel pitch",
-    value: formatPixelPitch,
+    value: (camera) => {
+      const binned = formatBinnedPitch(camera);
+      return (
+        <>
+          {formatPixelPitch(camera)}
+          {binned && <span className="compare-cell-note">{binned}</span>}
+        </>
+      );
+    },
     score: (camera) => (camera.pixelPitchUm ? round(camera.pixelPitchUm, 2) : null),
   },
   { label: "Stabilisation", value: (camera) => OIS_LABELS[camera.ois] || null },

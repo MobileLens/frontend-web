@@ -2,6 +2,7 @@ import {
   formatAperture,
   formatAspectRatio,
   formatAutofocus,
+  formatBinnedPitch,
   formatEquivalentAperture,
   formatEquivalentFocal,
   formatFocalLength,
@@ -13,6 +14,7 @@ import {
   videoSummary,
 } from "../../utils/camera";
 import { OIS_LABELS } from "../../utils/format";
+import { photoSizesSummary } from "../../utils/photoResolutions";
 import Icon from "../Icon/Icon";
 import "./CameraSpecs.css";
 
@@ -60,8 +62,6 @@ function Tile({ icon, title, value, caption, actual, detail, wide, children }) {
 
 // One camera's specs grouped like the mobile apps: optics, sensor, features, then video.
 export default function CameraSpecs({ camera }) {
-  const binned = camera.activeResolutionMp && camera.activeResolutionMp < camera.resolutionMp;
-
   return (
     <div className="spec-groups">
       <section>
@@ -95,7 +95,7 @@ export default function CameraSpecs({ camera }) {
             title="Resolution"
             value={formatMegapixels(camera.resolutionMp)}
             caption={formatSensorPixels(camera)}
-            detail={binned ? `Binned to ${formatMegapixels(camera.activeResolutionMp)}` : null}
+            detail={photoSizesSummary(camera)}
           />
           <Tile
             icon="sensor"
@@ -103,7 +103,7 @@ export default function CameraSpecs({ camera }) {
             value={formatSensorSize(camera)}
             caption={formatSensorDimensions(camera)}
           />
-          <Tile icon="grid" title="Pixel pitch" value={formatPixelPitch(camera)} />
+          <Tile icon="grid" title="Pixel pitch" value={formatPixelPitch(camera)} detail={formatBinnedPitch(camera)} />
           <Tile icon="focal" title="Aspect ratio" value={formatAspectRatio(camera)} />
         </div>
       </section>

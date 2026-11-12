@@ -6,14 +6,17 @@ import { createCamera, deleteCamera, updateCamera } from "../../api/cameras";
 import { deleteSmartphone, getCatalogue, getSmartphoneById, mergeSmartphones, updateSmartphone } from "../../api/smartphones";
 import { formatVideoMode, round } from "../../utils/format";
 import { formatAperture, formatEquivalentFocal, slotLabel, cameraSlots } from "../../utils/camera";
+import { formatPhotoSizes, singleSizeWarning } from "../../utils/photoResolutions";
 import CameraForm from "./CameraForm";
+import { SingleSizeWarning } from "./PhotoSizesEditor";
 import PhoneDetailsForm from "./PhoneDetailsForm";
 import { EmptyNote, LoadState, Section } from "./adminUi";
 import { errorText, phoneName, useAdminData } from "./adminUtils";
 
 function cameraSummary(camera) {
   return [
-    camera.resolutionMp && `${round(camera.resolutionMp)} MP`,
+    camera.resolutionMp && `${round(camera.resolutionMp)} MP sensor`,
+    `photos: ${formatPhotoSizes(camera)}`,
     formatEquivalentFocal(camera) !== "—" && `${formatEquivalentFocal(camera)} eq.`,
     formatAperture(camera) !== "—" && formatAperture(camera),
     camera.sensorFormat && `${camera.sensorFormat}"`,
@@ -239,6 +242,10 @@ export default function PhoneEditor({ phoneId, isAdmin, notify, onClose, onChang
                   <div className="admin-list-main">
                     <span className="admin-list-title">{slotLabel(slot)}</span>
                     <div className="admin-meta">{cameraSummary(camera)}</div>
+                    <SingleSizeWarning
+                      warning={singleSizeWarning(camera.photoResolutionsMp || [], camera.resolutionMp, camera.activeResolutionMp)}
+                      resolutionMp={camera.resolutionMp}
+                    />
                     {camera.videoModes?.length > 0 && (
                       <div className="admin-meta">{camera.videoModes.map(formatVideoMode).join(", ")}</div>
                     )}

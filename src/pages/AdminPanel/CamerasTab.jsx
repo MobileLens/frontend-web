@@ -4,8 +4,17 @@ import { getPendingCameras, reviewCamera } from "../../api/admin";
 import { getSmartphoneById, updateSmartphone } from "../../api/smartphones";
 import Icon from "../../components/Icon/Icon";
 import { CAMERA_TYPE_LABELS, OIS_LABELS, formatVideoMode, round } from "../../utils/format";
-import { formatAperture, formatEquivalentAperture, formatEquivalentFocal, formatFocalLength, formatPixelPitch } from "../../utils/camera";
+import {
+  formatAperture,
+  formatEquivalentAperture,
+  formatEquivalentFocal,
+  formatFocalLength,
+  formatPixelPitch,
+  formatSensorSize,
+} from "../../utils/camera";
+import { formatPhotoSizes, singleSizeWarning } from "../../utils/photoResolutions";
 import CameraForm from "./CameraForm";
+import { SingleSizeWarning } from "./PhotoSizesEditor";
 import PhoneDetailsForm from "./PhoneDetailsForm";
 import { EmptyNote, LoadState, Section } from "./adminUi";
 import { errorText, formatDateTime, phoneName, useAdminData } from "./adminUtils";
@@ -183,10 +192,10 @@ function PhoneGroup({ group, notify, onDropped, onPhoneChanged, decide }) {
                 <p className="admin-meta">Submitted {formatDateTime(camera.submittedAt)}</p>
 
                 <div className="admin-camera-specs-grid">
-                  <Spec label="Resolution">{camera.resolutionMp && `${round(camera.resolutionMp)} MP`}</Spec>
-                  <Spec label="Binned">{camera.activeResolutionMp && `${round(camera.activeResolutionMp)} MP`}</Spec>
+                  <Spec label="Sensor resolution">{camera.resolutionMp && `${round(camera.resolutionMp)} MP`}</Spec>
+                  <Spec label="Photo sizes">{formatPhotoSizes(camera)}</Spec>
                   <Spec label="Sensor">
-                    {[camera.sensorFormat && `${camera.sensorFormat}"`, camera.sensorModel].filter(Boolean).join(" · ")}
+                    {[formatSensorSize(camera) !== "—" && formatSensorSize(camera), camera.sensorModel].filter(Boolean).join(" · ")}
                   </Spec>
                   <Spec label="Pixel pitch">{formatPixelPitch(camera)}</Spec>
                   <Spec label="Focal length">
@@ -205,6 +214,11 @@ function PhoneGroup({ group, notify, onDropped, onPhoneChanged, decide }) {
                 {samples && (
                   <p className={`admin-meta ${camera.samples.satisfied ? "" : "admin-warning"}`}>{samples}</p>
                 )}
+
+                <SingleSizeWarning
+                  warning={singleSizeWarning(camera.photoResolutionsMp || [], camera.resolutionMp, camera.activeResolutionMp)}
+                  resolutionMp={camera.resolutionMp}
+                />
               </div>
 
               <div className="ui-actions">

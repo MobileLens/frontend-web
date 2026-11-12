@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Icon from "../../components/Icon/Icon";
 import { CAMERA_TYPE_LABELS, OIS_LABELS } from "../../utils/format";
+import { parseMp } from "../../utils/photoResolutions";
+import PhotoSizesEditor from "./PhotoSizesEditor";
 import { Field } from "./adminUi";
 import {
   OPTIONAL_NUMBERS,
@@ -121,6 +123,13 @@ export default function CameraForm({ camera, submitLabel, onSubmit, onCancel }) 
           </Field>
         ))}
       </div>
+
+      <PhotoSizesEditor
+        sizes={form.photoResolutionsMp}
+        resolutionMp={parseMp(form.resolutionMp)}
+        activeResolutionMp={camera?.activeResolutionMp}
+        onChange={(sizes) => set("photoResolutionsMp", sizes)}
+      />
 
       <div className="admin-form-grid">
         <div className="ui-field">

@@ -17,7 +17,8 @@ The dev server proxies `/api` and `/media` to the production backend. To use a l
 API_TARGET=http://localhost:3000 npm run dev
 ```
 
-Other scripts: `npm run build`, `npm run preview`, `npm run lint`.
+Other scripts: `npm run build`, `npm run preview`, `npm run lint`, `npm test` (unit tests of the pure
+spec rules, Node's built-in test runner, no extra packages).
 
 ## Configuration
 

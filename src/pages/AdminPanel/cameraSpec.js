@@ -1,12 +1,13 @@
 // Camera spec <-> form values. Inputs hold strings; the API takes numbers, booleans and nulls.
 
+import { normalizePhotoSizes, photoSizesProblem } from "../../utils/photoResolutions.js";
+
 export const REQUIRED_NUMBERS = [
   { key: "focalLengthMm", label: "Focal length (mm)", hint: "0.5–100" },
   { key: "aperture", label: "Aperture (f/)", hint: "0.5–32" },
   { key: "cropFactor", label: "Crop factor", hint: "1–20" },
   { key: "pixelPitchUm", label: "Pixel pitch (µm)", hint: "0.1–10" },
-  { key: "resolutionMp", label: "Resolution (MP)", hint: "0.1–500" },
-  { key: "activeResolutionMp", label: "Active resolution (MP)", hint: "≤ resolution" },
+  { key: "resolutionMp", label: "Sensor resolution (MP)", hint: "0.1–500" },
 ];
 
 export const OPTIONAL_NUMBERS = [
@@ -37,6 +38,8 @@ export function cameraToForm(camera) {
     opticalZoom: Boolean(camera.opticalZoom),
     focalLengthMaxMm: asText(camera.focalLengthMaxMm),
     note: asText(camera.note),
+    // Numbers, not strings: the chip editor keeps the list normalised.
+    photoResolutionsMp: normalizePhotoSizes(camera.photoResolutionsMp),
     videoModes: (camera.videoModes || []).map((mode) => ({
       widthPx: asText(mode.widthPx),
       heightPx: asText(mode.heightPx),
@@ -87,6 +90,13 @@ export function formToCamera(form) {
   for (const { key } of TEXT_FIELDS) {
     spec[key] = form[key].trim() || null;
   }
+
+  // The full list replaces the saved one; [] marks the sizes as unknown. activeResolutionMp is
+  // derived by the backend now and never sent.
+  const photoSizes = normalizePhotoSizes(form.photoResolutionsMp);
+  const photoProblem = photoSizesProblem(photoSizes, spec.resolutionMp);
+  if (photoProblem) return { error: `Photo sizes: ${photoProblem}` };
+  spec.photoResolutionsMp = photoSizes;
 
   if (form.variableAperture) {
     const number = toNumber(form.apertureNarrow);

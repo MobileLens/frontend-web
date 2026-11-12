@@ -27,6 +27,12 @@
   --shadow: none;
   --overlay-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 
+  /* Tło podglądu zdjęć, takie samo w obu motywach: neutralna szarość (≈ L* 50), jak otoczenie do
+     oceny obrazów w ISO 3664 i ISO 12646. Czarne tło zmienia odbiór jasności zdjęcia, a kolorowe
+     wprowadza indukcję barwną. Tekst na nim: czarny (kontrast 4.7:1; biały ma tylko 4.5:1). */
+  --photo-viewer-bg: #777777;
+  --photo-viewer-text: #000000;
+
   --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }

@@ -11,7 +11,7 @@ export default function ThemeSwitch() {
   const theme = useSyncExternalStore(subscribeTheme, getTheme);
 
   return (
-    <div className="theme-switch" role="radiogroup" aria-label="Colour theme">
+    <div className="segmented-switch" role="radiogroup" aria-label="Colour theme">
       {THEMES.map((option) => (
         <button
           key={option}

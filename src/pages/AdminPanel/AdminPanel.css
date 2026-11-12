@@ -2,7 +2,7 @@
 
 .admin-layout {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: calc(240px * var(--ui-scale)) 1fr;
   min-height: calc(100vh - 4.5rem);
   box-sizing: border-box;
   text-align: left;
@@ -81,7 +81,7 @@
 
 .admin-main {
   padding: 2rem 1.5rem 4rem;
-  max-width: 1050px;
+  max-width: calc(1050px * var(--ui-scale));
   margin: 0 auto;
   box-sizing: border-box;
   width: 100%;
@@ -190,7 +190,7 @@
 }
 
 .admin-list-main {
-  flex: 1 1 320px;
+  flex: 1 1 calc(320px * var(--ui-scale));
   min-width: 0;
 }
 
@@ -238,7 +238,7 @@ a.admin-list-title:hover {
 
 .admin-search .ui-input,
 .admin-toolbar .ui-input {
-  flex: 1 1 240px;
+  flex: 1 1 calc(240px * var(--ui-scale));
   width: auto;
 }
 
@@ -254,7 +254,7 @@ a.admin-list-title:hover {
 
 .admin-form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(200px * var(--ui-scale)), 1fr));
   gap: 0.75rem;
 }
 
@@ -364,8 +364,8 @@ a.admin-list-title:hover {
 }
 
 .admin-image-preview {
-  width: 96px;
-  height: 96px;
+  width: calc(96px * var(--ui-scale));
+  height: calc(96px * var(--ui-scale));
   object-fit: contain;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -566,7 +566,7 @@ a.admin-list-title:hover {
 
 .admin-cameras-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(320px * var(--ui-scale)), 1fr));
   gap: 1.25rem;
 }
 
@@ -660,7 +660,7 @@ a.admin-camera-card-phone:hover {
 
 .image-manager-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(calc(220px * var(--ui-scale)), 1fr));
   gap: 1rem;
 }
 
@@ -675,7 +675,7 @@ a.admin-camera-card-phone:hover {
 
 .image-preview {
   display: block;
-  height: 150px;
+  height: calc(150px * var(--ui-scale));
   overflow: hidden;
   background-color: var(--border-color);
 }
@@ -732,7 +732,7 @@ a.admin-camera-card-phone:hover {
 /* Brak dostępu */
 
 .forbidden-wrapper {
-  max-width: 460px;
+  max-width: calc(460px * var(--ui-scale));
   margin: 6rem auto;
   padding: 3rem;
   text-align: center;

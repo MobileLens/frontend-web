@@ -7,6 +7,7 @@ import logoInverse from "../../assets/brand/mobilelens-logo-horizontal-inverse.s
 import { browseUrl } from "../../utils/catalogueFilter";
 import Icon from "../Icon/Icon";
 import ThemeSwitch from "../ThemeSwitch/ThemeSwitch";
+import UiScaleSwitch from "../ThemeSwitch/UiScaleSwitch";
 import "./Footer.css";
 
 const MAX_BRANDS = 6;
@@ -95,7 +96,10 @@ function Footer() {
 
       <div className="site-footer-bottom">
         <span>© {new Date().getFullYear()} MobileLens</span>
-        <ThemeSwitch />
+        <div className="site-footer-settings">
+          <ThemeSwitch />
+          <UiScaleSwitch />
+        </div>
         <button type="button" className="ui-btn ui-btn-small" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
           <Icon name="arrowUp" /> Back to top
         </button>

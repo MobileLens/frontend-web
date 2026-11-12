@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getSmartphonePhotos } from "../../api/smartphones";
 import Icon from "../../components/Icon/Icon";
+import PhotoViewer from "../../components/PhotoViewer/PhotoViewer";
+import { openInViewer } from "../../components/PhotoViewer/openInViewer";
 import { slotLabel } from "../../utils/camera";
 import { photoCameraLabel, photoCaption } from "../../utils/format";
+import { shotCameras } from "../../utils/shotDetails";
 
 const PHOTOS_PER_PAGE = 6;
 const ALL_LENSES = "all";
 
 // One phone's verified sample photos, from one camera or all of them.
 function PhotoColumn({ phone, cameraId }) {
+  const [viewerIndex, setViewerIndex] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -38,13 +42,25 @@ function PhotoColumn({ phone, cameraId }) {
     };
   }, [phone.id, cameraId, page]);
 
-  function showMore() {
+  const showMore = useCallback(() => {
     setLoading(true);
     setPage((current) => current + 1);
-  }
+  }, []);
 
   return (
     <div className="compare-gallery-column">
+      {viewerIndex !== null && (
+        <PhotoViewer
+          photos={photos}
+          initialIndex={viewerIndex}
+          total={total}
+          onLoadMore={showMore}
+          loadingMore={loading}
+          cameras={shotCameras(phone.cameras)}
+          onClose={() => setViewerIndex(null)}
+        />
+      )}
+
       <h3 className="compare-gallery-phone">
         {phone.brandName && <span className="phone-brand">{phone.brandName}</span>}
         <span>{phone.modelName}</span>
@@ -55,12 +71,18 @@ function PhotoColumn({ phone, cameraId }) {
       {!error && !loading && photos.length === 0 && <p className="compare-gallery-empty">No sample photos yet.</p>}
 
       <ul className="compare-gallery-photos">
-        {photos.map((photo) => {
+        {photos.map((photo, index) => {
           const caption = photoCaption(photo);
 
           return (
             <li key={photo.id}>
-              <a href={photo.url} target="_blank" rel="noreferrer" className="photo-tile">
+              <a
+                href={photo.url}
+                target="_blank"
+                rel="noreferrer"
+                className="photo-tile"
+                onClick={(event) => openInViewer(event, () => setViewerIndex(index))}
+              >
                 <img src={photo.thumbUrl || photo.url} alt="" loading="lazy" decoding="async" />
               </a>
               <div className="photo-meta">

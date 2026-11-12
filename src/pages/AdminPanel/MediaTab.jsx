@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Icon from "../../components/Icon/Icon";
+import PhotoViewer from "../../components/PhotoViewer/PhotoViewer";
+import { openInViewer } from "../../components/PhotoViewer/openInViewer";
 import { getPendingMedia, reviewMedia, updateMediaMetadata } from "../../api/admin";
 import { round } from "../../utils/format";
 import { EmptyNote, Field, LoadState, Section } from "./adminUi";
@@ -120,6 +122,9 @@ export default function MediaTab({ notify }) {
   const { data: media, loading, error, setData } = useAdminData(loadPendingMedia);
   const [editingId, setEditingId] = useState(null);
   const [busyId, setBusyId] = useState(null);
+  const [viewerIndex, setViewerIndex] = useState(null);
+  // The viewer shows the photos only; videos play in their own tab.
+  const photos = (media || []).filter((item) => item.kind === "photos");
 
   async function decide(item, status) {
     if (status === "deleted" && !window.confirm("Delete this file permanently?")) return;
@@ -147,6 +152,10 @@ export default function MediaTab({ notify }) {
 
   return (
     <Section title="Waiting for verification" count={media?.length}>
+      {viewerIndex !== null && photos.length > 0 && (
+        <PhotoViewer photos={photos} initialIndex={Math.min(viewerIndex, photos.length - 1)} onClose={() => setViewerIndex(null)} />
+      )}
+
       <p className="admin-hint admin-section-intro">
         Verified files become public in the phone's gallery. Deleting removes the file for good.
         Preview links expire after an hour; reload the tab if they stop working.
@@ -158,7 +167,13 @@ export default function MediaTab({ notify }) {
       <div className="image-manager-grid">
         {media?.map((item) => (
           <div key={item.id} className="image-card">
-            <a className="image-preview" href={item.url} target="_blank" rel="noreferrer">
+            <a
+              className="image-preview"
+              href={item.url}
+              target="_blank"
+              rel="noreferrer"
+              onClick={item.kind === "photos" ? (event) => openInViewer(event, () => setViewerIndex(photos.indexOf(item))) : undefined}
+            >
               {item.kind === "photos" ? (
                 <img src={item.thumbUrl || item.url} alt="Pending sample photo" loading="lazy" />
               ) : (

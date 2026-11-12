@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useParams, Link } from "react-router-dom";
 
 import {
@@ -14,7 +14,10 @@ import {
 import { addFavorite, getFavorites, removeFavorite } from "../../api/favorites";
 import CameraSpecs from "../../components/CameraSpecs/CameraSpecs";
 import Icon from "../../components/Icon/Icon";
+import PhotoViewer from "../../components/PhotoViewer/PhotoViewer";
+import { openInViewer } from "../../components/PhotoViewer/openInViewer";
 import { isLoggedIn } from "../../utils/auth";
+import { shotCameras } from "../../utils/shotDetails";
 import { formatEquivalentFocal, sortCameras } from "../../utils/camera";
 import {
   formatReleaseDate,
@@ -34,7 +37,8 @@ function lensTabName(camera) {
   return name;
 }
 
-function SamplePhotos({ phoneId }) {
+function SamplePhotos({ phoneId, cameras }) {
+  const [viewerIndex, setViewerIndex] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -64,13 +68,25 @@ function SamplePhotos({ phoneId }) {
     };
   }, [phoneId, page]);
 
-  function showMore() {
+  const showMore = useCallback(() => {
     setLoading(true);
     setPage((current) => current + 1);
-  }
+  }, []);
 
   return (
     <section className="phone-section">
+      {viewerIndex !== null && (
+        <PhotoViewer
+          photos={photos}
+          initialIndex={viewerIndex}
+          total={total}
+          onLoadMore={showMore}
+          loadingMore={loading}
+          cameras={shotCameras(cameras)}
+          onClose={() => setViewerIndex(null)}
+        />
+      )}
+
       <h2 className="phone-section-title">
         Sample Photos {total > 0 && <span className="section-count">{total}</span>}
       </h2>
@@ -83,12 +99,18 @@ function SamplePhotos({ phoneId }) {
 
       {photos.length > 0 && (
         <ul className="photo-grid">
-          {photos.map((photo) => {
+          {photos.map((photo, index) => {
             const caption = photoCaption(photo);
 
             return (
               <li key={photo.id}>
-                <a href={photo.url} target="_blank" rel="noreferrer" className="photo-tile">
+                <a
+                  href={photo.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="photo-tile"
+                  onClick={(event) => openInViewer(event, () => setViewerIndex(index))}
+                >
                   <img src={photo.thumbUrl || photo.url} alt="" loading="lazy" decoding="async" />
                 </a>
                 <div className="photo-meta">
@@ -381,7 +403,7 @@ function PhoneDetails({ phoneId }) {
         <SpecsSkeleton />
       )}
 
-      <SamplePhotos phoneId={phoneId} />
+      <SamplePhotos phoneId={phoneId} cameras={phone?.cameras} />
     </main>
   );
 }

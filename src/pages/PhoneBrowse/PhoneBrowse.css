@@ -59,7 +59,7 @@
 
 .catalog-layout {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: calc(300px * var(--ui-scale)) minmax(0, 1fr);
   align-items: start;
   gap: 1.75rem;
 }

@@ -1,11 +1,11 @@
-.theme-switch {
+.segmented-switch {
   display: inline-flex;
   padding: 0.2rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
 
-.theme-switch button {
+.segmented-switch button {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -20,11 +20,11 @@
   cursor: pointer;
 }
 
-.theme-switch button:hover {
+.segmented-switch button:hover {
   color: var(--text-primary);
 }
 
-.theme-switch button.is-active {
+.segmented-switch button.is-active {
   background-color: var(--primary);
   color: var(--on-primary);
 }

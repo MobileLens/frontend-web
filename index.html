@@ -8,9 +8,13 @@
 
     <script>
       // Stored colour theme, before first paint so a reload doesn't flash the other one.
+      // (Any change in the stored values must be mirrored in utils/theme.js and utils/uiScale.js.)
       try {
         var theme = localStorage.getItem("theme");
         if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        // Stored interface scale (utils/uiScale.js), for the same reason.
+        var scale = localStorage.getItem("uiScale");
+        if (["1.15", "1.3", "1.5"].indexOf(scale) !== -1) document.documentElement.style.setProperty("--ui-scale", scale);
       } catch (error) {
         // no storage: follow the system
       }

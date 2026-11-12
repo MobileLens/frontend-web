@@ -1,6 +1,6 @@
 .phone-details-page {
   width: 100%;
-  max-width: 900px;
+  max-width: calc(900px * var(--ui-scale));
   margin: 2.5rem auto;
   padding: 0 1.5rem;
   box-sizing: border-box;
@@ -36,7 +36,7 @@
   border-radius: 12px;
   padding: 2rem;
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: calc(240px * var(--ui-scale)) 1fr;
   gap: 2rem;
   align-items: center;
   margin-bottom: 2rem;
@@ -57,7 +57,7 @@
 
 .phone-image-wrapper img {
   max-width: 100%;
-  max-height: 180px;
+  max-height: calc(180px * var(--ui-scale));
   object-fit: contain;
 }
 

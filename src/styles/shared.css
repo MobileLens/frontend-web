@@ -25,12 +25,12 @@
 }
 
 .page-inner {
-  max-width: 1046px;
+  max-width: calc(1046px * var(--ui-scale));
   margin: 0 auto;
 }
 
 .page-narrow {
-  max-width: 720px;
+  max-width: calc(720px * var(--ui-scale));
   margin: 0 auto;
 }
 

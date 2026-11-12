@@ -13,6 +13,8 @@ import {
   unlikeReview,
 } from "../../api/reviews";
 import Icon from "../../components/Icon/Icon";
+import PhotoViewer from "../../components/PhotoViewer/PhotoViewer";
+import { openInViewer } from "../../components/PhotoViewer/openInViewer";
 import { PageSkeleton } from "../../components/PhoneCard/PhoneCard";
 import { useAuth } from "../../context/useAuth";
 import "../../styles/reviews.css";
@@ -54,6 +56,7 @@ function Review() {
   const [posting, setPosting] = useState(false);
   const [commentError, setCommentError] = useState("");
   const [loadingMore, setLoadingMore] = useState(false);
+  const [viewerIndex, setViewerIndex] = useState(null);
 
   useEffect(() => {
     async function loadReview() {
@@ -209,14 +212,32 @@ function Review() {
     [...(review.contentMarkdown || "").matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((match) => mediaKey(match[1]))
   );
   const gallery = media.filter((item) => !inline.has(mediaKey(item.url)));
+  // The viewer goes through all the photos, those in the text first, in the review's order.
+  const photos = media.filter((item) => item.type !== "video");
+  const photoIndexByKey = new Map(photos.map((item, index) => [mediaKey(item.url), index]));
+
+  function viewerLink(url, image) {
+    const index = photoIndexByKey.get(mediaKey(url));
+    if (index === undefined) return image;
+
+    return (
+      <a href={photos[index].url} target="_blank" rel="noreferrer" onClick={(event) => openInViewer(event, () => setViewerIndex(index))}>
+        {image}
+      </a>
+    );
+  }
 
   const markdownComponents = {
-    img: ({ src, alt }) => <img src={mediumByKey.get(mediaKey(src)) || src} alt={alt || ""} loading="lazy" />,
+    img: ({ src, alt }) => viewerLink(src, <img src={mediumByKey.get(mediaKey(src)) || src} alt={alt || ""} loading="lazy" />),
     a: ({ href, children }) => <a href={href} target="_blank" rel="noreferrer noopener">{children}</a>,
   };
 
   return (
     <main className="page">
+      {viewerIndex !== null && (
+        <PhotoViewer photos={photos} initialIndex={viewerIndex} onClose={() => setViewerIndex(null)} />
+      )}
+
       <article className="page-narrow">
         <Link to={`/phone/${review.smartphoneId}/reviews`} className="text-link review-back"><Icon name="arrowLeft" /> All reviews</Link>
 
@@ -305,9 +326,7 @@ function Review() {
                   {item.type === "video" ? (
                     <video src={item.url} controls preload="metadata" />
                   ) : (
-                    <a href={item.url} target="_blank" rel="noreferrer">
-                      <img src={item.thumbUrl || item.url} alt="" loading="lazy" />
-                    </a>
+                    viewerLink(item.url, <img src={item.thumbUrl || item.url} alt="" loading="lazy" />)
                   )}
                 </li>
               ))}

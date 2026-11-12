@@ -3,7 +3,7 @@
 /* width: 100% - in the #root flex column, auto margins would otherwise shrink the card to its content */
 .auth-page {
   width: 100%;
-  max-width: 560px;
+  max-width: calc(560px * var(--ui-scale));
   margin: 3rem auto;
   padding: 0 1rem;
   box-sizing: border-box;

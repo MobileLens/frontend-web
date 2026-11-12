@@ -1,7 +1,11 @@
 /* Podstawa typografii; kolory są w styles/theme.css. */
 
+/* Skala interfejsu (stopka, utils/uiScale.js): wszystko w rem rośnie z rozmiarem czcionki,
+   a szerokości w px są mnożone przez --ui-scale tam, gdzie zostały. */
 :root {
-  font: 18px/145% var(--font-sans);
+  --ui-scale: 1;
+
+  font: calc(18px * var(--ui-scale))/145% var(--font-sans);
   letter-spacing: 0.18px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -9,7 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
-    font-size: 16px;
+    font-size: calc(16px * var(--ui-scale));
   }
 }
 

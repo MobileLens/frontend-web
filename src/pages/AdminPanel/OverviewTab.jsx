@@ -8,7 +8,6 @@ const QUEUES = [
   ["pendingReviews", "Reviews to verify", "reviews"],
   ["pendingSubmissions", "Cameras to verify", "cameras"],
   ["pendingPhotos", "Gallery photos to verify", "media"],
-  ["pendingVideos", "Gallery videos to verify", "media"],
   ["unverifiedPhones", "Phones to verify", "phones"],
 ];
 
@@ -21,7 +20,6 @@ const STATS = [
   ["phonesInDatabase", "Phones"],
   ["databaseSubmissions", "Camera submissions"],
   ["activeBans", "Active bans"],
-  ["totalBans", "All bans"],
 ];
 
 const reviewColumns = [

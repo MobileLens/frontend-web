@@ -15,49 +15,181 @@
       <stop offset="0" stop-color="#A8A8A8"/>
       <stop offset="1" stop-color="#5A5A5A"/>
     </linearGradient>
-    <radialGradient id="lk-lensShadowGrad" gradientUnits="userSpaceOnUse" cx="520" cy="524" r="398">
-      <stop offset="0" stop-color="#000000" stop-opacity="0.55"/>
-      <stop offset="0.91" stop-color="#000000" stop-opacity="0.55"/>
+    <radialGradient id="lk-lensShadowGrad" gradientUnits="userSpaceOnUse" cx="516" cy="518" r="408">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.5"/>
+      <stop offset="0.951" stop-color="#000000" stop-opacity="0.5"/>
       <stop offset="1" stop-color="#000000" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="lk-glassGrad" gradientUnits="userSpaceOnUse" cx="400.4" cy="381.8" r="539.4">
-      <stop offset="0" stop-color="#2A2A2A"/>
-      <stop offset="0.55" stop-color="#161616"/>
-      <stop offset="1" stop-color="#080808"/>
-    </radialGradient>
-    <linearGradient id="lk-glassRimGrad" gradientUnits="userSpaceOnUse" x1="204" y1="204" x2="820" y2="820">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.5"/>
-      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.08"/>
+    <linearGradient id="lk-glassGrad" gradientUnits="userSpaceOnUse" x1="236.2" y1="236.2" x2="787.8" y2="787.8">
+      <stop offset="0" stop-color="#1D1D1D"/>
+      <stop offset="0.5" stop-color="#111111"/>
+      <stop offset="1" stop-color="#090909"/>
+    </linearGradient>
+    <linearGradient id="lk-glassRimGrad" gradientUnits="userSpaceOnUse" x1="236.2" y1="236.2" x2="787.8" y2="787.8">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.7"/>
+      <stop offset="0.4" stop-color="#FFFFFF" stop-opacity="0.1"/>
       <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="lk-elementGrad" gradientUnits="userSpaceOnUse" cx="456.32" cy="440.08" r="278.4">
-      <stop offset="0" stop-color="#2E2E2E"/>
-      <stop offset="0.6" stop-color="#1C1C1C"/>
-      <stop offset="1" stop-color="#121212"/>
+    <linearGradient id="lk-funnelGrad" gradientUnits="userSpaceOnUse" x1="299.2" y1="299.2" x2="724.8" y2="724.8">
+      <stop offset="0" stop-color="#0C0B12"/>
+      <stop offset="0.5" stop-color="#171621"/>
+      <stop offset="1" stop-color="#272538"/>
+    </linearGradient>
+    <radialGradient id="lk-lensGrad" gradientUnits="userSpaceOnUse" cx="512" cy="494.69" r="158.66">
+      <stop offset="0" stop-color="#1D2546"/>
+      <stop offset="0.6" stop-color="#141B33"/>
+      <stop offset="1" stop-color="#0B101E"/>
     </radialGradient>
-    <radialGradient id="lk-reflectionGrad" gradientUnits="userSpaceOnUse" cx="565" cy="599" r="36">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.3"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    <radialGradient id="lk-glowTopGrad" gradientUnits="userSpaceOnUse" cx="512" cy="454.31" r="115.39">
+      <stop offset="0" stop-color="#7F8FEC" stop-opacity="0.95"/>
+      <stop offset="0.4" stop-color="#6373D0" stop-opacity="0.75"/>
+      <stop offset="0.75" stop-color="#4C5DB6" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#4C5DB6" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="lk-specularGrad" gradientUnits="userSpaceOnUse" cx="437" cy="406" r="55">
-      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
-      <stop offset="0.35" stop-color="#FFFFFF" stop-opacity="0.55"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    <radialGradient id="lk-glowBottomGrad" gradientUnits="userSpaceOnUse" cx="512" cy="627.39" r="118.27">
+      <stop offset="0" stop-color="#E6BEDD" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#CFA0C8" stop-opacity="0.65"/>
+      <stop offset="0.8" stop-color="#8E76BE" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#7868C4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lk-bandGrad" gradientUnits="userSpaceOnUse" cx="512" cy="509.12" r="137.02">
+      <stop offset="0" stop-color="#0B101E" stop-opacity="0.9"/>
+      <stop offset="0.55" stop-color="#0B101E" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#0B101E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lk-vignetteGrad" gradientUnits="userSpaceOnUse" cx="512" cy="512" r="168.48">
+      <stop offset="0" stop-color="#050508" stop-opacity="0"/>
+      <stop offset="0.6677" stop-color="#050508" stop-opacity="0"/>
+      <stop offset="0.7962" stop-color="#050508" stop-opacity="0.45"/>
+      <stop offset="0.8561" stop-color="#050508"/>
+      <stop offset="1" stop-color="#050508"/>
+    </radialGradient>
+    <linearGradient id="lk-blade1Grad" gradientUnits="userSpaceOnUse" x1="362.11" y1="569.54" x2="409.37" y2="564.57">
+      <stop offset="0" stop-color="#14131B"/>
+      <stop offset="1" stop-color="#201F2B"/>
+    </linearGradient>
+    <linearGradient id="lk-blade3Grad" gradientUnits="userSpaceOnUse" x1="537.12" y1="353.42" x2="517.79" y2="396.83">
+      <stop offset="0" stop-color="#191822"/>
+      <stop offset="1" stop-color="#201F2B"/>
+    </linearGradient>
+    <linearGradient id="lk-blade5Grad" gradientUnits="userSpaceOnUse" x1="681.93" y1="482.04" x2="709.86" y2="520.48">
+      <stop offset="0" stop-color="#0D0D12"/>
+      <stop offset="1" stop-color="#201F2B"/>
+    </linearGradient>
+    <linearGradient id="lk-blade0Grad" gradientUnits="userSpaceOnUse" x1="360.8" y1="360.8" x2="663.2" y2="663.2">
+      <stop offset="0" stop-color="#302F3F"/>
+      <stop offset="1" stop-color="#272633"/>
+    </linearGradient>
+    <linearGradient id="lk-blade2Grad" gradientUnits="userSpaceOnUse" x1="360.8" y1="360.8" x2="663.2" y2="663.2">
+      <stop offset="0" stop-color="#302F3F"/>
+      <stop offset="1" stop-color="#272633"/>
+    </linearGradient>
+    <linearGradient id="lk-blade4Grad" gradientUnits="userSpaceOnUse" x1="360.8" y1="360.8" x2="663.2" y2="663.2">
+      <stop offset="0" stop-color="#302F3F"/>
+      <stop offset="1" stop-color="#272633"/>
+    </linearGradient>
+    <linearGradient id="lk-edge1rootGrad" gradientUnits="userSpaceOnUse" x1="486.88" y1="670.58" x2="410.96" y2="636.78">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="lk-edge5rootGrad" gradientUnits="userSpaceOnUse" x1="661.89" y1="454.46" x2="670.58" y2="537.12">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="lk-edge5tipGrad" gradientUnits="userSpaceOnUse" x1="670.58" y1="537.12" x2="636.78" y2="613.04">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.51"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.51"/>
+    </linearGradient>
+    <linearGradient id="lk-edge0rootGrad" gradientUnits="userSpaceOnUse" x1="724.79" y1="549.1" x2="569.54" y2="661.89">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.54"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.54"/>
+    </linearGradient>
+    <linearGradient id="lk-edge0tipGrad" gradientUnits="userSpaceOnUse" x1="569.54" y1="661.89" x2="463.72" y2="673.02">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.43"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.43"/>
+    </linearGradient>
+    <linearGradient id="lk-edge4tipGrad" gradientUnits="userSpaceOnUse" x1="613.04" y1="387.22" x2="675.58" y2="473.3">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.09"/>
+    </linearGradient>
+    <linearGradient id="lk-edge0turn1Grad" gradientUnits="userSpaceOnUse" x1="463.72" y1="673.02" x2="454.11" y2="684.89">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.55"/>
+    </linearGradient>
+    <linearGradient id="lk-edge0endGrad" gradientUnits="userSpaceOnUse" x1="454.11" y1="684.89" x2="455.72" y2="700.17">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="lk-edge0turn2Grad" gradientUnits="userSpaceOnUse" x1="455.72" y1="700.17" x2="462.07" y2="708.9">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.09"/>
+    </linearGradient>
+    <linearGradient id="lk-edge2endGrad" gradientUnits="userSpaceOnUse" x1="391.22" y1="375.43" x2="377.18" y2="369.18">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.2"/>
+    </linearGradient>
+    <linearGradient id="lk-edge2turn2Grad" gradientUnits="userSpaceOnUse" x1="377.18" y1="369.18" x2="366.44" y2="370.3">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.43"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.43"/>
+    </linearGradient>
+    <linearGradient id="lk-edge2backGrad" gradientUnits="userSpaceOnUse" x1="366.44" y1="370.3" x2="328.71" y2="397.72">
+      <stop offset="0" stop-color="#DAD5F0" stop-opacity="0.54"/>
+      <stop offset="1" stop-color="#DAD5F0" stop-opacity="0.54"/>
+    </linearGradient>
+    <radialGradient id="lk-hotspotGrad" gradientUnits="userSpaceOnUse" cx="512" cy="416.81" r="57.69">
+      <stop offset="0" stop-color="#F6DCEC" stop-opacity="0.9"/>
+      <stop offset="0.5" stop-color="#E3AED0" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#E3AED0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lk-spotGrad" gradientUnits="userSpaceOnUse" cx="512" cy="548.06" r="28.85">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="0.45" stop-color="#EDE6F7" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#C9B5E6" stop-opacity="0"/>
     </radialGradient>
   </defs>
   <path id="lk-shadow" fill="url(#lk-shadowGrad)" d="M 36 526 A 476 476 0 1 1 988 526 A 476 476 0 1 1 36 526 Z"/>
-  <path id="lk-ring" fill="url(#lk-ringGrad)" fill-rule="evenodd" d="M 72 512 A 440 440 0 1 1 952 512 A 440 440 0 1 1 72 512 Z M 140 512 A 372 372 0 1 0 884 512 A 372 372 0 1 0 140 512 Z"/>
-  <path id="lk-rimEdge" fill="url(#lk-rimEdgeGrad)" fill-rule="evenodd" d="M 72 512 A 440 440 0 1 1 952 512 A 440 440 0 1 1 72 512 Z M 79 512 A 433 433 0 1 0 945 512 A 433 433 0 1 0 79 512 Z"/>
-  <path id="lk-lensShadow" fill="url(#lk-lensShadowGrad)" d="M 122 524 A 398 398 0 1 1 918 524 A 398 398 0 1 1 122 524 Z"/>
-  <path id="lk-glass" fill="url(#lk-glassGrad)" d="M 140 512 A 372 372 0 1 1 884 512 A 372 372 0 1 1 140 512 Z"/>
-  <path id="lk-glassRim" fill="url(#lk-glassRimGrad)" fill-rule="evenodd" d="M 140 512 A 372 372 0 1 1 884 512 A 372 372 0 1 1 140 512 Z M 154 512 A 358 358 0 1 0 870 512 A 358 358 0 1 0 154 512 Z"/>
-  <path id="lk-element" fill="url(#lk-elementGrad)" d="M 280 512 A 232 232 0 1 1 744 512 A 232 232 0 1 1 280 512 Z"/>
-  <path id="lk-elementRim" fill="#080808" fill-rule="evenodd" d="M 280 512 A 232 232 0 1 1 744 512 A 232 232 0 1 1 280 512 Z M 301 512 A 211 211 0 1 0 723 512 A 211 211 0 1 0 301 512 Z"/>
-  <g transform="translate(565 599) rotate(-30) scale(1 0.58) translate(-565 -599)">
-    <path id="lk-reflection" fill="url(#lk-reflectionGrad)" d="M 529 599 A 36 36 0 1 1 601 599 A 36 36 0 1 1 529 599 Z"/>
+  <path id="lk-ring" fill="url(#lk-ringGrad)" fill-rule="evenodd" d="M 72 512 A 440 440 0 1 1 952 512 A 440 440 0 1 1 72 512 Z M 118 512 A 394 394 0 1 0 906 512 A 394 394 0 1 0 118 512 Z"/>
+  <path id="lk-rimEdge" fill="url(#lk-rimEdgeGrad)" fill-rule="evenodd" d="M 72 512 A 440 440 0 1 1 952 512 A 440 440 0 1 1 72 512 Z M 78 512 A 434 434 0 1 0 946 512 A 434 434 0 1 0 78 512 Z"/>
+  <path id="lk-lensShadow" fill="url(#lk-lensShadowGrad)" d="M 108 518 A 408 408 0 1 1 924 518 A 408 408 0 1 1 108 518 Z"/>
+  <path id="lk-glass" fill="url(#lk-glassGrad)" d="M 118 512 A 394 394 0 1 1 906 512 A 394 394 0 1 1 118 512 Z"/>
+  <path id="lk-glassRim" fill="url(#lk-glassRimGrad)" fill-rule="evenodd" d="M 118 512 A 394 394 0 1 1 906 512 A 394 394 0 1 1 118 512 Z M 125 512 A 387 387 0 1 0 899 512 A 387 387 0 1 0 125 512 Z"/>
+  <path id="lk-funnel" fill="url(#lk-funnelGrad)" d="M 208 512 A 304 304 0 1 1 816 512 A 304 304 0 1 1 208 512 Z"/>
+  <path id="lk-element" fill="#050508" d="M 343.52 512 A 168.48 168.48 0 1 1 680.48 512 A 168.48 168.48 0 1 1 343.52 512 Z"/>
+  <path id="lk-lens" fill="url(#lk-lensGrad)" d="M 367.77 512 A 144.23 144.23 0 1 1 656.23 512 A 144.23 144.23 0 1 1 367.77 512 Z"/>
+  <g transform="translate(512 454.31) rotate(0) scale(1 0.57) translate(-512 -454.31)">
+    <path id="lk-glowTop" fill="url(#lk-glowTopGrad)" d="M 396.61 454.31 A 115.39 115.39 0 1 1 627.39 454.31 A 115.39 115.39 0 1 1 396.61 454.31 Z"/>
   </g>
-  <g transform="translate(437 406) rotate(-35) scale(1 0.65) translate(-437 -406)">
-    <path id="lk-specular" fill="url(#lk-specularGrad)" d="M 382 406 A 55 55 0 1 1 492 406 A 55 55 0 1 1 382 406 Z"/>
+  <g transform="translate(512 627.39) rotate(0) scale(1 0.44) translate(-512 -627.39)">
+    <path id="lk-glowBottom" fill="url(#lk-glowBottomGrad)" d="M 393.73 627.39 A 118.27 118.27 0 1 1 630.27 627.39 A 118.27 118.27 0 1 1 393.73 627.39 Z"/>
+  </g>
+  <g transform="translate(512 509.12) rotate(0) scale(1 0.21) translate(-512 -509.12)">
+    <path id="lk-band" fill="url(#lk-bandGrad)" d="M 374.98 509.12 A 137.02 137.02 0 1 1 649.02 509.12 A 137.02 137.02 0 1 1 374.98 509.12 Z"/>
+  </g>
+  <path id="lk-vignette" fill="url(#lk-vignetteGrad)" d="M 343.52 512 A 168.48 168.48 0 1 1 680.48 512 A 168.48 168.48 0 1 1 343.52 512 Z"/>
+  <path id="lk-iris" fill="#07070B" fill-rule="evenodd" d="M 291 512 A 221 221 0 1 1 733 512 A 221 221 0 1 1 291 512 Z M 569.54 661.89 L 486.88 670.58 L 410.96 636.78 L 362.11 569.54 L 353.42 486.88 L 387.22 410.96 L 454.46 362.11 L 537.12 353.42 L 613.04 387.22 L 661.89 454.46 L 670.58 537.12 L 636.78 613.04 Z"/>
+  <path id="lk-blade1" fill="url(#lk-blade1Grad)" d="M 486.88 670.58 L 410.96 636.78 L 362.11 569.54 L 373.48 677.73 A 216 216 0 0 0 504.68 727.88 L 456.37 706.37 L 452.98 674.15 Z"/>
+  <path id="lk-blade3" fill="url(#lk-blade3Grad)" d="M 387.22 410.96 L 454.46 362.11 L 537.12 353.42 L 437.73 309.17 A 216 216 0 0 0 328.71 397.72 L 371.49 366.64 L 401.09 379.82 Z"/>
+  <path id="lk-blade5" fill="url(#lk-blade5Grad)" d="M 661.89 454.46 L 670.58 537.12 L 636.78 613.04 L 724.79 549.1 A 216 216 0 0 0 702.61 410.4 L 708.14 462.99 L 681.93 482.04 Z"/>
+  <path id="lk-blade0" fill="url(#lk-blade0Grad)" d="M 569.54 661.89 L 463.72 673.02 A 10.8 10.8 0 0 0 454.11 684.89 L 455.72 700.17 A 10.8 10.8 0 0 0 462.07 708.9 L 504.68 727.88 A 216 216 0 0 0 724.79 549.1 Z"/>
+  <path id="lk-blade2" fill="url(#lk-blade2Grad)" d="M 353.42 486.88 L 396.69 389.68 A 10.8 10.8 0 0 0 391.22 375.43 L 377.18 369.18 A 10.8 10.8 0 0 0 366.44 370.3 L 328.71 397.72 A 216 216 0 0 0 373.48 677.73 Z"/>
+  <path id="lk-blade4" fill="url(#lk-blade4Grad)" d="M 613.04 387.22 L 675.58 473.3 A 10.8 10.8 0 0 0 690.67 475.69 L 703.1 466.66 A 10.8 10.8 0 0 0 707.49 456.79 L 702.61 410.4 A 216 216 0 0 0 437.73 309.17 Z"/>
+  <path id="lk-edge1root" fill="url(#lk-edge1rootGrad)" d="M 486.88 670.58 L 410.96 636.78 L 409.74 639.52 L 485.66 673.32 Z"/>
+  <path id="lk-edge5root" fill="url(#lk-edge5rootGrad)" d="M 661.89 454.46 L 670.58 537.12 L 673.57 536.8 L 664.88 454.15 Z"/>
+  <path id="lk-edge5tip" fill="url(#lk-edge5tipGrad)" d="M 670.58 537.12 L 636.78 613.04 L 639.52 614.26 L 673.32 538.34 Z"/>
+  <path id="lk-edge0root" fill="url(#lk-edge0rootGrad)" d="M 724.79 549.1 L 569.54 661.89 L 571.3 664.32 L 726.55 551.53 Z"/>
+  <path id="lk-edge0tip" fill="url(#lk-edge0tipGrad)" d="M 569.54 661.89 L 463.72 673.02 L 464.04 676 L 569.85 664.88 Z"/>
+  <path id="lk-edge4tip" fill="url(#lk-edge4tipGrad)" d="M 613.04 387.22 L 675.58 473.3 L 678.01 471.54 L 615.47 385.46 Z"/>
+  <path id="lk-edge0turn1" fill="url(#lk-edge0turn1Grad)" d="M 463.72 673.02 A 10.8 10.8 0 0 0 454.11 684.89 L 457.1 684.57 A 7.8 7.8 0 0 1 464.04 676 Z"/>
+  <path id="lk-edge0end" fill="url(#lk-edge0endGrad)" d="M 454.11 684.89 L 455.72 700.17 L 458.7 699.85 L 457.1 684.57 Z"/>
+  <path id="lk-edge0turn2" fill="url(#lk-edge0turn2Grad)" d="M 455.72 700.17 A 10.8 10.8 0 0 0 462.07 708.9 L 463.29 706.16 A 7.8 7.8 0 0 1 458.7 699.85 Z"/>
+  <path id="lk-edge2end" fill="url(#lk-edge2endGrad)" d="M 391.22 375.43 L 377.18 369.18 L 375.96 371.92 L 390 378.17 Z"/>
+  <path id="lk-edge2turn2" fill="url(#lk-edge2turn2Grad)" d="M 377.18 369.18 A 10.8 10.8 0 0 0 366.44 370.3 L 368.21 372.73 A 7.8 7.8 0 0 1 375.96 371.92 Z"/>
+  <path id="lk-edge2back" fill="url(#lk-edge2backGrad)" d="M 366.44 370.3 L 328.71 397.72 L 330.47 400.15 L 368.21 372.73 Z"/>
+  <g transform="translate(512 416.81) rotate(0) scale(1 0.37) translate(-512 -416.81)">
+    <path id="lk-hotspot" fill="url(#lk-hotspotGrad)" d="M 454.31 416.81 A 57.69 57.69 0 1 1 569.69 416.81 A 57.69 57.69 0 1 1 454.31 416.81 Z"/>
+  </g>
+  <g transform="translate(512 548.06) rotate(0) scale(1 0.5) translate(-512 -548.06)">
+    <path id="lk-spot" fill="url(#lk-spotGrad)" d="M 483.15 548.06 A 28.85 28.85 0 1 1 540.85 548.06 A 28.85 28.85 0 1 1 483.15 548.06 Z"/>
   </g>
   </g>
   <g transform="translate(255, 170.25)">

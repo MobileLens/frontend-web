@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { compareSmartphones, searchSmartphones } from "../../api/smartphones";
+import { compareSmartphones } from "../../api/smartphones";
 import {
   MAX_COMPARE_PHONES,
   addPhoneToCompare,
@@ -11,6 +11,7 @@ import {
 import { VideoLines } from "../../components/CameraSpecs/CameraSpecs";
 import Icon from "../../components/Icon/Icon";
 import { PhoneImage } from "../../components/PhoneCard/PhoneCard";
+import PhoneSearch, { PhoneThumb } from "../../components/PhoneSearch/PhoneSearch";
 import {
   cameraSlots,
   compareSlots,
@@ -32,8 +33,6 @@ import { photoSizesSummary } from "../../utils/photoResolutions";
 import { useCompareList } from "../../utils/useCompareList";
 import CompareGallery from "./CompareGallery";
 import "./PhoneComparison.css";
-
-const SEARCH_DELAY_MS = 250;
 
 const GENERAL_ROWS = [
   { label: "Release date", value: (phone) => (phone.releaseDate ? formatReleaseDate(phone.releaseDate) : null) },
@@ -108,81 +107,6 @@ function bestIndexes(values, lowerIsBetter) {
   if (scored.every((value) => value === best)) return new Set();
 
   return new Set(values.flatMap((value, index) => (value === best ? [index] : [])));
-}
-
-function AddPhoneSearch({ selectedIds, onAdd }) {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [searching, setSearching] = useState(false);
-
-  useEffect(() => {
-    const trimmed = query.trim();
-    if (!trimmed) return undefined;
-
-    let ignore = false;
-    const timer = setTimeout(async () => {
-      setSearching(true);
-
-      try {
-        const phones = await searchSmartphones(trimmed, 8);
-
-        if (!ignore) {
-          setResults(phones);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (!ignore) {
-          setSearching(false);
-        }
-      }
-    }, SEARCH_DELAY_MS);
-
-    return () => {
-      ignore = true;
-      clearTimeout(timer);
-    };
-  }, [query]);
-
-  function handleAdd(phone) {
-    onAdd(phone);
-    setQuery("");
-    setResults([]);
-  }
-
-  const visibleResults = query.trim() ? results.filter((phone) => !selectedIds.includes(phone.id)) : [];
-
-  return (
-    <div className="compare-add">
-      <input
-        type="search"
-        className="ui-input"
-        placeholder="Add a phone: type a model name…"
-        aria-label="Search for a phone to add"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-      />
-
-      {query.trim() && (
-        <ul className="compare-add-results">
-          {searching && visibleResults.length === 0 && <li className="compare-add-empty">Searching…</li>}
-          {!searching && visibleResults.length === 0 && <li className="compare-add-empty">No phones found.</li>}
-          {visibleResults.map((phone) => (
-            <li key={phone.id}>
-              <button type="button" className="compare-add-option" onClick={() => handleAdd(phone)}>
-                <span className="compare-add-thumb"><PhoneImage phone={phone} /></span>
-                <span>
-                  {phone.brandName && <span className="phone-brand">{phone.brandName} </span>}
-                  <strong>{phone.modelName}</strong>
-                </span>
-                <span className="compare-add-plus" aria-hidden="true"><Icon name="plus" /></span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
 }
 
 function Compare() {
@@ -268,13 +192,13 @@ function Compare() {
           </span>
         </header>
 
-        {selected.length < MAX_COMPARE_PHONES && <AddPhoneSearch selectedIds={ids} onAdd={handleAdd} />}
+        {selected.length < MAX_COMPARE_PHONES && <PhoneSearch className="compare-add" excludeIds={ids} onPick={handleAdd} />}
 
         {selected.length < 2 && (
           <div className="compare-empty">
             {selected.length === 1 && (
               <div className="compare-chip">
-                <span className="compare-add-thumb"><PhoneImage phone={selected[0]} /></span>
+                <PhoneThumb phone={selected[0]} />
                 <Link to={`/phone/${selected[0].id}`} className="compare-chip-name">
                   {selected[0].brandName} {selected[0].modelName}
                 </Link>

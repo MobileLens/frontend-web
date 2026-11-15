@@ -18,7 +18,7 @@ const TABS = [
   { id: "overview", label: "Overview" },
   { id: "reviews", label: "Reviews", badge: (stats) => stats.pendingReviews },
   { id: "cameras", label: "Camera submissions", badge: (stats) => stats.pendingSubmissions },
-  { id: "media", label: "Photos & videos", badge: (stats) => (stats.pendingPhotos ?? 0) + (stats.pendingVideos ?? 0) },
+  { id: "media", label: "Photos", badge: (stats) => stats.pendingPhotos },
   { id: "phones", label: "Phones", badge: (stats) => stats.unverifiedPhones },
   { id: "brands", label: "Brands" },
   { id: "users", label: "Users & bans" },

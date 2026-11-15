@@ -267,3 +267,86 @@
     height: 10rem;
   }
 }
+
+/* Wątek recenzji: nagłówek z przyciskiem i filtr */
+
+.review-thread-header,
+.my-reviews-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.review-filters .lens-tab {
+  flex: 0 0 auto;
+}
+
+.review-list.is-updating {
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+/* Moje recenzje */
+
+.my-reviews-notice {
+  margin-bottom: 1rem;
+}
+
+.review-card-own:hover {
+  border-color: var(--border-color);
+}
+
+.review-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.review-card-link:hover {
+  text-decoration: underline;
+}
+
+.review-card-own .ui-badge {
+  align-self: flex-start;
+}
+
+.review-status-published {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.review-card-actions {
+  margin-top: 0.35rem;
+}
+
+/* Recenzja: komunikaty, panel autora, podpisy zdjęć */
+
+.review-notice {
+  margin-top: 1rem;
+}
+
+.review-author {
+  border-style: solid;
+  border-color: var(--border-color);
+  background-color: var(--surface-muted);
+}
+
+.review-author-note {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.review-gallery li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.review-gallery-caption {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-secondary);
+}

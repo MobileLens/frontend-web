@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
   addComment,
@@ -17,12 +17,22 @@ import PhotoViewer from "../../components/PhotoViewer/PhotoViewer";
 import { openInViewer } from "../../components/PhotoViewer/openInViewer";
 import { PageSkeleton } from "../../components/PhoneCard/PhoneCard";
 import { useAuth } from "../../context/useAuth";
+import { splitCaptions } from "../../utils/reviewCaptions";
+import { canPublishReviews } from "../ReviewEditor/reviewDraft";
 import "../../styles/reviews.css";
 
 const STATUS_LABELS = {
   draft: "Draft",
   pending: "Waiting for verification",
   hidden: "Hidden by an administrator",
+};
+
+// What the author is told about their review in each status.
+const AUTHOR_NOTES = {
+  draft: "This draft is only visible to you.",
+  pending: "A moderator will check the review before it's published. Until then only you and the moderators can see it.",
+  published: "Your review is public.",
+  hidden: "An administrator hid this review. Edit it if needed, then ask for it to be published again.",
 };
 
 const COMMENT_MAX = 2000;
@@ -42,7 +52,14 @@ function mediaKey(url) {
 function Review() {
   const { reviewId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser, isStaff, isAdmin } = useAuth();
+  // Set by the editor after saving.
+  const [notice, setNotice] = useState(location.state?.notice || "");
+  // The editor's message is shown once: a reload doesn't bring it back.
+  useEffect(() => {
+    if (location.state?.notice) navigate(location.pathname, { replace: true, state: null });
+  }, [location.state, location.pathname, navigate]);
 
   const [review, setReview] = useState(null);
   const [moderating, setModerating] = useState(false);
@@ -81,6 +98,7 @@ function Review() {
   async function changeStatus(status) {
     setModerating(true);
     setModerationError("");
+    setNotice("");
 
     try {
       const result = await setReviewStatus(review.id, status);
@@ -101,7 +119,11 @@ function Review() {
 
     try {
       await deleteReview(review.id);
-      navigate(`/phone/${review.smartphoneId}/reviews`, { replace: true });
+      if (review.authorId === currentUser?.id) {
+        navigate("/reviews/mine", { replace: true, state: { notice: "Review deleted." } });
+      } else {
+        navigate(`/phone/${review.smartphoneId}/reviews`, { replace: true });
+      }
     } catch (err) {
       setModerationError(err.message || "Could not delete the review.");
       setModerating(false);
@@ -205,11 +227,15 @@ function Review() {
   }
 
   const comments = review.comments?.data || [];
-  const media = review.media || [];
+  const isAuthor = Boolean(currentUser) && review.authorId === currentUser.id;
+  const canPublish = canPublishReviews(currentUser?.role);
+  // The automatic captions at the end of the text ("*Photo 1: Shot on …*") go under the photos.
+  const { body, captions } = splitCaptions(review.contentMarkdown);
+  const media = (review.media || []).map((item, index) => ({ ...item, caption: captions.get(index + 1) || null }));
   const mediumByKey = new Map(media.map((item) => [mediaKey(item.url), item.mediumUrl || item.url]));
   // Photos already placed in the text are not repeated below it.
   const inline = new Set(
-    [...(review.contentMarkdown || "").matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((match) => mediaKey(match[1]))
+    [...body.matchAll(/!\[[^\]]*\]\(([^)\s]+)/g)].map((match) => mediaKey(match[1]))
   );
   const gallery = media.filter((item) => !inline.has(mediaKey(item.url)));
   // The viewer goes through all the photos, those in the text first, in the review's order.
@@ -241,7 +267,43 @@ function Review() {
       <article className="page-narrow">
         <Link to={`/phone/${review.smartphoneId}/reviews`} className="text-link review-back"><Icon name="arrowLeft" /> All reviews</Link>
 
-        {isStaff && (
+        {notice && <p className="ui-alert ui-alert-success review-notice" role="status">{notice}</p>}
+
+        {isAuthor && (
+          <div className="review-moderation review-author" role="group" aria-label="Your review">
+            <p className="review-author-note">{AUTHOR_NOTES[review.status]}</p>
+            <div className="ui-actions">
+              <Link to={`/review/${review.id}/edit`} className="ui-btn ui-btn-small ui-btn-primary">
+                <Icon name="edit" /> Edit
+              </Link>
+              {review.status === "draft" && (
+                <button type="button" className="ui-btn ui-btn-small" disabled={moderating} onClick={() => changeStatus(canPublish ? "published" : "pending")}>
+                  <Icon name="check" /> {canPublish ? "Publish" : "Submit for verification"}
+                </button>
+              )}
+              {review.status === "pending" && canPublish && (
+                <button type="button" className="ui-btn ui-btn-small" disabled={moderating} onClick={() => changeStatus("published")}>
+                  <Icon name="check" /> Publish
+                </button>
+              )}
+              {(review.status === "pending" || (review.status === "published" && canPublish)) && (
+                <button type="button" className="ui-btn ui-btn-small" disabled={moderating} onClick={() => changeStatus("draft")}>
+                  <Icon name="arrowLeft" /> {review.status === "pending" ? "Withdraw to drafts" : "Unpublish"}
+                </button>
+              )}
+              {review.status === "hidden" && (
+                <button type="button" className="ui-btn ui-btn-small" disabled={moderating} onClick={() => changeStatus("pending")}>
+                  <Icon name="refresh" /> Ask to publish again
+                </button>
+              )}
+              <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={moderating} onClick={handleDeleteReview}>
+                <Icon name="trash" /> Delete
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isStaff && (!isAuthor || isAdmin) && (
           <div className="review-moderation" role="group" aria-label="Moderation">
             <span className="ui-label">Moderation</span>
             <div className="ui-actions">
@@ -265,7 +327,7 @@ function Review() {
                   <Icon name="check" /> Publish again
                 </button>
               )}
-              {isAdmin && (
+              {isAdmin && !isAuthor && (
                 <button type="button" className="ui-btn ui-btn-small ui-btn-danger" disabled={moderating} onClick={handleDeleteReview}>
                   <Icon name="trash" /> Delete review
                 </button>
@@ -294,7 +356,7 @@ function Review() {
         </header>
 
         <div className="review-body">
-          <Markdown components={markdownComponents}>{review.contentMarkdown}</Markdown>
+          <Markdown components={markdownComponents}>{body}</Markdown>
         </div>
 
         {review.status === "published" && (
@@ -326,8 +388,9 @@ function Review() {
                   {item.type === "video" ? (
                     <video src={item.url} controls preload="metadata" />
                   ) : (
-                    viewerLink(item.url, <img src={item.thumbUrl || item.url} alt="" loading="lazy" />)
+                    viewerLink(item.url, <img src={item.thumbUrl || item.url} alt={item.caption || ""} loading="lazy" />)
                   )}
+                  {item.caption && <span className="review-gallery-caption">{item.caption}</span>}
                 </li>
               ))}
             </ul>

@@ -30,6 +30,8 @@ const ForgotPassword = lazy(() => import("./pages/ResetPassword/ForgotPassword")
 const ResetPassword = lazy(() => import("./pages/ResetPassword/ResetPassword"));
 // The Markdown renderer and the admin panel are large and only some visitors need them.
 const Review = lazy(() => import("./pages/Review/Review"));
+const ReviewEditor = lazy(() => import("./pages/ReviewEditor/ReviewEditor"));
+const MyReviews = lazy(() => import("./pages/MyReviews/MyReviews"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel/AdminPanel"));
 
 function preloadPages() {
@@ -68,7 +70,10 @@ function App() {
             <Route path="/browse" element={<PhoneBrowse />} />
             <Route path="/phone/:phoneId" element={<PhoneSpecifications />} />
             <Route path="/phone/:phoneId/reviews" element={<ReviewThread />} />
+            <Route path="/review/new" element={<ReviewEditor />} />
             <Route path="/review/:reviewId" element={<Review />} />
+            <Route path="/review/:reviewId/edit" element={<ReviewEditor />} />
+            <Route path="/reviews/mine" element={<MyReviews />} />
             <Route path="/compare" element={<PhoneComparison />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/account" element={<Account />} />

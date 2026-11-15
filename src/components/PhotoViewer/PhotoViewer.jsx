@@ -97,7 +97,8 @@ export default function PhotoViewer({ photos, initialIndex, total, onLoadMore, l
   const go = (step) => setIndex((current) => Math.min(Math.max(current + step, 0), photos.length - 1));
   const camera = cameras?.get(photo.cameraId);
   const details = shotDetails(photo, camera);
-  const cameraLabel = photo.cameraType ? photoCameraLabel(photo) : null;
+  // Gallery photos name their camera; review photos may have a caption ("Shot on Apple iPhone 16").
+  const cameraLabel = photo.cameraType ? photoCameraLabel(photo) : photo.caption || null;
   const position = `Photo ${index + 1} of ${count}`;
 
   function handleKeyDown(event) {

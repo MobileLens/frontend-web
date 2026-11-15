@@ -162,7 +162,7 @@ export default function MediaTab({ notify }) {
       </p>
 
       <LoadState loading={loading} error={error} errorMessage="Could not load pending media." />
-      {media?.length === 0 && <EmptyNote>No photos or videos are waiting.</EmptyNote>}
+      {media?.length === 0 && <EmptyNote>No photos are waiting.</EmptyNote>}
 
       <div className="image-manager-grid">
         {media?.map((item) => (

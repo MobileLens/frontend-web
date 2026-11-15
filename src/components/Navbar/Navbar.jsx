@@ -45,6 +45,7 @@ function Navbar() {
           {compareCount > 0 && <span className="nav-badge" aria-hidden="true">{compareCount}</span>}
         </NavLink>
         {loggedIn && <NavLink to="/favorites" className="nav-link"><Icon name="heart" /> Favorites</NavLink>}
+        {loggedIn && <NavLink to="/reviews/mine" className="nav-link"><Icon name="comment" /> My reviews</NavLink>}
 
         <div className="navbar-actions">
           {loggedIn ? (

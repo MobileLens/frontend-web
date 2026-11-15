@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser } from "../../api/auth";
 import Icon from "../../components/Icon/Icon";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
@@ -10,6 +10,9 @@ import "../../styles/auth.css";
 function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  // A page that sent the visitor here to log in (e.g. the review editor) gets them back.
+  const from = useLocation().state?.from;
+  const returnTo = typeof from === "string" && from.startsWith("/") && !from.startsWith("//") ? from : "/";
 
   // After a link from an e-mail the backend sends the browser back here.
   const linkError = searchParams.get("error");
@@ -52,7 +55,7 @@ function Login() {
       }
 
       saveToken(data.token);
-      navigate("/");
+      navigate(returnTo, { replace: true });
     } catch (err) {
       console.error(err);
 

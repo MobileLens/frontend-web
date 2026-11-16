@@ -1,21 +1,13 @@
 /* Logowanie i rejestracja */
 
-/* width: 100% - in the #root flex column, auto margins would otherwise shrink the card to its content */
-.auth-page {
-  width: 100%;
-  max-width: calc(560px * var(--ui-scale));
-  margin: 3rem auto;
-  padding: 0 1rem;
-  box-sizing: border-box;
-  text-align: left;
-}
+/* Układ strony (panel z logo obok formularza) jest w components/AuthLayout. */
 
 .auth-title {
-  margin: 0 0 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
 }
 
@@ -23,7 +15,7 @@
   background-color: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 1.5rem 1.75rem;
+  padding: 1.75rem;
   box-sizing: border-box;
 }
 
@@ -156,8 +148,14 @@
 
 .password-checklist li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.35rem;
+}
+
+/* Przy zawiniętej pozycji ikona zostaje przy pierwszej linii */
+.password-checklist .icon {
+  flex: none;
+  margin-top: 0.25em;
 }
 
 .password-checklist li.is-met {
@@ -265,9 +263,12 @@
 }
 
 @media (max-width: 480px) {
-  .auth-page {
-    margin: 1.5rem auto;
-    padding: 0 0.5rem;
+  .auth-title {
+    font-size: 1.5rem;
+  }
+
+  .password-checklist {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .auth-card {

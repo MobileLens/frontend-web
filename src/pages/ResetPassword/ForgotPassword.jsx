@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { requestPasswordReset } from "../../api/auth";
+import AuthLayout from "../../components/AuthLayout/AuthLayout";
 import Icon from "../../components/Icon/Icon";
 import "../../styles/auth.css";
 
@@ -33,9 +34,7 @@ function ForgotPassword() {
   }
 
   return (
-    <main className="auth-page">
-      <h1 className="auth-title">Reset your password</h1>
-
+    <AuthLayout title="Reset your password" subtitle="We'll e-mail you a link to choose a new one.">
       <div className="auth-card">
         {sent ? (
           <p role="status" className="auth-notice">
@@ -67,7 +66,7 @@ function ForgotPassword() {
           <Link to="/login" className="auth-link-btn">Back to log in</Link>
         </p>
       </div>
-    </main>
+    </AuthLayout>
   );
 }
 

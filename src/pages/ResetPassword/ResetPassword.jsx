@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../../api/auth";
+import AuthLayout from "../../components/AuthLayout/AuthLayout";
 import Icon from "../../components/Icon/Icon";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import PasswordChecklist from "../../components/PasswordInput/PasswordChecklist";
@@ -39,9 +40,7 @@ function ResetPassword() {
   }
 
   return (
-    <main className="auth-page">
-      <h1 className="auth-title">Set a new password</h1>
-
+    <AuthLayout title="Set a new password" subtitle="Choose one you don't use on other sites.">
       <div className="auth-card">
         {done && <p role="status" className="auth-notice">Password changed. You can log in now.</p>}
 
@@ -88,7 +87,7 @@ function ResetPassword() {
           <Link to="/login" className="auth-link-btn">Back to log in</Link>
         </p>
       </div>
-    </main>
+    </AuthLayout>
   );
 }
 

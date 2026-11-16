@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { loginUser } from "../../api/auth";
+import AuthLayout from "../../components/AuthLayout/AuthLayout";
 import Icon from "../../components/Icon/Icon";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import ResendVerification from "../../components/ResendVerification/ResendVerification";
@@ -73,9 +74,7 @@ function Login() {
   }
 
   return (
-    <main className="auth-page">
-      <h1 className="auth-title">Log in to MobileLens</h1>
-
+    <AuthLayout title="Log in" subtitle="Welcome back to MobileLens.">
       <div className="auth-card">
         {verified && <p role="status" className="auth-notice">E-mail address confirmed. You can log in now.</p>}
         {linkError && <p role="alert" className="auth-error auth-link-error">This link has expired or is not valid. Log in to get a new one.</p>}
@@ -123,7 +122,7 @@ function Login() {
           </button>
         </p>
       </div>
-    </main>
+    </AuthLayout>
   );
 }
 

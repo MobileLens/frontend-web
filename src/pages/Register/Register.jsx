@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../api/auth";
+import AuthLayout from "../../components/AuthLayout/AuthLayout";
 import Icon from "../../components/Icon/Icon";
 import PasswordChecklist from "../../components/PasswordInput/PasswordChecklist";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
@@ -72,9 +73,7 @@ function Register() {
   }
 
   return (
-    <main className="auth-page">
-      <h1 className="auth-title">Create an account</h1>
-
+    <AuthLayout title="Create an account" subtitle="It's free and takes a minute.">
       <div className="auth-card">
         {sentTo ? (
           <div className="auth-inbox">
@@ -163,7 +162,7 @@ function Register() {
           </button>
         </p>
       </div>
-    </main>
+    </AuthLayout>
   );
 }
 
